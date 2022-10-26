@@ -20,7 +20,7 @@ class AuthService {
     return 'https://identitytoolkit.googleapis.com/v1/accounts:$method?key=$_apiKey';
   }
 
-  Future<AuthToken> _authenticate(
+  Future<AuthTokenModel> _authenticate(
     String email,
     String password,
     String method,
@@ -52,21 +52,21 @@ class AuthService {
     }
   }
 
-  Future<AuthToken> signup(String email, String password) {
+  Future<AuthTokenModel> signup(String email, String password) {
     return _authenticate(email, password, 'signUp');
   }
 
-  Future<AuthToken> login(String email, String password) {
+  Future<AuthTokenModel> login(String email, String password) {
     return _authenticate(email, password, 'signInWithPassword');
   }
 
-  Future<void> _saveAuthToken(AuthToken authToken) async {
+  Future<void> _saveAuthToken(AuthTokenModel authToken) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(_authTokenKey, json.encode(authToken.toJson()));
   }
 
-  AuthToken _fromJson(Map<String, dynamic> json) {
-    return AuthToken(
+  AuthTokenModel _fromJson(Map<String, dynamic> json) {
+    return AuthTokenModel(
       token: json['idToken'],
       userId: json['localId'],
       expiryDate: DateTime.now().add(
@@ -79,7 +79,7 @@ class AuthService {
     );
   }
 
-  Future<AuthToken?> loadSavedAuthToken() async {
+  Future<AuthTokenModel?> loadSavedAuthToken() async {
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey(_authTokenKey)) {
       return null;
@@ -87,7 +87,7 @@ class AuthService {
 
     final savedToken = prefs.getString(_authTokenKey);
 
-    final authToken = AuthToken.fromJson(json.decode(savedToken!));
+    final authToken = AuthTokenModel.fromJson(json.decode(savedToken!));
     if (!authToken.isValid) {
       return null;
     }

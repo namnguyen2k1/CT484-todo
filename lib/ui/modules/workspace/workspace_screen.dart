@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todoapp/ui/shared/app_drawer.dart';
+import '../../../state/controllers/app_settings_controller.dart';
 import '../../screens.dart';
 
 class WorkspaceScreen extends StatefulWidget {
@@ -19,16 +21,26 @@ class WorkspaceScreen extends StatefulWidget {
 }
 
 class _WorkspaceScreenState extends State<WorkspaceScreen> {
-  int _selectedScreenIndex = 0;
-
+  // int selectedScreenIndex = Provider.of<AppSettingsController>(context).selectedNavigationBar;
+  int selectedScreenIndex = 0;
   void _handleOnItemTapped(int index) {
     setState(() {
-      _selectedScreenIndex = index;
+      selectedScreenIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    // final appSettingsController = Provider.of<AppSettingsController>(context);
+    // final switchScreenAnyWay = appSettingsController.selectedNavigationBar;
+
+    // Nếu có sự thay đổi trong route thì sẽ gán lại router mới
+    // if (switchScreenAnyWay != selectedScreenIndex) {
+    // appSettingsController.setNavigationBar(selected: selectedScreenIndex);
+    // setState(() {
+    //   selectedScreenIndex = switchScreenAnyWay;
+    // });
+    // }
     const backgroundColorNavigationBar = Colors.black54;
     const selectedColorIcon = Colors.black;
     const selectedBackgroundColorIcon = Colors.green;
@@ -37,17 +49,17 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
     return Scaffold(
       body: Center(
-        child: WorkspaceScreen._screenOptions.elementAt(_selectedScreenIndex),
+        child: WorkspaceScreen._screenOptions.elementAt(selectedScreenIndex),
       ),
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
-          indicatorColor: selectedBackgroundColorIcon,
-          backgroundColor: backgroundColorNavigationBar,
+          // indicatorColor: selectedBackgroundColorIcon,
+          // backgroundColor: backgroundColorNavigationBar,
           surfaceTintColor: Colors.red,
           labelTextStyle: MaterialStateProperty.all(
             const TextStyle(
               fontWeight: FontWeight.bold,
-              color: colorLabel,
+              // color: colorLabel,
             ),
           ),
         ),
@@ -56,7 +68,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
           animationDuration: animationDurationTap,
           onDestinationSelected: _handleOnItemTapped,
-          selectedIndex: _selectedScreenIndex,
+          selectedIndex: selectedScreenIndex,
           destinations: const [
             NavigationDestination(
               icon: Icon(
@@ -64,7 +76,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               ),
               selectedIcon: Icon(
                 Icons.home,
-                color: selectedColorIcon,
+                // color: selectedColorIcon,
               ),
               label: 'Home',
             ),
@@ -74,14 +86,14 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               ),
               selectedIcon: Icon(
                 Icons.assignment,
-                color: selectedColorIcon,
+                // color: selectedColorIcon,
               ),
               label: 'Tasks',
             ),
             NavigationDestination(
               selectedIcon: Icon(
                 Icons.notifications,
-                color: selectedColorIcon,
+                // color: selectedColorIcon,
               ),
               icon: Icon(
                 Icons.notifications_outlined,
@@ -91,7 +103,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
             NavigationDestination(
               selectedIcon: Icon(
                 Icons.account_circle,
-                color: selectedColorIcon,
+                // color: selectedColorIcon,
               ),
               icon: Icon(
                 Icons.account_circle_outlined,

@@ -23,6 +23,10 @@ dependencies:
   toggle_switch: ^2.0.1
   percent_indicator: ^4.2.2
   syncfusion_flutter_charts: ^20.3.50
+  flutter_native_splash: ^2.2.12
+  animated_text_kit: ^4.2.2
+  intl: ^0.17.0
+  flutter_colorpicker: ^1.0.3
 
 dev_dependencies:
   flutter_test:

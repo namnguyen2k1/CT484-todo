@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/auth_token.dart';
 import '../services/auth_service.dart';
 
 class AuthController with ChangeNotifier {
-  AuthToken? _authToken;
+  AuthTokenModel? _authToken;
   Timer? _authTimer;
 
   final AuthService _authService = AuthService();
@@ -14,22 +15,26 @@ class AuthController with ChangeNotifier {
     return authToken != null && authToken!.isValid;
   }
 
-  AuthToken? get authToken {
+  AuthTokenModel? get authToken {
     return _authToken;
   }
 
-  void _setAuthToken(AuthToken token) {
+  void _setAuthToken(AuthTokenModel token) {
     _authToken = token;
     _autoLogout(); // Bậc timer tự động logout
     notifyListeners();
   }
 
   Future<void> signup(String email, String password) async {
-    _setAuthToken(await _authService.signup(email, password));
+    _setAuthToken(
+      await _authService.signup(email, password),
+    );
   }
 
   Future<void> login(String email, String password) async {
-    _setAuthToken(await _authService.login(email, password));
+    _setAuthToken(
+      await _authService.login(email, password),
+    );
   }
 
   Future<bool> tryAutoLogin() async {

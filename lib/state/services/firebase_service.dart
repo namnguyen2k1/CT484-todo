@@ -8,13 +8,13 @@ abstract class FirebaseService {
   String? _userId;
   late final String? databaseUrl;
 
-  FirebaseService([AuthToken? authToken])
+  FirebaseService([AuthTokenModel? authToken])
       : _token = authToken?.token,
         _userId = authToken?.userId {
     databaseUrl = dotenv.env['FIREBASE_URL'];
   }
 
-  set authToken(AuthToken? authToken) {
+  set authToken(AuthTokenModel? authToken) {
     _token = authToken?.token;
     _userId = authToken?.userId;
   }

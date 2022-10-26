@@ -5,13 +5,13 @@ import '../models/todo_model.dart';
 import '../models/auth_token.dart';
 
 class TodoController with ChangeNotifier {
-  List<Todo> _items = [];
+  List<TodoModel> _items = [];
   final TodoService _todosService;
 
-  TodoController([AuthToken? authToken])
+  TodoController([AuthTokenModel? authToken])
       : _todosService = TodoService(authToken);
 
-  set authToken(AuthToken? authToken) {
+  set authToken(AuthTokenModel? authToken) {
     _todosService.authToken = authToken;
   }
 
@@ -20,7 +20,7 @@ class TodoController with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addTodo(Todo todo) async {
+  Future<void> addTodo(TodoModel todo) async {
     final newtodo = await _todosService.addTodo(todo);
     if (newtodo != null) {
       _items.add(newtodo);
@@ -32,19 +32,19 @@ class TodoController with ChangeNotifier {
     return _items.length;
   }
 
-  List<Todo> get items {
+  List<TodoModel> get items {
     return [..._items];
   }
 
-  List<Todo> get favoriteItems {
+  List<TodoModel> get favoriteItems {
     return _items.where((todo) => todo.isCompleted).toList();
   }
 
-  Todo findById(String id) {
+  TodoModel findById(String id) {
     return _items.firstWhere((prod) => prod.id == id);
   }
 
-  Future<void> updateTodo(Todo todo) async {
+  Future<void> updateTodo(TodoModel todo) async {
     final index = _items.indexWhere(
       (item) => item.id == todo.id,
     );
@@ -56,7 +56,7 @@ class TodoController with ChangeNotifier {
     }
   }
 
-  Future<void> toggleFavoriteStatus(Todo todo) async {
+  Future<void> toggleFavoriteStatus(TodoModel todo) async {
     final savedStatus = todo.isCompleted;
     todo.isCompleted = !savedStatus;
 
@@ -69,7 +69,7 @@ class TodoController with ChangeNotifier {
     final index = _items.indexWhere(
       (item) => item.id == id,
     );
-    Todo? existingtodo = _items[index];
+    TodoModel? existingtodo = _items[index];
     _items.removeAt(index);
     notifyListeners();
     if (!await _todosService.deleteTodo(id)) {

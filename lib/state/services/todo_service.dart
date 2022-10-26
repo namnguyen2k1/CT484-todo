@@ -6,10 +6,10 @@ import '../models/auth_token.dart';
 import './firebase_service.dart';
 
 class TodoService extends FirebaseService {
-  TodoService([AuthToken? authToken]) : super(authToken);
+  TodoService([AuthTokenModel? authToken]) : super(authToken);
 
-  Future<List<Todo>> fetchTodos([bool filterByUser = false]) async {
-    final List<Todo> todos = [];
+  Future<List<TodoModel>> fetchTodos([bool filterByUser = false]) async {
+    final List<TodoModel> todos = [];
 
     try {
       final filters =
@@ -59,7 +59,7 @@ class TodoService extends FirebaseService {
     }
   }
 
-  Future<Todo?> addTodo(Todo todo) async {
+  Future<TodoModel?> addTodo(TodoModel todo) async {
     try {
       final url = Uri.parse('$databaseUrl/todos.json?auth=$token');
       final response = await http.post(
@@ -84,7 +84,7 @@ class TodoService extends FirebaseService {
     }
   }
 
-  Future<bool> updateTodo(Todo todo) async {
+  Future<bool> updateTodo(TodoModel todo) async {
     try {
       final url = Uri.parse(
         '$databaseUrl/Todos/${todo.id}.json?auth=$token',
@@ -123,7 +123,7 @@ class TodoService extends FirebaseService {
     }
   }
 
-  Future<bool> saveFavoriteStatus(Todo todo) async {
+  Future<bool> saveFavoriteStatus(TodoModel todo) async {
     try {
       final url = Uri.parse(
         '$databaseUrl/userFavorites/$userId/${todo.id}.json?auth=$token',

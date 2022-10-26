@@ -9,11 +9,11 @@ class EditTodoScreen extends StatefulWidget {
   static const routeName = '/edit-todo';
 
   EditTodoScreen(
-    Todo? todo, {
+    TodoModel? todo, {
     super.key,
   }) {
     if (todo == null) {
-      this.todo = Todo(
+      this.todo = TodoModel(
         id: null,
         categoryId: null,
         name: '',
@@ -27,7 +27,7 @@ class EditTodoScreen extends StatefulWidget {
       this.todo = todo;
     }
   }
-  late final Todo todo;
+  late final TodoModel todo;
 
   @override
   State<EditTodoScreen> createState() => _EditTodoScreenState();
@@ -37,7 +37,7 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
   final _imageUrlController = TextEditingController();
   final _imageUrlFocusNode = FocusNode();
   final _editForm = GlobalKey<FormState>();
-  late Todo _editedTodo;
+  late TodoModel _editedTodo;
   var _isLoading = false;
 
   bool _isValidImageUrl(String value) {

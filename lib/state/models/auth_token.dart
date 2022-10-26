@@ -1,9 +1,9 @@
-class AuthToken {
+class AuthTokenModel {
   final String _token;
   final String _userId;
   final DateTime _expiryDate;
 
-  AuthToken({
+  AuthTokenModel({
     token,
     userId,
     expiryDate,
@@ -38,8 +38,8 @@ class AuthToken {
     };
   }
 
-  static AuthToken fromJson(Map<String, dynamic> json) {
-    return AuthToken(
+  static AuthTokenModel fromJson(Map<String, dynamic> json) {
+    return AuthTokenModel(
       token: json['authToken'],
       userId: json['userId'],
       expiryDate: DateTime.parse(json['expiryDate']),

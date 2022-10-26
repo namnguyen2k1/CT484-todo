@@ -5,12 +5,15 @@ class ScaffoldMessengerCustom {
 
   static showSuccessMessage(BuildContext context, String message) {
     return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      // backgroundColor: Colors.teal,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 1000),
       behavior: SnackBarBehavior.floating,
       content: Row(
         children: [
-          const Icon(Icons.alarm),
+          const Icon(
+            Icons.alarm,
+            // color: Theme.of(context).textTheme.bodyText1?.backgroundColor,
+            color: Colors.black,
+          ),
           Padding(
             padding: const EdgeInsets.only(left: 5),
             child: Text(

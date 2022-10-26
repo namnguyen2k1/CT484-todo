@@ -29,6 +29,9 @@ class _AuthCardState extends State<AuthCard> {
   final _isSubmitting = ValueNotifier<bool>(false);
   final _passwordController = TextEditingController();
 
+  bool _passwordVisible = false;
+  bool _passwordConfirmVisible = false;
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -83,9 +86,10 @@ class _AuthCardState extends State<AuthCard> {
       elevation: 8.0,
       child: Container(
         height: _authMode == AuthMode.signup ? 320 : 260,
-        constraints:
-            BoxConstraints(minHeight: _authMode == AuthMode.signup ? 320 : 260),
-        width: deviceSize.width * 0.75,
+        constraints: BoxConstraints(
+          minHeight: _authMode == AuthMode.signup ? 320 : 260,
+        ),
+        // width: deviceSize.width * 0.95,
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
@@ -117,17 +121,28 @@ class _AuthCardState extends State<AuthCard> {
   }
 
   Widget _buildAuthModeSwitchButton() {
-    return TextButton(
-      onPressed: _switchAuthMode,
-      style: TextButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        textStyle: TextStyle(
-          color: Theme.of(context).primaryColor,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          _authMode == AuthMode.login ? 'First time here?' : 'Already account?',
         ),
-      ),
-      child:
-          Text('${_authMode == AuthMode.login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
+        TextButton(
+          onPressed: _switchAuthMode,
+          style: TextButton.styleFrom(
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            textStyle: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          child: Text(
+            _authMode == AuthMode.login ? 'register' : 'login',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -139,20 +154,41 @@ class _AuthCardState extends State<AuthCard> {
           borderRadius: BorderRadius.circular(30),
         ),
         backgroundColor: Theme.of(context).primaryColor,
-        padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 10.0),
         textStyle: TextStyle(
           color: Theme.of(context).primaryTextTheme.headline6?.color,
         ),
       ),
-      child: Text(_authMode == AuthMode.login ? 'LOGIN' : 'SIGN UP'),
+      child: Text(
+        _authMode == AuthMode.login ? 'LOGIN' : 'REGISTER',
+      ),
     );
   }
 
   Widget _buildPasswordConfirmField() {
     return TextFormField(
       enabled: _authMode == AuthMode.signup,
-      decoration: const InputDecoration(labelText: 'Confirm Password'),
-      obscureText: true,
+      decoration: InputDecoration(
+        labelText: 'Confirm password',
+        prefixIcon: const Padding(
+          padding: EdgeInsets.only(left: 10, right: 10),
+          child: Icon(
+            Icons.lock,
+          ),
+        ),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _passwordConfirmVisible ? Icons.visibility : Icons.visibility_off,
+            // color: Colors.black87,
+          ),
+          onPressed: () {
+            setState(() {
+              _passwordConfirmVisible = !_passwordConfirmVisible;
+            });
+          },
+        ),
+      ),
+      obscureText: !_passwordConfirmVisible,
       validator: _authMode == AuthMode.signup
           ? (value) {
               if (value != _passwordController.text) {
@@ -166,8 +202,27 @@ class _AuthCardState extends State<AuthCard> {
 
   Widget _buildPasswordField() {
     return TextFormField(
-      decoration: const InputDecoration(labelText: 'Password'),
-      obscureText: true,
+      obscureText: !_passwordVisible,
+      decoration: InputDecoration(
+        labelText: 'Password',
+        prefixIcon: const Padding(
+          padding: EdgeInsets.only(left: 10, right: 10),
+          child: Icon(
+            Icons.lock_outline,
+          ),
+        ),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _passwordVisible ? Icons.visibility : Icons.visibility_off,
+            // color: Colors.black87,
+          ),
+          onPressed: () {
+            setState(() {
+              _passwordVisible = !_passwordVisible;
+            });
+          },
+        ),
+      ),
       controller: _passwordController,
       validator: (value) {
         if (value == null || value.length < 5) {
@@ -183,7 +238,15 @@ class _AuthCardState extends State<AuthCard> {
 
   Widget _buildEmailField() {
     return TextFormField(
-      decoration: const InputDecoration(labelText: 'E-Mail'),
+      decoration: const InputDecoration(
+        labelText: 'Email address',
+        prefixIcon: Padding(
+          padding: EdgeInsets.only(left: 10, right: 10),
+          child: Icon(
+            Icons.email,
+          ),
+        ),
+      ),
       keyboardType: TextInputType.emailAddress,
       validator: (value) {
         if (value!.isEmpty || !value.contains('@')) {

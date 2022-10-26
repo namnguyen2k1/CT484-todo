@@ -19,55 +19,30 @@ class _NotificationScreenState extends State<NotificationScreen> {
     const double _flutterIconSize = 30.0;
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Task Pending...'),
+        actions: [
+          TextButton.icon(
+            onPressed: () {
+              setState(() {
+                _checkSeenNotification = !_checkSeenNotification;
+              });
+            },
+            icon: Icon(
+              _checkSeenNotification
+                  ? Icons.access_alarm
+                  : Icons.alarm_off_outlined,
+              color: _checkSeenNotification ? Colors.black : Colors.red,
+            ),
+            label: const Text(''),
+          ),
+        ],
+      ),
       body: ListView(
         children: [
           Container(
             child: Column(
               children: [
-                Card(
-                  margin: EdgeInsets.zero,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero,
-                  ),
-                  child: ClipPath(
-                    clipper: const ShapeBorderClipper(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                    ),
-                    child: Container(
-                      padding: EdgeInsets.zero,
-                      decoration: const BoxDecoration(
-                        border: Border(
-                            // bottom: BorderSide(color: Colors.green, width: 3),
-                            ),
-                      ),
-                      child: ListTile(
-                        // contentPadding: EdgeInsets.zero,
-                        title: const Text(
-                          'Task Pedding...',
-                          style: TextStyle(
-                            // color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        trailing: Icon(
-                          _checkSeenNotification
-                              ? Icons.access_alarm
-                              : Icons.alarm_off_outlined,
-                          color: _checkSeenNotification
-                              ? Colors.green
-                              : Colors.grey,
-                        ),
-                        onTap: (() {
-                          setState(() {
-                            _checkSeenNotification = !_checkSeenNotification;
-                          });
-                        }),
-                      ),
-                    ),
-                  ),
-                ),
                 Container(
                   alignment: Alignment.topLeft,
                   padding: const EdgeInsets.only(left: 10, top: 10),

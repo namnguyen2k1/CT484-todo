@@ -7,15 +7,18 @@ const String authScreen = '/auth';
 // const String authRegisterScreen = '/auth/register';
 
 const String homeScreen = '/workspace/home';
+const String customCategoryScreen = '/workspace/home/category';
+
 const String scheduleScreen = '/workspace/schedule';
 const String notificationScreen = '/workspace/notification';
 const String profileScreen = '/workspace/profile';
+const String editProfileScreen = '/workspace/profile/edit';
 const String profileSettingScreen = '/workspace/profile/setting';
 
 const String workspaceScreen = '/workspace';
 
 // Control our page route flow
-Route<dynamic> route_controller(RouteSettings settings) {
+Route<dynamic> routeController(RouteSettings settings) {
   switch (settings.name) {
     case splashScreen:
       return MaterialPageRoute(
@@ -29,6 +32,11 @@ Route<dynamic> route_controller(RouteSettings settings) {
       return MaterialPageRoute(
         builder: (context) => const HomeScreen(),
       );
+
+    case customCategoryScreen:
+      return MaterialPageRoute(
+        builder: (context) => const CategoryScreen(),
+      );
     case scheduleScreen:
       return MaterialPageRoute(
         builder: (context) => const ScheduleScreen(),
@@ -40,6 +48,11 @@ Route<dynamic> route_controller(RouteSettings settings) {
     case profileScreen:
       return MaterialPageRoute(
         builder: (context) => const ProfileScreen(),
+      );
+
+    case editProfileScreen:
+      return MaterialPageRoute(
+        builder: (context) => const EditProfileScreen(),
       );
 
     case profileSettingScreen:

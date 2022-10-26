@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-class Todo {
+class TodoModel {
   final String? id;
   final String? categoryId;
   final String name;
@@ -10,7 +10,7 @@ class Todo {
   final String deadlinedAt;
   final ValueNotifier<bool> _isCompleted;
 
-  Todo({
+  TodoModel({
     this.id,
     this.categoryId,
     required this.name,
@@ -21,7 +21,7 @@ class Todo {
     isCompleted = false,
   }) : _isCompleted = ValueNotifier(isCompleted);
 
-  Todo copyWith({
+  TodoModel copyWith({
     String? id,
     String? categoryId,
     String? name,
@@ -31,7 +31,7 @@ class Todo {
     String? deadlinedAt,
     bool? isCompleted,
   }) {
-    return Todo(
+    return TodoModel(
       id: id ?? this.id,
       categoryId: categoryId ?? this.categoryId,
       name: name ?? this.name,
@@ -73,8 +73,8 @@ class Todo {
     };
   }
 
-  static Todo fromJson(Map<String, dynamic> json) {
-    return Todo(
+  static TodoModel fromJson(Map<String, dynamic> json) {
+    return TodoModel(
       id: json['id'],
       categoryId: json['categoryId'],
       name: json['name'],

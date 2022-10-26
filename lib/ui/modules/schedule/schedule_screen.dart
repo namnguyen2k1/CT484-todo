@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 
-class ScheduleScreen extends StatelessWidget {
+import '../todo/todo_item.dart';
+
+class ScheduleScreen extends StatefulWidget {
   static const routeName = '/schedule';
   const ScheduleScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ScheduleScreen> createState() => _ScheduleScreenState();
+}
+
+class _ScheduleScreenState extends State<ScheduleScreen> {
+  bool _showSearchField = false;
 
   @override
   Widget build(BuildContext context) {
@@ -10,118 +19,172 @@ class ScheduleScreen extends StatelessWidget {
     const double _flutterIconSize = 30.0;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Schedule'),
+        title: _showSearchField
+            ? Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        setState(() {
+                          _showSearchField = false;
+                        });
+                      },
+                    ),
+                    hintText: 'Search...',
+                    border: InputBorder.none,
+                  ),
+                ),
+              )
+            : Row(
+                children: const [
+                  Text('Task Managerment'),
+                ],
+              ),
+        actions: [
+          !_showSearchField
+              ? IconButton(
+                  onPressed: () => {
+                    setState(() {
+                      _showSearchField = true;
+                    })
+                  },
+                  icon: const Icon(Icons.search),
+                )
+              : const Text(""),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           print('adding task');
         },
         backgroundColor: Colors.teal,
-        child: const Icon(Icons.add_task),
+        child: const Icon(Icons.post_add_sharp),
       ),
-      body: DefaultTabController(
-        length: 3,
-        initialIndex: 0,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Container(
-              height: 50,
-              padding: const EdgeInsets.all(5),
-              child: const TabBar(
-                isScrollable: false,
-                // labelColor: Colors.yellow,
-                // indicatorColor: Colors.black,
-                indicatorWeight: 2,
-                // unselectedLabelColor: Colors.black,
-                indicator: BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(5.0),
+      body: ListView(
+        children: [
+          DefaultTabController(
+            length: 3,
+            initialIndex: 0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Container(
+                  height: 50,
+                  padding: const EdgeInsets.all(5),
+                  child: const TabBar(
+                    isScrollable: false,
+                    // labelColor: Colors.yellow,
+                    // indicatorColor: Colors.black,
+                    indicatorWeight: 2,
+                    // unselectedLabelColor: Colors.black,
+                    indicator: BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(5.0),
+                      ),
+                      // color: Colors.green,
+                    ),
+                    tabs: [
+                      Tab(
+                        icon: Icon(Icons.today),
+                      ),
+                      Tab(
+                        icon: Icon(Icons.school),
+                      ),
+                      Tab(
+                        icon: Icon(Icons.tips_and_updates),
+                      )
+                    ],
                   ),
-                  // color: Colors.green,
                 ),
-                tabs: [
-                  Tab(
-                    icon: Icon(Icons.admin_panel_settings_sharp),
+                Container(
+                  height: deviceSize.height - 210, //height of TabBarView
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      top: BorderSide(
+                        // color: Colors.grey,
+                        width: 0.5,
+                      ),
+                    ),
                   ),
-                  Tab(
-                    icon: Icon(Icons.school),
+                  child: TabBarView(
+                    children: <Widget>[
+                      buildDailyTask(),
+                      buildFavoriteTask(),
+                      buildTaskTips()
+                    ],
                   ),
-                  Tab(
-                    icon: Icon(Icons.group_sharp),
-                  )
-                ],
-              ),
+                )
+              ],
             ),
-            Container(
-              height: deviceSize.height - 210, //height of TabBarView
-              decoration: const BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    // color: Colors.grey,
-                    width: 0.5,
-                  ),
-                ),
-              ),
-              child: TabBarView(
-                children: <Widget>[
-                  ListView(
-                    children: const [
-                      Card(
-                        margin: EdgeInsets.all(10),
-                        child: ListTile(
-                          leading: Icon(
-                            Icons.admin_panel_settings_sharp,
-                            size: _flutterIconSize,
-                          ),
-                          title: Text('Two-line ListTile'),
-                          subtitle: Text('Here is a second line'),
-                          trailing: Icon(Icons.delete),
-                        ),
-                      ),
-                    ],
-                  ),
-                  ListView(
-                    children: const [
-                      Card(
-                        margin: EdgeInsets.all(10),
-                        child: ListTile(
-                          leading: Icon(
-                            Icons.school,
-                            size: _flutterIconSize,
-                          ),
-                          title: Text('Two-line ListTile'),
-                          subtitle: Text('Here is a second line'),
-                          trailing: Icon(Icons.delete),
-                        ),
-                      ),
-                    ],
-                  ),
-                  ListView(
-                    children: const [
-                      Card(
-                        margin: EdgeInsets.all(10),
-                        child: ListTile(
-                          leading: Icon(
-                            Icons.group_sharp,
-                            size: _flutterIconSize,
-                          ),
-                          title: Text('Three-line ListTile'),
-                          subtitle: Text(
-                            'A sufficiently long subtitle warrants three lines.',
-                          ),
-                          trailing: Icon(Icons.delete),
-                          isThreeLine: true,
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            )
-          ],
-        ),
+          ),
+        ],
       ),
+    );
+  }
+
+  ListView buildDailyTask() {
+    return ListView(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          child: const TodoItem(),
+        ),
+        Container(
+          padding: const EdgeInsets.all(10),
+          child: const TodoItem(),
+        ),
+        Container(
+          padding: const EdgeInsets.all(10),
+          child: const TodoItem(),
+        ),
+        Container(
+          padding: const EdgeInsets.all(10),
+          child: const TodoItem(),
+        ),
+      ],
+    );
+  }
+
+  ListView buildTaskTips() {
+    return ListView(
+      padding: const EdgeInsets.all(10),
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.deepPurple,
+            border: Border.all(color: Colors.black, width: 1.0),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: const EdgeInsets.all(10),
+          child: const Text('Tip 1'),
+        ),
+        const Divider(),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.deepPurple,
+            border: Border.all(color: Colors.black, width: 1.0),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: const EdgeInsets.all(10),
+          child: const Text('Tip 1'),
+        ),
+      ],
+    );
+  }
+
+  ListView buildFavoriteTask() {
+    return ListView(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          child: const TodoItem(),
+        ),
+      ],
     );
   }
 }
