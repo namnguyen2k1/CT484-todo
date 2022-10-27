@@ -1,7 +1,5 @@
 export './splash_screen.dart';
 
-export './modules/auth/login_screen.dart';
-export './modules/auth/register_screen.dart';
 export './modules/auth/auth_screen.dart';
 
 export './modules/home/home_screen.dart';

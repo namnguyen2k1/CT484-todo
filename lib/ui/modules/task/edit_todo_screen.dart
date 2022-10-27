@@ -90,7 +90,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         await todosController.addTask(_editedTodo);
       }
     } catch (error) {
-      await showInformation(context, '', 'Something went wrong.');
+      await showAlearDialog(context, '', 'Something went wrong.');
     }
     setState(() {
       _isLoading = false;

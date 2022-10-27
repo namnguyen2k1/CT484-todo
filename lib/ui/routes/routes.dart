@@ -3,8 +3,6 @@ import '../screens.dart';
 
 const String splashScreen = '/splash';
 const String authScreen = '/auth';
-// const String authLoginScreen = '/auth/login';
-// const String authRegisterScreen = '/auth/register';
 
 const String homeScreen = '/workspace/home';
 const String customCategoryScreen = '/workspace/home/category';
@@ -71,12 +69,6 @@ Route<dynamic> routeController(RouteSettings settings) {
       return MaterialPageRoute(
         builder: (context) => const WorkspaceScreen(),
       );
-    // case authLoginScreen:
-    //   return MaterialPageRoute(
-    //     builder: (context) => LoginScreen(
-    //       handleLogin: (() => {}),
-    //     ),
-    //   );
     default:
       return MaterialPageRoute(
         builder: (context) => const ErrorScreen(),

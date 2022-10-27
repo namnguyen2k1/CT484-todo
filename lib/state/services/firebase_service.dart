@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import '../models/auth_token.dart';
+import '../models/auth_token_model.dart';
 
 abstract class FirebaseService {
   String? _token;

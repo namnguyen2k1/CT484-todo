@@ -11,9 +11,9 @@ class AuthTokenModel {
         _userId = userId,
         _expiryDate = expiryDate;
 
-  bool get isValid {
-    return token != null;
-  }
+  bool get isValid => token != null;
+  String get userId => _userId;
+  DateTime get expiryDate => _expiryDate;
 
   String? get token {
     if (_expiryDate.isAfter(DateTime.now())) {
@@ -22,26 +22,18 @@ class AuthTokenModel {
     return null;
   }
 
-  String get userId {
-    return _userId;
-  }
-
-  DateTime get expiryDate {
-    return _expiryDate;
-  }
-
   Map<String, dynamic> toJson() {
     return {
-      'authToken': _token,
       'userId': _userId,
+      'authToken': _token,
       'expiryDate': _expiryDate.toIso8601String(),
     };
   }
 
   static AuthTokenModel fromJson(Map<String, dynamic> json) {
     return AuthTokenModel(
-      token: json['authToken'],
       userId: json['userId'],
+      token: json['authToken'],
       expiryDate: DateTime.parse(json['expiryDate']),
     );
   }

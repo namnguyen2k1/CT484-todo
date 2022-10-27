@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/auth_token.dart';
+import '../models/auth_token_model.dart';
 import '../services/auth_service.dart';
 
 class AuthController with ChangeNotifier {
-  AuthTokenModel? _authToken;
+  AuthTokenModel? _user;
   Timer? _authTimer;
 
   final AuthService _authService = AuthService();
@@ -16,11 +15,11 @@ class AuthController with ChangeNotifier {
   }
 
   AuthTokenModel? get authToken {
-    return _authToken;
+    return _user;
   }
 
   void _setAuthToken(AuthTokenModel token) {
-    _authToken = token;
+    _user = token;
     _autoLogout(); // Bậc timer tự động logout
     notifyListeners();
   }
@@ -47,8 +46,14 @@ class AuthController with ChangeNotifier {
     return true;
   }
 
+  Future<void> removeLocalAccount(String email) async {
+    await _authService.deleteLocalAccount(email);
+    notifyListeners();
+    _authService.clearSavedAuthToken();
+  }
+
   Future<void> logout() async {
-    _authToken = null;
+    _user = null;
     if (_authTimer != null) {
       _authTimer!.cancel();
       _authTimer = null;
@@ -61,7 +66,7 @@ class AuthController with ChangeNotifier {
     if (_authTimer != null) {
       _authTimer!.cancel();
     }
-    final timeToExpiry = _authToken!.expiryDate
+    final timeToExpiry = _user!.expiryDate
         .difference(
           DateTime.now(),
         )

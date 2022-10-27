@@ -1,15 +1,14 @@
 import 'dart:convert';
 import 'dart:async';
-
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../common/http_exception.dart';
-import '../models/auth_token.dart';
+import '../models/auth_token_model.dart';
+import './local_key.dart';
+import './shared_preference_service.dart';
 
 class AuthService {
-  static const _authTokenKey = 'authToken';
   late final String? _apiKey;
 
   AuthService() {
@@ -44,6 +43,7 @@ class AuthService {
 
       final authToken = _fromJson(responseJson);
       _saveAuthToken(authToken);
+      saveLocalAccount(email, password);
 
       return authToken;
     } catch (error) {
@@ -61,8 +61,70 @@ class AuthService {
   }
 
   Future<void> _saveAuthToken(AuthTokenModel authToken) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString(_authTokenKey, json.encode(authToken.toJson()));
+    await SharedPreferencesSerivce().setString(
+      LocalSavedKey.authTokenKey,
+      json.encode(authToken.toJson()),
+    );
+  }
+
+  Future<void> deleteLocalAccount(String email) async {
+    final savedAccount = await getAllLocalAccounts();
+
+    for (int i = 0; i < savedAccount.length; i++) {
+      if (savedAccount[i]['email'] == email) {
+        savedAccount.removeAt(i);
+      }
+    }
+    var savedData = <String>[];
+    for (var account in savedAccount) {
+      savedData.add(json.encode(account));
+    }
+    await SharedPreferencesSerivce().setStringList(
+      LocalSavedKey.localAccountKey,
+      savedData,
+    );
+  }
+
+  Future<void> saveLocalAccount(String email, String password) async {
+    final savedAccount = await getAllLocalAccounts();
+    for (int i = 0; i < savedAccount.length; i++) {
+      if (savedAccount[i]['email'] == email) {
+        return;
+      }
+    }
+
+    savedAccount.add({
+      "email": email,
+      "password": password,
+    });
+    var savedData = <String>[];
+    for (var account in savedAccount) {
+      savedData.add(json.encode(account));
+    }
+    await SharedPreferencesSerivce().setStringList(
+      LocalSavedKey.localAccountKey,
+      savedData,
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> getAllLocalAccounts() async {
+    final result = <Map<String, dynamic>>[];
+    final bool isExisted = await SharedPreferencesSerivce().isExisted(
+      LocalSavedKey.localAccountKey,
+    );
+    if (!isExisted) {
+      return result;
+    }
+    final savedAccountList = await SharedPreferencesSerivce().getStringList(
+          LocalSavedKey.localAccountKey,
+        ) ??
+        [];
+    for (var account in savedAccountList) {
+      result.add(
+        json.decode(account),
+      );
+    }
+    return result;
   }
 
   AuthTokenModel _fromJson(Map<String, dynamic> json) {
@@ -80,14 +142,19 @@ class AuthService {
   }
 
   Future<AuthTokenModel?> loadSavedAuthToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey(_authTokenKey)) {
+    final bool isExisted = await SharedPreferencesSerivce().isExisted(
+      LocalSavedKey.authTokenKey,
+    );
+
+    if (!isExisted) {
       return null;
     }
 
-    final savedToken = prefs.getString(_authTokenKey);
+    final savedToken = await SharedPreferencesSerivce().getString(
+      LocalSavedKey.authTokenKey,
+    );
 
-    final authToken = AuthTokenModel.fromJson(json.decode(savedToken!));
+    final authToken = AuthTokenModel.fromJson(json.decode(savedToken));
     if (!authToken.isValid) {
       return null;
     }
@@ -95,7 +162,8 @@ class AuthService {
   }
 
   Future<void> clearSavedAuthToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.remove(_authTokenKey);
+    await SharedPreferencesSerivce().removeStorage(
+      LocalSavedKey.authTokenKey,
+    );
   }
 }

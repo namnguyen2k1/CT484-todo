@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/ui/shared/dialog_utils.dart';
 
-import '../../shared/response_message.dart';
-
 class NotificationScreen extends StatefulWidget {
-  static const routeName = '/notification';
   const NotificationScreen({Key? key}) : super(key: key);
 
   @override
@@ -16,8 +13,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const double _flutterIconSize = 30.0;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Task Pending...'),
@@ -142,7 +137,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     subtitle: const Text('Học Fluter trong 1 tuần'),
                     trailing: const Icon(Icons.info),
                     onTap: () {
-                      showInformation(
+                      showAlearDialog(
                         context,
                         'Learn Flutter',
                         'Flutter là một nền tảng đáng để học hỏi...',
@@ -162,7 +157,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     subtitle: const Text('Học Fluter trong 1 tuần'),
                     trailing: const Icon(Icons.info),
                     onTap: () {
-                      showInformation(
+                      showAlearDialog(
                         context,
                         'Học Flutter',
                         'Flutter là một nền tảng đáng để học hỏi...',
@@ -182,7 +177,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     subtitle: const Text('Học Fluter trong 1 tuần'),
                     trailing: const Icon(Icons.info),
                     onTap: () {
-                      showInformation(
+                      showAlearDialog(
                         context,
                         'Learn Flutter',
                         'Flutter là một nền tảng đáng để học hỏi...',

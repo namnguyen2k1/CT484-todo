@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:todoapp/ui/shared/app_drawer.dart';
-import '../../../state/controllers/app_settings_controller.dart';
 import '../../screens.dart';
 
 class WorkspaceScreen extends StatefulWidget {

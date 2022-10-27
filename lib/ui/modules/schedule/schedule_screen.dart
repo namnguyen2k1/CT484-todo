@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../task/task_item.dart';
 
 class ScheduleScreen extends StatefulWidget {
-  static const routeName = '/schedule';
   const ScheduleScreen({Key? key}) : super(key: key);
 
   @override
@@ -16,7 +15,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
-    const double _flutterIconSize = 30.0;
+
     return Scaffold(
       appBar: AppBar(
         title: _showSearchField

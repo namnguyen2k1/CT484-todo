@@ -55,7 +55,7 @@ class _AuthCardState extends State<AuthCard> {
             );
       }
     } catch (error) {
-      showInformation(
+      showAlearDialog(
         context,
         '',
         (error is HttpException) ? error.toString() : 'Authentication failed',

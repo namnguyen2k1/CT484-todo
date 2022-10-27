@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:intl/intl.dart';
 import 'package:todoapp/ui/modules/task/task_item.dart';
 
 class HomeScreen extends StatefulWidget {
-  static const routeName = '/home';
   const HomeScreen({Key? key}) : super(key: key);
 
   @override

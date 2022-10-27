@@ -1,13 +1,14 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-import 'package:animated_background/animated_background.dart';
+import 'package:provider/provider.dart';
+
+import 'package:todoapp/state/controllers/auth_controller.dart';
+import 'package:todoapp/state/services/auth_service.dart';
 import 'package:todoapp/ui/shared/dialog_utils.dart';
 
 import 'auth_card.dart';
 
 class AuthScreen extends StatefulWidget {
-  static const routeName = '/auth';
-
   const AuthScreen({super.key});
 
   @override
@@ -15,11 +16,20 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  final List<Map<String, String>> _listQuickAccount = [
-    {"email": "nanam133hg@gmail.com", "password": "quickpassword1"},
-    {"email": "namb1910414@student.ctu.edu.com", "password": "quickpassword2"},
-    {"email": "namfsdfsd@gmail.com", "password": "quickpassword3"},
-  ];
+  var _listQuickAccount = <Map<String, dynamic>>[];
+
+  @override
+  void initState() {
+    _loadAllLocalAccount();
+    super.initState();
+  }
+
+  Future<void> _loadAllLocalAccount() async {
+    final accounts = await AuthService().getAllLocalAccounts();
+    setState(() {
+      _listQuickAccount = accounts;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +70,7 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
           const AuthCard(),
           buildQuickLogin(),
+          // Text(_listQuickAccount.toString()),
         ],
       ),
     );
@@ -123,13 +134,17 @@ class _AuthScreenState extends State<AuthScreen> {
         Row(
           children: [
             IconButton(
-              onPressed: () {
-                print('delete');
-                showConfirmDialog(
+              onPressed: () async {
+                print('[Remove] $email');
+                final isAccepted = await showConfirmDialog(
                   context,
                   'Remove this account from your device?',
                   "*Bạn phải nhập lại thông tin ở lần đăng nhập sau.",
                 );
+
+                if (isAccepted != false) {
+                  context.read<AuthController>().removeLocalAccount(email);
+                }
               },
               icon: const Icon(Icons.delete),
             ),
@@ -138,8 +153,8 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
             IconButton(
               onPressed: () {
-                print('login');
-                print(password);
+                print('[Login]: $email');
+                context.read<AuthController>().login(email, password);
               },
               icon: const Icon(Icons.login),
             ),

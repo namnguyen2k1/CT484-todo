@@ -13,7 +13,6 @@ class SalesData {
 }
 
 class ProfileScreen extends StatefulWidget {
-  static const routeName = '/profile';
   const ProfileScreen({Key? key}) : super(key: key);
 
   @override
@@ -129,6 +128,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ElevatedButton.icon(
                 onPressed: () {
                   context.read<AuthController>().logout();
+                  print('[logout]');
                 },
                 icon: const Icon(Icons.exit_to_app),
                 label: const Text('Logout'),
