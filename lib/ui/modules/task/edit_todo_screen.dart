@@ -2,42 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todoapp/ui/shared/dialog_utils.dart';
 
-import '../../../state/models/todo_model.dart';
-import '../../../state/controllers/todo_controller.dart';
+import '../../../state/models/task_model.dart';
+import '../../../state/controllers/task_controller.dart';
 
-class EditTodoScreen extends StatefulWidget {
-  static const routeName = '/edit-todo';
+class EditTaskScreen extends StatefulWidget {
+  static const routeName = '/edit-task';
 
-  EditTodoScreen(
-    TodoModel? todo, {
+  EditTaskScreen(
+    TaskModel? todo, {
     super.key,
   }) {
     if (todo == null) {
-      this.todo = TodoModel(
-        id: null,
-        categoryId: null,
+      this.todo = TaskModel(
+        id: -1,
+        categoryId: -1,
         name: '',
+        star: 1,
+        color: "4294940672",
         description: '',
         imageUrl: '',
-        createdAt: '',
-        deadlinedAt: '',
+        startTime: DateTime.now().toString(),
+        finishTime: DateTime.now().toString(),
         isCompleted: false,
       );
     } else {
       this.todo = todo;
     }
   }
-  late final TodoModel todo;
+
+  late final TaskModel todo;
 
   @override
-  State<EditTodoScreen> createState() => _EditTodoScreenState();
+  State<EditTaskScreen> createState() => _EditTaskScreenState();
 }
 
-class _EditTodoScreenState extends State<EditTodoScreen> {
+class _EditTaskScreenState extends State<EditTaskScreen> {
   final _imageUrlController = TextEditingController();
   final _imageUrlFocusNode = FocusNode();
   final _editForm = GlobalKey<FormState>();
-  late TodoModel _editedTodo;
+  late TaskModel _editedTodo;
   var _isLoading = false;
 
   bool _isValidImageUrl(String value) {
@@ -80,11 +83,11 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
     });
 
     try {
-      final todosController = context.read<TodoController>();
+      final todosController = context.read<TaskController>();
       if (_editedTodo.id != null) {
-        await todosController.updateTodo(_editedTodo);
+        await todosController.updateTask(_editedTodo);
       } else {
-        await todosController.addTodo(_editedTodo);
+        await todosController.addTask(_editedTodo);
       }
     } catch (error) {
       await showInformation(context, '', 'Something went wrong.');
@@ -224,7 +227,7 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
                   children: <Widget>[
                     buildNameField(),
                     buildDescriptionField(),
-                    buildtodoPreview(),
+                    // buildtodoPreview(),
                   ],
                 ),
               ),

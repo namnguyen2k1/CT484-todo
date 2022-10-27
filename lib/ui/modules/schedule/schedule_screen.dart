@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../todo/todo_item.dart';
+import '../task/task_item.dart';
 
 class ScheduleScreen extends StatefulWidget {
   static const routeName = '/schedule';
@@ -60,7 +60,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          print('adding task');
+          Navigator.pushNamed(context, '/workspace/schedule/todo_');
         },
         backgroundColor: Colors.teal,
         child: const Icon(Icons.post_add_sharp),
@@ -73,34 +73,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                Container(
-                  height: 50,
-                  padding: const EdgeInsets.all(5),
-                  child: const TabBar(
-                    isScrollable: false,
-                    // labelColor: Colors.yellow,
-                    // indicatorColor: Colors.black,
-                    indicatorWeight: 2,
-                    // unselectedLabelColor: Colors.black,
-                    indicator: BoxDecoration(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(5.0),
-                      ),
-                      // color: Colors.green,
-                    ),
-                    tabs: [
-                      Tab(
-                        icon: Icon(Icons.today),
-                      ),
-                      Tab(
-                        icon: Icon(Icons.school),
-                      ),
-                      Tab(
-                        icon: Icon(Icons.tips_and_updates),
-                      )
-                    ],
-                  ),
-                ),
+                buildAppBar(),
                 Container(
                   height: deviceSize.height - 210, //height of TabBarView
                   decoration: const BoxDecoration(
@@ -127,24 +100,72 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     );
   }
 
+  Container buildAppBar() {
+    return Container(
+      height: 50,
+      padding: const EdgeInsets.all(5),
+      child: TabBar(
+        isScrollable: false,
+        // labelColor: Colors.yellow,
+        // indicatorColor: Colors.black,
+        indicatorWeight: 2,
+        // unselectedLabelColor: Colors.black,
+        indicator: const BoxDecoration(
+          borderRadius: BorderRadius.all(
+            Radius.circular(5.0),
+          ),
+          color: Colors.teal,
+        ),
+        tabs: [
+          Tab(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(Icons.today),
+                SizedBox(
+                  width: 5,
+                ),
+                Text('Today'),
+              ],
+            ),
+          ),
+          Tab(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(Icons.favorite),
+                SizedBox(
+                  width: 5,
+                ),
+                Text('Yêu Thích'),
+              ],
+            ),
+          ),
+          Tab(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(Icons.tips_and_updates),
+                SizedBox(
+                  width: 5,
+                ),
+                Text('Tip'),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
   ListView buildDailyTask() {
     return ListView(
       children: [
         Container(
           padding: const EdgeInsets.all(10),
-          child: const TodoItem(),
-        ),
-        Container(
-          padding: const EdgeInsets.all(10),
-          child: const TodoItem(),
-        ),
-        Container(
-          padding: const EdgeInsets.all(10),
-          child: const TodoItem(),
-        ),
-        Container(
-          padding: const EdgeInsets.all(10),
-          child: const TodoItem(),
+          child: const TaskItem(
+            content: "hello",
+          ),
         ),
       ],
     );
@@ -182,18 +203,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       children: [
         Container(
           padding: const EdgeInsets.all(10),
-          child: const TodoItem(),
+          child: const TaskItem(
+            content: "hello",
+          ),
         ),
       ],
     );
   }
 }
-// Container(
-//             width: deviceSize.width,
-//             height: 100,
-//             padding: const EdgeInsets.all(10),
-//             child: const Card(
-//               color: Colors.teal,
-//               child: const Text('Current Task'),
-//             ),
-//           ),

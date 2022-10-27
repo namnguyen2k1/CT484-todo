@@ -10,9 +10,13 @@ const String homeScreen = '/workspace/home';
 const String customCategoryScreen = '/workspace/home/category';
 
 const String scheduleScreen = '/workspace/schedule';
+const String customTodoScreen = '/workspace/schedule/todo';
+
 const String notificationScreen = '/workspace/notification';
+
 const String profileScreen = '/workspace/profile';
 const String editProfileScreen = '/workspace/profile/edit';
+
 const String profileSettingScreen = '/workspace/profile/setting';
 
 const String workspaceScreen = '/workspace';
@@ -41,6 +45,14 @@ Route<dynamic> routeController(RouteSettings settings) {
       return MaterialPageRoute(
         builder: (context) => const ScheduleScreen(),
       );
+
+    case customTodoScreen:
+      return MaterialPageRoute(
+        builder: (context) {
+          return EditTaskScreen(null);
+        },
+      );
+
     case notificationScreen:
       return MaterialPageRoute(
         builder: (context) => const NotificationScreen(),
@@ -55,10 +67,6 @@ Route<dynamic> routeController(RouteSettings settings) {
         builder: (context) => const EditProfileScreen(),
       );
 
-    case profileSettingScreen:
-      return MaterialPageRoute(
-        builder: (context) => const SettingScreen(),
-      );
     case workspaceScreen:
       return MaterialPageRoute(
         builder: (context) => const WorkspaceScreen(),

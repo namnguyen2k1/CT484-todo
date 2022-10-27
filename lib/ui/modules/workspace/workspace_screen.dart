@@ -43,7 +43,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     // }
     const backgroundColorNavigationBar = Colors.black54;
     const selectedColorIcon = Colors.black;
-    const selectedBackgroundColorIcon = Colors.green;
+    const selectedBackgroundColorIcon = Colors.teal;
     const animationDurationTap = Duration(milliseconds: 700);
     const colorLabel = Colors.teal;
 

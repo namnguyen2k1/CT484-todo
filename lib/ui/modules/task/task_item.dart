@@ -1,23 +1,22 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:todoapp/ui/shared/dialog_utils.dart';
 
-class TodoItem extends StatefulWidget {
-  const TodoItem({super.key});
+class TaskItem extends StatefulWidget {
+  final String content;
+
+  const TaskItem({super.key, required this.content});
 
   @override
-  State<TodoItem> createState() => _TodoItemState();
+  State<TaskItem> createState() => _TaskItemState();
 }
 
-class _TodoItemState extends State<TodoItem> {
+class _TaskItemState extends State<TaskItem> {
   bool _completed = false;
 
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: ValueKey(1),
+      key: const ValueKey(1),
       background: Container(
         color: Theme.of(context).errorColor,
         alignment: Alignment.centerRight,
@@ -53,12 +52,6 @@ class _TodoItemState extends State<TodoItem> {
         child: Column(
           children: [
             Row(
-              children: buildStarRank(3),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
@@ -73,19 +66,27 @@ class _TodoItemState extends State<TodoItem> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-                const SizedBox(
-                  width: 10,
+                Row(
+                  children: buildStarRank(3),
                 ),
                 IconButton(
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
-                  onPressed: () {
-                    setState(() {
-                      _completed = !_completed;
-                    });
+                  onPressed: () async {
+                    final bool? finshed = await showConfirmDialog(
+                      context,
+                      'Đánh dấu hoành thành công việc?',
+                      DateTime.now().toString(),
+                    );
+                    if (finshed!) {
+                      setState(() {
+                        _completed = true;
+                      });
+                    }
                   },
                   icon: Icon(
-                      _completed ? Icons.check_circle : Icons.circle_outlined),
+                    _completed ? Icons.check_circle : Icons.circle_outlined,
+                  ),
                 ),
               ],
             ),
@@ -106,36 +107,20 @@ class _TodoItemState extends State<TodoItem> {
                 ),
                 Expanded(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(
-                              color: Colors.grey,
-                              width: 1.0,
-                            ),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(
+                            color: Colors.grey,
+                            width: 1.0,
                           ),
-                          padding: const EdgeInsets.all(10),
-                          child: RichText(
-                            text: const TextSpan(
-                              children: [
-                                TextSpan(
-                                    text:
-                                        'Học lập trình Flutter là một trãi nghiệm rất là thú vị. Học ngay đi nào! '),
-                                WidgetSpan(
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 2.0,
-                                    ),
-                                    child: Icon(
-                                      Icons.edit,
-                                      size: 15,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )),
+                        ),
+                        padding: const EdgeInsets.all(10),
+                        child: buildTodoDescription(),
+                      ),
                       const SizedBox(
                         height: 10,
                       ),
@@ -155,6 +140,29 @@ class _TodoItemState extends State<TodoItem> {
             )
           ],
         ),
+      ),
+    );
+  }
+
+  RichText buildTodoDescription() {
+    return RichText(
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: widget.content,
+          ),
+          const WidgetSpan(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 2.0,
+              ),
+              child: Icon(
+                Icons.edit,
+                size: 15,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

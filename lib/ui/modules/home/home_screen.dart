@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:intl/intl.dart';
-import 'package:todoapp/ui/modules/todo/todo_item.dart';
+import 'package:todoapp/ui/modules/task/task_item.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -59,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     final double widthCategory = deviceSize.width * 0.6;
-    const double heightCategory = 200.00;
+    const double heightCategory = 150.00;
 
     return Scaffold(
       appBar: buildHomeScreenAppBar(context),
@@ -87,6 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           buildListCategory(heightCategory, widthCategory),
+          buildCurrentTask(),
           Container(
             padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
             child: Row(
@@ -122,7 +123,16 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           buildTaskDaily(),
-          const Divider(),
+        ],
+      ),
+    );
+  }
+
+  Container buildCurrentTask() {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        children: [
           Container(
             alignment: Alignment.topLeft,
             padding: const EdgeInsets.only(left: 10, top: 10),
@@ -133,9 +143,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: const TodoItem(),
+          const TaskItem(
+            content: "Hello",
           ),
         ],
       ),
@@ -331,15 +340,12 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Row(
                   children: [
-                    const SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: CircleAvatar(
-                        radius: 40,
-                        backgroundColor: Colors.transparent,
-                        backgroundImage: AssetImage(
-                          'assets/images/splash_icon.png',
-                        ),
+                    SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Image.asset(
+                        'assets/images/splash_icon.png',
+                        fit: BoxFit.cover,
                       ),
                     ),
                     const SizedBox(
