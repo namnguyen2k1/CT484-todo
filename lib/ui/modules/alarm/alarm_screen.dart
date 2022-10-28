@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/ui/shared/dialog_utils.dart';
 
-class NotificationScreen extends StatefulWidget {
-  const NotificationScreen({Key? key}) : super(key: key);
+class AlarmScreen extends StatefulWidget {
+  const AlarmScreen({Key? key}) : super(key: key);
 
   @override
-  State<NotificationScreen> createState() => _NotificationScreenState();
+  State<AlarmScreen> createState() => _AlarmScreenState();
 }
 
-class _NotificationScreenState extends State<NotificationScreen> {
+class _AlarmScreenState extends State<AlarmScreen> {
   bool _checkSeenNotification = true;
 
   @override

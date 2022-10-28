@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:todoapp/ui/modules/category/category_item.dart';
+import 'package:todoapp/ui/modules/tip/tip_item.dart';
+import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 
 import '../task/task_item.dart';
 
@@ -12,51 +15,16 @@ class ScheduleScreen extends StatefulWidget {
 class _ScheduleScreenState extends State<ScheduleScreen> {
   bool _showSearchField = false;
 
+  final List<Map<String, dynamic>> _listTask = FakeData.tasks;
+  final List<Map<String, dynamic>> _listTip = FakeData.tips;
+  final List<Map<String, dynamic>> _listCategory = FakeData.categories;
+
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: AppBar(
-        title: _showSearchField
-            ? Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: TextField(
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        setState(() {
-                          _showSearchField = false;
-                        });
-                      },
-                    ),
-                    hintText: 'Search...',
-                    border: InputBorder.none,
-                  ),
-                ),
-              )
-            : Row(
-                children: const [
-                  Text('Task Managerment'),
-                ],
-              ),
-        actions: [
-          !_showSearchField
-              ? IconButton(
-                  onPressed: () => {
-                    setState(() {
-                      _showSearchField = true;
-                    })
-                  },
-                  icon: const Icon(Icons.search),
-                )
-              : const Text(""),
-        ],
-      ),
+      // appBar: buildScheduleAppBar(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.pushNamed(context, '/workspace/schedule/todo');
@@ -85,8 +53,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   ),
                   child: TabBarView(
                     children: <Widget>[
-                      buildDailyTask(),
-                      buildFavoriteTask(),
+                      buildDailyTask(context),
+                      buildCategory(context),
                       buildTaskTips()
                     ],
                   ),
@@ -96,6 +64,49 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  AppBar buildScheduleAppBar() {
+    return AppBar(
+      title: _showSearchField
+          ? Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      setState(() {
+                        _showSearchField = false;
+                      });
+                    },
+                  ),
+                  hintText: 'Search...',
+                  border: InputBorder.none,
+                ),
+              ),
+            )
+          : Row(
+              children: const [
+                Text('Task Managerment'),
+              ],
+            ),
+      actions: [
+        !_showSearchField
+            ? IconButton(
+                onPressed: () => {
+                  setState(() {
+                    _showSearchField = true;
+                  })
+                },
+                icon: const Icon(Icons.search),
+              )
+            : const Text(""),
+      ],
     );
   }
 
@@ -132,11 +143,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
-                Icon(Icons.favorite),
+                Icon(Icons.category),
                 SizedBox(
                   width: 5,
                 ),
-                Text('Yêu Thích'),
+                Text('Category'),
               ],
             ),
           ),
@@ -157,56 +168,53 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     );
   }
 
-  ListView buildDailyTask() {
-    return ListView(
-      children: [
-        Container(
+  ListView buildDailyTask(BuildContext context) {
+    return ListView.builder(
+      itemCount: _listTask.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Container(
           padding: const EdgeInsets.all(10),
-          child: const TaskItem(
-            content: "hello",
+          child: Expanded(
+            child: TaskItem(
+              item: _listTask[index],
+            ),
           ),
-        ),
-      ],
+        );
+      },
+    );
+  }
+
+  ListView buildCategory(BuildContext context) {
+    final deviceSize = MediaQuery.of(context).size;
+
+    return ListView.builder(
+      itemCount: _listCategory.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Column(
+          children: [
+            CategoryItem(
+              category: _listCategory[index],
+              widthItem: deviceSize.width,
+              isHorizontal: false,
+            ),
+          ],
+        );
+      },
+      padding: const EdgeInsets.all(10),
     );
   }
 
   ListView buildTaskTips() {
+    List<Widget> listItem = <Widget>[];
+
+    for (var item in _listTip) {
+      listItem.add(TipItem(tip: item));
+      listItem.add(const Divider());
+    }
+
     return ListView(
       padding: const EdgeInsets.all(10),
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.deepPurple,
-            border: Border.all(color: Colors.black, width: 1.0),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          padding: const EdgeInsets.all(10),
-          child: const Text('Tip 1'),
-        ),
-        const Divider(),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.deepPurple,
-            border: Border.all(color: Colors.black, width: 1.0),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          padding: const EdgeInsets.all(10),
-          child: const Text('Tip 1'),
-        ),
-      ],
-    );
-  }
-
-  ListView buildFavoriteTask() {
-    return ListView(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          child: const TaskItem(
-            content: "hello",
-          ),
-        ),
-      ],
+      children: listItem,
     );
   }
 }

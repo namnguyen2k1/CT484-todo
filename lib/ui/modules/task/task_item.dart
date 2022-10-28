@@ -3,9 +3,9 @@ import 'package:todoapp/ui/shared/dialog_utils.dart';
 import 'package:todoapp/ui/shared/rate_star.dart';
 
 class TaskItem extends StatefulWidget {
-  final String content;
+  final Map<String, dynamic> item;
 
-  const TaskItem({super.key, required this.content});
+  const TaskItem({super.key, required this.item});
 
   @override
   State<TaskItem> createState() => _TaskItemState();
@@ -16,6 +16,7 @@ class _TaskItemState extends State<TaskItem> {
 
   @override
   Widget build(BuildContext context) {
+    final deviceSize = MediaQuery.of(context).size;
     return Dismissible(
       key: const ValueKey(1),
       background: Container(
@@ -56,36 +57,50 @@ class _TaskItemState extends State<TaskItem> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
+                  constraints: BoxConstraints(
+                    minWidth: deviceSize.width * 0.5,
+                    maxWidth: deviceSize.width * 0.5,
+                  ),
                   decoration: BoxDecoration(
-                    color: Colors.grey,
+                    color: Color(int.parse(widget.item['color'])),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 7),
-                  child: const Text(
-                    'Learn Flutter',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Text(
+                    widget.item['name'],
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
-                const RateStar(starCount: 3),
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  onPressed: () async {
-                    final bool? finshed = await showConfirmDialog(
-                      context,
-                      'Đánh dấu hoành thành công việc?',
-                      DateTime.now().toString(),
-                    );
-                    if (finshed!) {
-                      setState(() {
-                        _completed = true;
-                      });
-                    }
-                  },
-                  icon: Icon(
-                    _completed ? Icons.check_circle : Icons.circle_outlined,
-                  ),
+                Row(
+                  children: [
+                    RateStar(starCount: widget.item['star']),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    IconButton(
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () async {
+                        final bool? finshed = await showConfirmDialog(
+                          context,
+                          'Đánh dấu hoành thành công việc?',
+                          DateTime.now().toString(),
+                        );
+                        if (finshed!) {
+                          setState(() {
+                            _completed = true;
+                          });
+                        }
+                      },
+                      icon: Icon(
+                        _completed ? Icons.check_circle : Icons.circle_outlined,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -108,6 +123,18 @@ class _TaskItemState extends State<TaskItem> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Row(
+                        children: const [
+                          Icon(Icons.timer),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text('10:00 AM -> 17:00 PM'),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
                       Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
@@ -119,21 +146,9 @@ class _TaskItemState extends State<TaskItem> {
                         ),
                         padding: const EdgeInsets.all(10),
                         child: buildTodoDescription(
-                          content: widget.content,
+                          content: widget.item['description'],
                           icon: Icons.edit,
                         ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        children: const [
-                          Icon(Icons.timer),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text('10:00 AM -> 17:00 PM'),
-                        ],
                       ),
                     ],
                   ),

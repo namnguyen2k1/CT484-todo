@@ -7,7 +7,7 @@ class WorkspaceScreen extends StatefulWidget {
   static const List<Widget> _screenOptions = <Widget>[
     HomeScreen(),
     ScheduleScreen(),
-    NotificationScreen(),
+    AlarmScreen(),
     ProfileScreen()
   ];
 
@@ -28,16 +28,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final appSettingsController = Provider.of<AppSettingsController>(context);
-    // final switchScreenAnyWay = appSettingsController.selectedNavigationBar;
-
-    // Nếu có sự thay đổi trong route thì sẽ gán lại router mới
-    // if (switchScreenAnyWay != selectedScreenIndex) {
-    // appSettingsController.setNavigationBar(selected: selectedScreenIndex);
-    // setState(() {
-    //   selectedScreenIndex = switchScreenAnyWay;
-    // });
-    // }
     const backgroundColorNavigationBar = Colors.black54;
     const selectedColorIcon = Colors.black;
     const selectedBackgroundColorIcon = Colors.teal;
@@ -69,23 +59,23 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           destinations: const [
             NavigationDestination(
               icon: Icon(
-                Icons.home_outlined,
+                Icons.home_work_outlined,
               ),
               selectedIcon: Icon(
-                Icons.home,
+                Icons.home_work,
                 // color: selectedColorIcon,
               ),
               label: 'Home',
             ),
             NavigationDestination(
               icon: Icon(
-                Icons.assignment_outlined,
+                Icons.sticky_note_2_outlined,
               ),
               selectedIcon: Icon(
-                Icons.assignment,
+                Icons.sticky_note_2,
                 // color: selectedColorIcon,
               ),
-              label: 'Tasks',
+              label: 'Schedule',
             ),
             NavigationDestination(
               selectedIcon: Icon(
@@ -95,7 +85,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               icon: Icon(
                 Icons.notifications_outlined,
               ),
-              label: 'Notice',
+              label: 'Alarm',
             ),
             NavigationDestination(
               selectedIcon: Icon(
