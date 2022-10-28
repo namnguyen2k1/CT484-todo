@@ -1,71 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import '../services/shared_preference_service.dart';
+import '../services/local_key.dart';
+
+// 'light', 'dark', 'system'
+enum ThemMode { light, dark, system }
+
+// 'vi', 'eng', 'jp', 'chi'
+enum LanguageMode { vietnamese, english, japan, china }
 
 class AppSettingsController with ChangeNotifier {
-  final appThemeKey = 'todo_app_theme';
-  final appLanguageKey = 'todo_app_language';
+  ThemMode _theme = ThemMode.light;
+  LanguageMode _language = LanguageMode.english;
 
-  bool _isDarkTheme = false;
-  bool _isEnglish = false;
-  int _selectedNavigationBar = 0;
+  bool get isEnglishLanguage => _language == LanguageMode.english;
+  bool get isDarkTheme => _theme == ThemMode.dark;
 
-  bool get isEnglishLanguage => _isEnglish;
-  bool get isDarkTheme => _isDarkTheme;
-  int get selectedNavigationBar => _selectedNavigationBar;
-
-  initValue() async {
-    final String currentTheme = await getCurrentAppTheme();
+  Future<void> _initValue() async {
+    // Load Theme
+    final String currentTheme = await SharedPreferencesSerivce().getString(
+      LocalSavedKey.appThemeKey,
+    );
     if (currentTheme == 'light') {
-      _isDarkTheme = false;
+      _theme = ThemMode.light;
+    } else if (currentTheme == 'dark') {
+      _theme = ThemMode.dark;
     }
-    _isDarkTheme = true;
+
+    // Load language
+    final String currentLanguage = await SharedPreferencesSerivce().getString(
+      LocalSavedKey.appLanguageKey,
+    );
+    if (currentLanguage == 'vi') {
+      _language = LanguageMode.vietnamese;
+    } else if (currentLanguage == 'eng') {
+      _language = LanguageMode.english;
+    }
+
+    notifyListeners();
   }
 
   AppSettingsController() {
-    initValue();
+    _initValue();
   }
 
-  Future<String> getCurrentAppTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String currentAppTheme = prefs.getString(appThemeKey) ?? 'light';
-    return currentAppTheme;
-  }
-
-  Future<String> getCurrentAppLanguage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String currentAppLanguage = prefs.getString(appLanguageKey) ?? 'vi';
-    return currentAppLanguage;
-  }
-
-  Future<void> setCurrentAppTheme(String theme) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(appThemeKey, theme);
-  }
-
-  Future<void> setCurrentAppLanguage(String language) async {
-    // language: 'vi', 'eng'
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(appLanguageKey, language);
-  }
-
-  void setNavigationBar({required selected}) {
-    _selectedNavigationBar = selected;
-  }
-
-  dynamic changeAppTheme({required String theme}) async {
-    theme == 'dark' ? _isDarkTheme = true : _isDarkTheme = false;
+  Future<void> changeAppTheme({required String theme}) async {
+    if (theme == 'dark') {
+      _theme = ThemMode.dark;
+    } else if (theme == 'light') {
+      _theme = ThemMode.light;
+    }
+    await SharedPreferencesSerivce().setString(
+      LocalSavedKey.appThemeKey,
+      theme,
+    );
     notifyListeners();
-
-    // Save local
-    await setCurrentAppTheme(theme);
   }
 
-  dynamic changeAppLanguage({required String language}) async {
-    language == 'eng' ? _isEnglish = true : _isEnglish = false;
+  Future<void> changeAppLanguage({required String language}) async {
+    if (language == 'vi') {
+      _language = LanguageMode.vietnamese;
+    } else if (language == 'eng') {
+      _language = LanguageMode.english;
+    }
+    await SharedPreferencesSerivce().setString(
+      LocalSavedKey.appLanguageKey,
+      language,
+    );
     notifyListeners();
-
-    // Save local
-    await setCurrentAppLanguage(language);
   }
 }

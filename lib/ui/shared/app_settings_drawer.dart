@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todoapp/state/controllers/app_settings_controller.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
-import '../../state/controllers/auth_controller.dart';
-import './dialog_utils.dart';
+import 'package:todoapp/state/controllers/app_settings_controller.dart';
 
 class AppDrawer extends StatefulWidget {
   const AppDrawer({super.key});
@@ -15,7 +13,7 @@ class AppDrawer extends StatefulWidget {
 
 class _AppDrawerState extends State<AppDrawer> {
   final _themeOptions = ['dark', 'light'];
-  final _languageOptions = ['vi', 'eng'];
+  final _languageOptions = ['eng', 'vi'];
 
   @override
   Widget build(BuildContext context) {
@@ -47,8 +45,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     appSettingsController.isDarkTheme ? 'dark' : 'light',
                   ),
                   fontSize: 16.0,
-                  cornerRadius: 10.0,
-                  totalSwitches: 2,
+                  totalSwitches: _themeOptions.length,
                   labels: _themeOptions,
                   onToggle: (index) {
                     final String selectedTheme =
@@ -78,8 +75,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     appSettingsController.isEnglishLanguage ? 'eng' : 'vi',
                   ),
                   fontSize: 16.0,
-                  cornerRadius: 10.0,
-                  totalSwitches: 2,
+                  totalSwitches: _languageOptions.length,
                   labels: _languageOptions,
                   onToggle: (index) {
                     final String selectedLanguage =

@@ -1,6 +1,7 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todoapp/state/controllers/app_settings_controller.dart';
 
 import 'package:todoapp/state/controllers/auth_controller.dart';
 import 'package:todoapp/state/services/auth_service.dart';
@@ -43,7 +44,6 @@ class _AuthScreenState extends State<AuthScreen> {
     const colorizeTextStyle = TextStyle(
       fontSize: 35.0,
     );
-    final deviceSize = MediaQuery.of(context).size;
     return Scaffold(
       // resizeToAvoidBottomInset: false,
       body: ListView(
@@ -70,7 +70,6 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
           const AuthCard(),
           buildQuickLogin(),
-          // Text(_listQuickAccount.toString()),
         ],
       ),
     );
@@ -141,9 +140,10 @@ class _AuthScreenState extends State<AuthScreen> {
                   'Remove this account from your device?',
                   "*Bạn phải nhập lại thông tin ở lần đăng nhập sau.",
                 );
-
                 if (isAccepted != false) {
-                  context.read<AuthController>().removeLocalAccount(email);
+                  if (mounted) {
+                    context.read<AuthController>().removeLocalAccount(email);
+                  }
                 }
               },
               icon: const Icon(Icons.delete),
