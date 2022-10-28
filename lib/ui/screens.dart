@@ -3,10 +3,10 @@ export './splash_screen.dart';
 export './modules/auth/auth_screen.dart';
 
 export './modules/home/home_screen.dart';
-export './modules/category/category_screen.dart';
+export 'modules/category/edit_category_screen.dart';
 
 export './modules/schedule/schedule_screen.dart';
-export 'modules/task/edit_todo_screen.dart';
+export 'modules/task/edit_task_screen.dart';
 
 export './modules/notification/notification_screen.dart';
 

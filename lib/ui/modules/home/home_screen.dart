@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:todoapp/ui/modules/category/category_item.dart';
 import 'package:todoapp/ui/modules/task/task_item.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,21 +17,21 @@ class _HomeScreenState extends State<HomeScreen> {
       "title": "Study",
       "color": "4294940672",
       "code": "001",
-      "description": "Thuoc the loai hoc va hanh"
+      "description": "Hoc an hoc noi hoc goi hoc mo"
     },
     {
       "id": 2,
       "title": "Eat",
       "code": "002",
       "color": "4278238420",
-      "description": "Thuoc the loai an uong"
+      "description": "An va ngu la dieu khong the thieu"
     },
     {
       "id": 3,
-      "title": "Sleep",
+      "title": "Relax",
       "code": "003",
       "color": "4283215696",
-      "description": "Thuoc the loai nghi ngoi"
+      "description": "Thu gian hop ly giup tang cuong suc khoe"
     }
   ];
 
@@ -56,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
-    final double widthCategory = deviceSize.width * 0.6;
+    final double widthCategory = deviceSize.width * 0.5;
     const double heightCategory = 150.00;
 
     return Scaffold(
@@ -123,6 +124,42 @@ class _HomeScreenState extends State<HomeScreen> {
           buildTaskDaily(),
         ],
       ),
+    );
+  }
+
+  AppBar buildHomeScreenAppBar(BuildContext context) {
+    return AppBar(
+      title: const Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: "Hello, ",
+            ),
+            TextSpan(
+              text: "Nguyen Anh Nam",
+              style: TextStyle(color: Colors.teal),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        Stack(
+          children: [
+            TextButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).bottomAppBarColor,
+              ),
+              child: const CircleAvatar(
+                radius: 20,
+                backgroundImage: AssetImage('assets/images/avatar.gif'),
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '/workspace/profile');
+              },
+            ),
+          ],
+        )
+      ],
     );
   }
 
@@ -327,150 +364,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
     for (var item in _listCategory) {
       // print(item['id'].toString());
-      listWidgetCategory.add(Container(
-        width: widthCategory,
-        padding: const EdgeInsets.only(left: 10),
-        child: Card(
-          // color: Colors.teal,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: Image.asset(
-                        'assets/images/splash_icon.png',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: buildCategoryLabel(item),
-                    ),
-                  ],
-                ),
-                const Divider(),
-                Row(
-                  children: [
-                    Text('${item['description']} '),
-                    const Icon(
-                      Icons.edit,
-                      size: 15,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
+      listWidgetCategory.add(CategoryItem(
+        category: item,
+        widthItem: widthCategory,
       ));
     }
     return Container(
-      // padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       height: heightCategory,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: listWidgetCategory,
       ),
-    );
-  }
-
-  Container buildCategoryLabel(Map<String, dynamic> item) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 10,
-        horizontal: 10,
-      ),
-      decoration: BoxDecoration(
-        color: Color(
-          int.parse(item['color']),
-        ),
-        border: Border.all(color: Colors.black, width: 1.0),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Text(
-        '${item['title']} (3)',
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
-  AppBar buildHomeScreenAppBar(BuildContext context) {
-    return AppBar(
-      title: const Text.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text: "Hello, ",
-            ),
-            TextSpan(
-              text: "Nguyen Anh Nam",
-              style: TextStyle(color: Colors.teal),
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        Stack(
-          children: [
-            TextButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).bottomAppBarColor,
-              ),
-              child: const CircleAvatar(
-                radius: 20,
-                backgroundImage: AssetImage('assets/images/avatar.gif'),
-              ),
-              onPressed: () {
-                Navigator.pushNamed(context, '/workspace/profile');
-              },
-            ),
-          ],
-        )
-      ],
-      // bottom: PreferredSize(
-      //   preferredSize: const Size(0.0, 50.0),
-      //   child: Container(
-      //     alignment: Alignment.topLeft,
-      //     padding: const EdgeInsets.only(left: 15, bottom: 10),
-      //     child: Row(
-      //       children: [
-      //         ElevatedButton.icon(
-      //           onPressed: () {},
-      //           label: const Text('99 done'),
-      //           icon: const Icon(Icons.done),
-      //           style: ElevatedButton.styleFrom(
-      //             backgroundColor: Colors.teal,
-      //             textStyle: const TextStyle(
-      //               fontSize: 15,
-      //               fontWeight: FontWeight.bold,
-      //             ),
-      //           ),
-      //         ),
-      //         const SizedBox(
-      //           width: 10,
-      //         ),
-      //         ElevatedButton.icon(
-      //           style: ElevatedButton.styleFrom(
-      //             backgroundColor: Colors.deepOrange,
-      //             textStyle: const TextStyle(
-      //               fontSize: 15,
-      //               fontWeight: FontWeight.bold,
-      //             ),
-      //           ),
-      //           onPressed: () {},
-      //           label: const Text('10 pending'),
-      //           icon: const Icon(Icons.pending),
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      // ),
     );
   }
 }

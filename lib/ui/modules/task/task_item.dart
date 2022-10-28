@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/ui/shared/dialog_utils.dart';
+import 'package:todoapp/ui/shared/rate_star.dart';
 
 class TaskItem extends StatefulWidget {
   final String content;
@@ -44,8 +45,8 @@ class _TaskItemState extends State<TaskItem> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.deepPurple,
-          border: Border.all(color: Colors.black, width: 1.0),
+          color: Colors.transparent,
+          border: Border.all(color: Colors.grey, width: 1.0),
           borderRadius: BorderRadius.circular(10),
         ),
         padding: const EdgeInsets.all(10),
@@ -66,9 +67,7 @@ class _TaskItemState extends State<TaskItem> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-                Row(
-                  children: buildStarRank(3),
-                ),
+                const RateStar(starCount: 3),
                 IconButton(
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
@@ -119,7 +118,10 @@ class _TaskItemState extends State<TaskItem> {
                           ),
                         ),
                         padding: const EdgeInsets.all(10),
-                        child: buildTodoDescription(),
+                        child: buildTodoDescription(
+                          content: widget.content,
+                          icon: Icons.edit,
+                        ),
                       ),
                       const SizedBox(
                         height: 10,
@@ -144,20 +146,23 @@ class _TaskItemState extends State<TaskItem> {
     );
   }
 
-  RichText buildTodoDescription() {
+  RichText buildTodoDescription({
+    required String content,
+    required IconData icon,
+  }) {
     return RichText(
       text: TextSpan(
         children: [
           TextSpan(
-            text: widget.content,
+            text: content,
           ),
-          const WidgetSpan(
+          WidgetSpan(
             child: Padding(
-              padding: EdgeInsets.symmetric(
+              padding: const EdgeInsets.symmetric(
                 horizontal: 2.0,
               ),
               child: Icon(
-                Icons.edit,
+                icon,
                 size: 15,
               ),
             ),
@@ -165,15 +170,5 @@ class _TaskItemState extends State<TaskItem> {
         ],
       ),
     );
-  }
-
-  List<Widget> buildStarRank(int starCount) {
-    List<Widget> list = <Widget>[];
-    for (var i = 0; i < starCount; i++) {
-      list.add(const Icon(Icons.star));
-      list.add(const SizedBox(width: 5));
-    }
-
-    return list;
   }
 }

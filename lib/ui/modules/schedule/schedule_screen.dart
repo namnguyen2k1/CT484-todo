@@ -59,7 +59,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/workspace/schedule/todo_');
+          Navigator.pushNamed(context, '/workspace/schedule/todo');
         },
         backgroundColor: Colors.teal,
         child: const Icon(Icons.post_add_sharp),

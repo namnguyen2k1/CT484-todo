@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:todoapp/ui/shared/response_message.dart';
 
-class CategoryScreen extends StatefulWidget {
-  const CategoryScreen({super.key});
+class EditCategoryScreen extends StatefulWidget {
+  const EditCategoryScreen({super.key});
 
   @override
-  State<CategoryScreen> createState() => _CategoryScreenState();
+  State<EditCategoryScreen> createState() => _EditCategoryScreenState();
 }
 
-class _CategoryScreenState extends State<CategoryScreen> {
+class _EditCategoryScreenState extends State<EditCategoryScreen> {
   bool _isEditing = true;
   Color _selectedColor = Colors.white;
 
@@ -17,32 +17,14 @@ class _CategoryScreenState extends State<CategoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: true,
         title: const Text('New Category'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(10),
         children: [
-          TextFormField(
-            enabled: _isEditing,
-            onTap: () {
-              setState(() {
-                _isEditing = true;
-              });
-            },
-            keyboardType: TextInputType.name,
-            obscureText: false,
-            decoration: const InputDecoration(
-              prefixIcon: Icon(
-                Icons.note,
-                size: 20,
-              ),
-              border: OutlineInputBorder(),
-              labelText: 'Category Name',
-              labelStyle: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+          buildFieldText(prefixIcon: Icons.note, label: 'Category Name'),
           const Divider(),
           buildFieldText(prefixIcon: Icons.code, label: 'Category Code'),
           const Divider(),
@@ -50,21 +32,38 @@ class _CategoryScreenState extends State<CategoryScreen> {
           const Divider(),
           buildFieldColor(context),
           const Divider(),
-          Center(
-            child: ElevatedButton.icon(
-              onPressed: () {
-                ScaffoldMessengerCustom.showSuccessMessage(
-                  context,
-                  'Add Category successfully',
-                );
-                Navigator.pop(context);
-              },
-              icon: const Icon(Icons.save),
-              label: const Text('Add'),
-            ),
-          ),
+          buildControlButtons(context),
         ],
       ),
+    );
+  }
+
+  Row buildControlButtons(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton.icon(
+          onPressed: () {
+            ScaffoldMessengerCustom.showSuccessMessage(
+              context,
+              'Add Category successfully',
+            );
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.save),
+          label: const Text('Add'),
+        ),
+        const SizedBox(
+          width: 50,
+        ),
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.skip_previous),
+          label: const Text('Back'),
+        ),
+      ],
     );
   }
 
@@ -99,6 +98,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
               child: TextField(
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 10,
+                  ),
                   label: Text(_selectedColor.value.toString()),
                   border: const OutlineInputBorder(),
                 ),
@@ -159,6 +163,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
         prefixIcon: Icon(
           prefixIcon,
           size: 20,
+        ),
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 10,
         ),
         border: const OutlineInputBorder(),
         labelText: label,
