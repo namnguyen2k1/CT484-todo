@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'package:todoapp/ui/shared/app_settings_drawer.dart';
 import 'package:todoapp/ui/shared/dialog_utils.dart';
+import 'package:todoapp/ui/shared/rate_star.dart';
 import '../../../state/controllers/auth_controller.dart';
 
 class SalesData {
@@ -28,112 +30,223 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const double coverImageHeight = 150;
+    const double coverImageHeight = 200;
     return Scaffold(
       key: _scaffoldKey,
       drawer: const AppDrawer(),
       drawerEnableOpenDragGesture: false,
-      appBar: AppBar(
-        title: const Text('Profile Overview'),
-        // leadingWidth: 0,
-        // titleSpacing: 0,
-        automaticallyImplyLeading: false,
-        // backgroundColor: Colors.black87,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            tooltip: 'Setting',
-            onPressed: _openDrawer,
-          ),
-        ],
-      ),
-      body: ListView(
-        children: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                color: Colors.grey,
-                child: Image.asset(
-                  'assets/images/coverImage.jpg',
-                  width: double.infinity,
-                  height: coverImageHeight,
-                  fit: BoxFit.cover,
+      body: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              automaticallyImplyLeading: false,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.settings),
+                  tooltip: 'Setting',
+                  onPressed: _openDrawer,
                 ),
-              ),
-              Positioned(
-                top: 5,
-                right: 5,
-                child: CircleAvatar(
-                  radius: 15,
-                  backgroundColor: Colors.white,
-                  child: IconButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/workspace/profile/edit');
-                    },
-                    icon: const Icon(
-                      Icons.build,
-                      size: 15,
+              ],
+              title: const Text("Profile Overview"),
+              expandedHeight: 0,
+              floating: true,
+              snap: true,
+              pinned: false,
+            )
+          ];
+        },
+        body: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  color: Colors.grey,
+                  child: Image.asset(
+                    'assets/images/coverImage.jpg',
+                    width: double.infinity,
+                    height: coverImageHeight,
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
+                Positioned(
+                  bottom: 10,
+                  right: 10,
+                  child: CircleAvatar(
+                    radius: 15,
+                    backgroundColor: Colors.white,
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/workspace/profile/edit');
+                      },
+                      icon: const Icon(
+                        Icons.build,
+                        size: 15,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Positioned(
-                bottom: 10,
-                left: 20,
-                child: buildProfileHeader(),
-              )
-            ],
-          ),
-          Container(
-            margin: const EdgeInsets.all(10),
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey, width: 0.5),
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-            ),
-            child: Column(
-              children: const [
-                buildTextInformation(
-                  icon: Icons.email,
-                  fieldTitle: 'Email',
-                  fieldContent: 'nanam133hg@gmail.com',
-                ),
-                Divider(),
-                buildTextInformation(
-                  icon: Icons.home,
-                  fieldTitle: 'Address',
-                  fieldContent: 'Ninh Kieu, Can Tho',
-                ),
+                Positioned(
+                  bottom: 10,
+                  left: 20,
+                  child: buildProfileHeader(),
+                )
               ],
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            buildProfileInformations(),
+            buildProfileStatistical(),
+            Center(
+              child: CircularPercentIndicator(
+                radius: 60.0,
+                lineWidth: 10.0,
+                percent: 0.9,
+                center: const Center(child: RateStar(starCount: 2)),
+                backgroundColor: Colors.red,
+                progressColor: Colors.green,
+                footer: const Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: Text(
+                    'Finished more than 19 task to upgrade rank',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
+            const Divider(),
+            buildProfileControls(context),
+            const SizedBox(
+              height: 200,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  AppBar buildProfileAppBar() {
+    return AppBar(
+      title: const Text('Profile Overview'),
+      // leadingWidth: 0,
+      // titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      // backgroundColor: Colors.black87,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.settings),
+          tooltip: 'Setting',
+          onPressed: _openDrawer,
+        ),
+      ],
+    );
+  }
+
+  Column buildProfileControls(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              ElevatedButton.icon(
-                onPressed: () {
-                  showConfirmDialog(
-                    context,
-                    'Xác nhận muốn xoá tài khoản?',
-                    '*Lưu ý: hành động không thể phục hồi!',
-                  );
-                },
-                icon: const Icon(Icons.no_accounts),
-                label: const Text('Delete Account'),
+              const Text(
+                'Delete Account',
+                style: TextStyle(color: Colors.red),
               ),
-              const SizedBox(
-                width: 30,
-              ),
-              ElevatedButton.icon(
-                onPressed: () {
-                  context.read<AuthController>().logout();
-                  print('[logout]');
-                },
-                icon: const Icon(Icons.exit_to_app),
-                label: const Text('Logout'),
-              ),
+              IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () {
+                    showConfirmDialog(
+                      context,
+                      'Xác nhận muốn xoá tài khoản?',
+                      '*Lưu ý: hành động không thể phục hồi!',
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.no_accounts,
+                    color: Colors.red,
+                  ))
             ],
+          ),
+        ),
+        const Divider(),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Logout',
+                style: TextStyle(color: Colors.teal),
+              ),
+              IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () {
+                    context.read<AuthController>().logout();
+                    print('[logout]');
+                  },
+                  icon: const Icon(
+                    Icons.exit_to_app,
+                    color: Colors.teal,
+                  ))
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Container buildProfileInformations() {
+    return Container(
+      margin: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey, width: 0.5),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Column(
+        children: const [
+          buildTextInformation(
+            icon: Icons.email,
+            fieldTitle: 'Email',
+            fieldContent: 'nanam133hg@gmail.com',
+          ),
+          Divider(),
+          buildTextInformation(
+            icon: Icons.home,
+            fieldTitle: 'Address',
+            fieldContent: 'Đại học Cần Thơ, Ninh Kiều Cần Thơ',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container buildProfileStatistical() {
+    return Container(
+      margin: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey, width: 0.5),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Column(
+        children: const [
+          buildTextInformation(
+            icon: Icons.task,
+            fieldTitle: 'Task',
+            fieldContent: '103 easy, 56 middle, 19 hard',
+          ),
+          Divider(),
+          buildTextInformation(
+            icon: Icons.category,
+            fieldTitle: 'Category',
+            fieldContent: '9 category',
           ),
         ],
       ),
@@ -141,29 +254,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Row buildProfileHeader() {
-    const double _paddingSize = 2;
-    const _textShadow = <Shadow>[
+    const double paddingSize = 2;
+    const textShadow = <Shadow>[
       Shadow(
         // offset: Offset(0.0, 0.0),
         blurRadius: 3.0,
         color: Colors.white,
       ),
     ];
-
-    List<Widget> buildStarRank(int starCount, List<Shadow> _textShadow) {
-      List<Widget> list = <Widget>[];
-      for (var i = 0; i < starCount; i++) {
-        list.add(Icon(
-          Icons.star,
-          shadows: _textShadow,
-        ));
-        list.add(const SizedBox(
-          width: _paddingSize,
-        ));
-      }
-
-      return list;
-    }
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -177,21 +275,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
           width: 10,
         ),
         Column(
-          children: [
-            const Text(
+          children: const [
+            Text(
               'Nguyen Anh Nam',
               style: TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
-                shadows: _textShadow,
+                shadows: textShadow,
               ),
             ),
-            const SizedBox(
-              width: _paddingSize * 4,
+            SizedBox(
+              width: paddingSize * 4,
             ),
-            Row(
-              children: buildStarRank(3, _textShadow),
-            ),
+            RateStar(starCount: 3),
           ],
         ),
       ],
@@ -213,7 +309,7 @@ class buildTextInformation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: EdgeInsets.zero,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -222,11 +318,20 @@ class buildTextInformation extends StatelessWidget {
             size: 30,
           ),
           const SizedBox(
-            width: 20,
+            width: 10,
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [Text(fieldTitle), Text(fieldContent)],
+            children: [
+              Text(
+                '$fieldTitle:',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Text(fieldContent)
+            ],
           )
         ],
       ),

@@ -34,26 +34,13 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           buildListCategory(heightCategory, widthCategory),
           buildCurrentTask(),
-          buildTaskDaily(context),
+          buildTaskStatistical(context),
         ],
       ),
     );
   }
 
   AppBar buildHomeScreenAppBar(BuildContext context) {
-    // const text2 = Text.rich(
-    //   TextSpan(
-    //     children: [
-    //       TextSpan(
-    //         text: "Hello, ",
-    //       ),
-    //       TextSpan(
-    //         text: "Nguyen Anh Nam",
-    //         style: TextStyle(color: Colors.teal),
-    //       ),
-    //     ],
-    //   ),
-    // );
     return AppBar(
       title: Row(children: const [
         Text(
@@ -112,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Column buildTaskDaily(BuildContext context) {
+  Column buildTaskStatistical(BuildContext context) {
     final appSettingsController = Provider.of<AppSettingsController>(context);
     final settingLanguage =
         appSettingsController.isEnglishLanguage ? 'eng' : 'vi';
@@ -162,6 +149,9 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              const SizedBox(
+                width: 20,
+              ),
               Expanded(
                 child: CircularPercentIndicator(
                   radius: 60.0,
@@ -185,68 +175,29 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        SizedBox(
-                          height: 30,
-                          width: 30,
-                          child: Container(
-                            color: Colors.deepPurple,
-                            child: const Icon(
-                              Icons.list,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        const Text('11 Task'),
-                      ],
+                    buildTotalTaskType(
+                      size: 30,
+                      icon: Icons.list,
+                      backgroundColor: Colors.purple,
+                      label: "11 Task",
                     ),
                     const SizedBox(
                       height: 10,
                     ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          height: 30,
-                          width: 30,
-                          child: Container(
-                            color: Colors.red,
-                            child: const Icon(
-                              Icons.pending,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        const Text('2 Task'),
-                      ],
+                    buildTotalTaskType(
+                      size: 30,
+                      icon: Icons.pending,
+                      backgroundColor: Colors.red,
+                      label: "2 Task",
                     ),
                     const SizedBox(
                       height: 10,
                     ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          height: 30,
-                          width: 30,
-                          child: Container(
-                            color: Colors.green,
-                            child: const Icon(
-                              Icons.done,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        const Text('9 Task'),
-                      ],
+                    buildTotalTaskType(
+                      size: 30,
+                      icon: Icons.done,
+                      backgroundColor: Colors.green,
+                      label: "9 Task",
                     ),
                   ],
                 ),
@@ -255,68 +206,29 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        SizedBox(
-                          height: 30,
-                          width: 30,
-                          child: Container(
-                            color: Colors.blue,
-                            child: const Icon(
-                              Icons.notification_important_outlined,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        const Text('5 task'),
-                      ],
+                    buildTotalTaskType(
+                      size: 30,
+                      icon: Icons.notification_important_outlined,
+                      backgroundColor: Colors.blue,
+                      label: "5 Task",
                     ),
                     const SizedBox(
                       height: 10,
                     ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          height: 30,
-                          width: 30,
-                          child: Container(
-                            color: Colors.deepPurpleAccent,
-                            child: const Icon(
-                              Icons.notification_important_outlined,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        const Text('4 Task'),
-                      ],
+                    buildTotalTaskType(
+                      size: 30,
+                      icon: Icons.notification_important_outlined,
+                      backgroundColor: Colors.deepPurpleAccent,
+                      label: "4 Task",
                     ),
                     const SizedBox(
                       height: 10,
                     ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          height: 30,
-                          width: 30,
-                          child: Container(
-                            color: Colors.red,
-                            child: const Icon(
-                              Icons.notification_important_sharp,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        const Text('2 Task'),
-                      ],
+                    buildTotalTaskType(
+                      size: 30,
+                      icon: Icons.notification_important,
+                      backgroundColor: Colors.red,
+                      label: "2 Task",
                     ),
                   ],
                 ),
@@ -324,6 +236,33 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
+      ],
+    );
+  }
+
+  Row buildTotalTaskType({
+    required double size,
+    required Color backgroundColor,
+    required IconData icon,
+    required String label,
+  }) {
+    return Row(
+      children: [
+        SizedBox(
+          height: size,
+          width: size,
+          child: Container(
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.all(Radius.circular(size * 0.2)),
+            ),
+            child: Icon(icon, size: 20),
+          ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        Text(label),
       ],
     );
   }

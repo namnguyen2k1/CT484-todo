@@ -34,3 +34,18 @@ class RiskTextCustomt extends StatelessWidget {
     );
   }
 }
+
+
+    // const text2 = Text.rich(
+    //   TextSpan(
+    //     children: [
+    //       TextSpan(
+    //         text: "Hello, ",
+    //       ),
+    //       TextSpan(
+    //         text: "Nguyen Anh Nam",
+    //         style: TextStyle(color: Colors.teal),
+    //       ),
+    //     ],
+    //   ),
+    // );

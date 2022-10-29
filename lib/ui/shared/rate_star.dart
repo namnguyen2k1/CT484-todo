@@ -8,6 +8,7 @@ class RateStar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: buildStarRank(starCount),
     );
   }
@@ -30,7 +31,9 @@ class RateStar extends StatelessWidget {
         Icons.star,
         color: colorStar,
       ));
-      list.add(const SizedBox(width: 5));
+      if (i < starCount - 1) {
+        list.add(const SizedBox(width: 5));
+      }
     }
 
     return list;
