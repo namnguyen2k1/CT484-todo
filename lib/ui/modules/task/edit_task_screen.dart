@@ -161,9 +161,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             return null;
           },
           onSaved: (value) {
-            _editedTodo = _editedTodo.copyWith(
-              name: value,
-            );
+            // _editedTodo = _editedTodo.copyWith(
+            //   name: value,
+            // );
           },
         ),
       ],
@@ -197,9 +197,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             return null;
           },
           onSaved: (value) {
-            _editedTodo = _editedTodo.copyWith(
-              description: value,
-            );
+            // _editedTodo = _editedTodo.copyWith(
+            //   description: value,
+            // );
           },
         ),
       ],
@@ -229,9 +229,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         return null;
       },
       onSaved: (value) {
-        _editedTodo = _editedTodo.copyWith(
-          imageUrl: value,
-        );
+        // _editedTodo = _editedTodo.copyWith(
+        //   imageUrl: value,
+        // );
       },
     );
   }
@@ -301,7 +301,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                   children: <Widget>[
                     buildNameField(),
                     buildDescriptionField(),
-                    buildRankTask(),
+                    buildRankField(),
                     buildCategoryList(),
                     buildFieldColor(context),
                     buildtodoPreview(),
@@ -314,7 +314,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     );
   }
 
-  Column buildRankTask() {
+  Column buildRankField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

@@ -6,6 +6,7 @@ import 'package:todoapp/state/controllers/app_settings_controller.dart';
 import 'package:todoapp/ui/modules/category/category_item.dart';
 import 'package:todoapp/ui/modules/task/task_item.dart';
 import 'package:todoapp/ui/modules/utilities/fake_data.dart';
+import 'package:todoapp/ui/shared/rate_star.dart';
 import '../utilities/convert.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -40,26 +41,35 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   AppBar buildHomeScreenAppBar(BuildContext context) {
+    // const text2 = Text.rich(
+    //   TextSpan(
+    //     children: [
+    //       TextSpan(
+    //         text: "Hello, ",
+    //       ),
+    //       TextSpan(
+    //         text: "Nguyen Anh Nam",
+    //         style: TextStyle(color: Colors.teal),
+    //       ),
+    //     ],
+    //   ),
+    // );
     return AppBar(
-      title: const Text.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text: "Hello, ",
-            ),
-            TextSpan(
-              text: "Nguyen Anh Nam",
-              style: TextStyle(color: Colors.teal),
-            ),
-          ],
+      title: Row(children: const [
+        Text(
+          'Nguyen Nam',
         ),
-      ),
+        SizedBox(
+          width: 10,
+        ),
+        RateStar(starCount: 3)
+      ]),
       actions: [
         Stack(
           children: [
             TextButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).bottomAppBarColor,
+                backgroundColor: Colors.transparent,
               ),
               child: const CircleAvatar(
                 radius: 20,
@@ -95,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.all(10),
           child: TaskItem(
             item: _listTask[0],
+            focus: false,
           ),
         ),
       ],
@@ -325,6 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
         category: item,
         widthItem: widthCategory,
         isHorizontal: true,
+        focus: false,
       ));
     }
     return Column(
@@ -332,23 +344,10 @@ class _HomeScreenState extends State<HomeScreen> {
         Container(
           padding: const EdgeInsets.all(10),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  const Icon(Icons.view_comfortable),
-                  const SizedBox(width: 10),
-                  Text('Category (${_listCategory.length})'),
-                ],
-              ),
-              IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/workspace/home/category');
-                },
-                icon: const Icon(Icons.create_new_folder),
-              )
+              const Icon(Icons.view_comfortable),
+              const SizedBox(width: 10),
+              Text('Category (${_listCategory.length})'),
             ],
           ),
         ),

@@ -31,8 +31,16 @@ class MyApp extends StatelessWidget {
             title: 'Todo App',
             debugShowCheckedModeBanner: false,
             theme: appSettingsController.isDarkTheme
-                ? ThemeData.dark()
-                : ThemeData.light(),
+                ? ThemeData.dark().copyWith(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
+                  )
+                : ThemeData.light().copyWith(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
+                  ),
             home: authController.isAuth
                 ? const WorkspaceScreen()
                 : FutureBuilder(

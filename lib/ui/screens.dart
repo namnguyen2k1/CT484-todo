@@ -7,6 +7,7 @@ export 'modules/category/edit_category_screen.dart';
 
 export './modules/schedule/schedule_screen.dart';
 export 'modules/task/edit_task_screen.dart';
+export './modules/schedule/schedule_search_screen.dart';
 
 export 'modules/alarm/alarm_screen.dart';
 

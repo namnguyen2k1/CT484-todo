@@ -1,30 +1,39 @@
 import 'package:flutter/material.dart';
 
-class CategoryItem extends StatelessWidget {
+import '../../shared/risk_text.dart';
+
+class CategoryItem extends StatefulWidget {
   final Map<String, dynamic> category;
   final double widthItem;
   final bool isHorizontal;
+  final bool focus;
+
   const CategoryItem({
     super.key,
     required this.category,
     required this.widthItem,
     required this.isHorizontal,
+    required this.focus,
   });
 
+  @override
+  State<CategoryItem> createState() => _CategoryItemState();
+}
+
+class _CategoryItemState extends State<CategoryItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(10),
       margin: EdgeInsets.only(
-        right: isHorizontal ? 10 : 0,
-        bottom: isHorizontal ? 0 : 10,
+        right: widget.isHorizontal ? 10 : 0,
+        bottom: widget.isHorizontal ? 0 : 10,
       ),
-      width: widthItem,
+      width: widget.widthItem,
       decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.grey,
-          width: 1.0,
-        ),
+        border: widget.focus
+            ? Border.all(color: Colors.green, width: 2.0)
+            : Border.all(color: Colors.grey, width: 1.0),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -44,12 +53,15 @@ class CategoryItem extends StatelessWidget {
                 width: 10,
               ),
               Expanded(
-                child: buildCategoryLabel(category),
+                child: buildCategoryLabel(widget.category),
               ),
             ],
           ),
           const Divider(),
-          buildRiskText(content: category['description'], icon: Icons.edit)
+          RiskTextCustomt(
+            content: widget.category['description'],
+            lastIcon: Icons.edit,
+          ),
         ],
       ),
     );
@@ -74,32 +86,6 @@ class CategoryItem extends StatelessWidget {
           fontWeight: FontWeight.bold,
           overflow: TextOverflow.ellipsis,
         ),
-      ),
-    );
-  }
-
-  RichText buildRiskText({
-    required String content,
-    required IconData icon,
-  }) {
-    return RichText(
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: content,
-          ),
-          WidgetSpan(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 2.0,
-              ),
-              child: Icon(
-                icon,
-                size: 15,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
