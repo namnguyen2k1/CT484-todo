@@ -22,11 +22,16 @@ dependencies:
   animated_background: ^2.0.0
   toggle_switch: ^2.0.1
   percent_indicator: ^4.2.2
-  syncfusion_flutter_charts: ^20.3.50
   flutter_native_splash: ^2.2.12
   animated_text_kit: ^4.2.2
   intl: ^0.17.0
   flutter_colorpicker: ^1.0.3
+  slide_countdown: ^0.3.4 # stream_duration: disable
+  stream_duration: ^2.0.4 # stream_duration: disable
+  neon_circular_timer: ^0.0.7
+  widget_circular_animator: ^1.0.0
+  simple_ripple_animation: ^0.0.3
+  animated_bottom_navigation_bar: ^1.1.0
 
 dev_dependencies:
   flutter_test:

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:neon_circular_timer/neon_circular_timer.dart';
 import 'package:stream_duration/stream_duration.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:slide_countdown/slide_countdown.dart';
 import 'package:todoapp/ui/modules/task/task_item.dart';
 import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import 'package:todoapp/ui/shared/dialog_utils.dart';
-import 'package:todoapp/ui/shared/notice_drawer.dart';
-import 'package:todoapp/ui/shared/risk_text.dart';
 
 class AlarmScreen extends StatefulWidget {
   const AlarmScreen({Key? key}) : super(key: key);
@@ -18,34 +16,35 @@ class AlarmScreen extends StatefulWidget {
 class _AlarmScreenState extends State<AlarmScreen> {
   bool _turnOnAlarm = true;
   int _currentTask = 0;
-
-  final GlobalKey<ScaffoldState> _scaffoldAlarmKey = GlobalKey<ScaffoldState>();
-
-  void _openDrawer() {
-    _scaffoldAlarmKey.currentState!.openDrawer();
-  }
+  late final StreamDuration _streamDuration;
 
   final _listTask = FakeData.tasks;
 
   bool _isRunningTimer = true;
-  final CountDownController _timerController = CountDownController();
-  final _listPromodoroTip = <Map<String, dynamic>>[
-    {"name": "Working Time", "content": "Lao dong la vinh quang"},
-    {"name": "Short BreakTime", "content": "Nghi ngoi mot chut"},
-    {"name": "Long BreakTime", "content": "Nghi ngoi mot lat"},
-  ];
-  int _countdownShortBreakTime = 3;
-  final int _durationSecTimes = 3;
 
-  int _selectedPromodoroTip = 0;
+  void _handleOnEndTimer() {
+    setState(() {
+      _isRunningTimer = false;
+    });
+    print('end..');
+  }
 
   @override
   void initState() {
+    _streamDuration = StreamDuration(
+      const Duration(
+        hours: 10,
+      ),
+      onDone: () {
+        print('on done');
+      },
+    );
     super.initState();
   }
 
   @override
   void dispose() {
+    _streamDuration.dispose();
     super.dispose();
   }
 
@@ -54,8 +53,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
     const double heightScroll = 190;
     const double lineWidth = 15;
     return Scaffold(
-      key: _scaffoldAlarmKey,
-      drawer: const AlarmDrawer(),
       appBar: buildAlarmAppBar(),
       body: ListView(
         children: [
@@ -73,162 +70,100 @@ class _AlarmScreenState extends State<AlarmScreen> {
       children: [
         Container(
           padding: const EdgeInsets.all(10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: const [
-                  Icon(Icons.timer),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    'Pomoron Timer',
-                    style: TextStyle(color: Colors.teal),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  _isRunningTimer
-                      ? IconButton(
-                          iconSize: 30,
-                          onPressed: () {
-                            _timerController.pause();
-                            setState(() {
-                              _isRunningTimer = false;
-                            });
-                            print('pause');
-                          },
-                          icon: const Icon(Icons.stop_circle),
-                        )
-                      : IconButton(
-                          iconSize: 30,
-                          onPressed: () {
-                            _timerController.resume();
-                            print('play');
-                            setState(() {
-                              _isRunningTimer = true;
-                            });
-                          },
-                          icon: const Icon(Icons.play_circle),
-                        ),
-                  IconButton(
-                    iconSize: 30,
-                    onPressed: () {
-                      _timerController.restart();
-                      _isRunningTimer = true;
-                    },
-                    icon: const Icon(Icons.restart_alt),
-                  ),
-                ],
-              ),
-            ],
+          child: const Text(
+            'Pomorono',
+            style: TextStyle(color: Colors.teal),
           ),
         ),
+        const Divider(),
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.only(
-                top: 10,
-                bottom: 10,
-                left: 20,
-                right: 10,
-              ),
-              child: NeonCircularTimer(
-                onStart: () {
-                  setState(() {
-                    if (_selectedPromodoroTip == 2) {
-                      _selectedPromodoroTip = 0;
-                      _countdownShortBreakTime = 3;
-                    }
-
-                    if (_countdownShortBreakTime == 0) {
-                      _selectedPromodoroTip = 2;
-                      return;
-                    }
-
-                    if (_selectedPromodoroTip == 0) {
-                      _selectedPromodoroTip = 1;
-                      _countdownShortBreakTime = _countdownShortBreakTime - 1;
-                      return;
-                    } else if (_selectedPromodoroTip == 1) {
-                      _selectedPromodoroTip = 0;
-                      return;
-                    }
-                  });
-                },
-                onComplete: () {
-                  _timerController.restart();
-                },
-                textFormat: TextFormat.HH_MM_SS,
-                textStyle: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-                width: 100,
-                controller: _timerController,
-                duration: _durationSecTimes,
-                strokeWidth: 10,
-                isTimerTextShown: true,
-                neumorphicEffect: false,
-                // outerStrokeColor: Colors.grey.shade100,
-                innerFillGradient: LinearGradient(colors: [
-                  Colors.greenAccent.shade200,
-                  Colors.blueAccent.shade400
-                ]),
-                neonGradient: LinearGradient(colors: [
-                  Colors.greenAccent.shade200,
-                  Colors.blueAccent.shade400
-                ]),
-                strokeCap: StrokeCap.round,
-                innerFillColor: Colors.transparent,
-                backgroudColor: Colors.transparent,
-                neonColor: Colors.teal,
-              ),
+            const SizedBox(
+              width: 10,
             ),
             Expanded(
               child: Container(
-                height: 110,
+                alignment: Alignment.center,
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: _selectedPromodoroTip == 0
-                        ? Colors.green
-                        : (_selectedPromodoroTip == 2
-                            ? Colors.black
-                            : Colors.grey),
-                    width: 2.0,
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                margin: const EdgeInsets.only(left: 10, right: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      margin: const EdgeInsets.only(bottom: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.teal,
-                        // border: Border.all(color: Colors.grey, width: 1.0),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                          _listPromodoroTip[_selectedPromodoroTip]['name']),
+                // decoration: BoxDecoration(
+                //   border: Border.all(color: Colors.grey, width: 0.5),
+                //   borderRadius: BorderRadius.circular(10),
+                // ),
+                child: SlideCountdownSeparated(
+                    width: 50,
+                    duration: const Duration(
+                      hours: 0,
+                      minutes: 0,
+                      seconds: 10,
                     ),
-                    RiskTextCustomt(
-                      content: _listPromodoroTip[_selectedPromodoroTip]
-                          ['content'],
-                      lastIcon: Icons.edit,
+                    showZeroValue: true,
+                    streamDuration: _streamDuration,
+                    decoration: const BoxDecoration(
+                      color: Colors.teal,
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
                     )
-                  ],
-                ),
+                    // suffixIcon: Icon(Icons.timer),
+                    ),
               ),
+            ),
+            _isRunningTimer
+                ? IconButton(
+                    onPressed: () {
+                      _streamDuration.pause();
+                      setState(() {
+                        _isRunningTimer = false;
+                      });
+                      print('pause');
+                    },
+                    icon: const Icon(Icons.stop_circle),
+                  )
+                : IconButton(
+                    onPressed: () {
+                      _streamDuration.resume();
+                      print('play');
+                      setState(() {
+                        _isRunningTimer = true;
+                      });
+                    },
+                    icon: const Icon(Icons.play_circle),
+                  ),
+            IconButton(
+              onPressed: () {
+                // _streamDuration.add(const Duration(minutes: 10));
+                _streamDuration.resume();
+                setState(() {
+                  _isRunningTimer = true;
+                });
+              },
+              icon: const Icon(Icons.restart_alt),
             )
           ],
         ),
+        const Divider(),
+        Row(
+          children: [
+            const SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey, width: 0.5),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text('29:59'),
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                print('alarm');
+              },
+              icon: const Icon(Icons.notifications),
+            )
+          ],
+        ),
+        const Divider(),
       ],
     );
   }
@@ -236,12 +171,18 @@ class _AlarmScreenState extends State<AlarmScreen> {
   AppBar buildAlarmAppBar() {
     return AppBar(
       title: const Text('Task Notice'),
-      automaticallyImplyLeading: false,
       actions: [
-        IconButton(
-          icon: const Icon(Icons.settings),
-          tooltip: 'Setting',
-          onPressed: _openDrawer,
+        TextButton.icon(
+          onPressed: () {
+            setState(() {
+              _turnOnAlarm = !_turnOnAlarm;
+            });
+          },
+          icon: Icon(
+            _turnOnAlarm ? Icons.notifications : Icons.notifications_off,
+            color: _turnOnAlarm ? Colors.teal : Colors.red,
+          ),
+          label: const Text(''),
         ),
       ],
     );

@@ -7,6 +7,7 @@ import 'package:todoapp/ui/modules/category/category_item.dart';
 import 'package:todoapp/ui/modules/task/task_item.dart';
 import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import 'package:todoapp/ui/shared/rate_star.dart';
+import 'package:widget_circular_animator/widget_circular_animator.dart';
 import '../utilities/convert.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -52,21 +53,28 @@ class _HomeScreenState extends State<HomeScreen> {
         RateStar(starCount: 3)
       ]),
       actions: [
-        Stack(
-          children: [
-            TextButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-              ),
-              child: const CircleAvatar(
-                radius: 20,
-                backgroundImage: AssetImage('assets/images/avatar.gif'),
-              ),
-              onPressed: () {
-                Navigator.pushNamed(context, '/workspace/profile');
-              },
+        TextButton(
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.zero,
+            backgroundColor: Colors.transparent,
+          ),
+          onPressed: () {
+            Navigator.pushNamed(context, '/workspace/profile');
+          },
+          child: const WidgetCircularAnimator(
+            size: 50,
+            innerIconsSize: 1,
+            outerIconsSize: 2,
+            innerAnimation: Curves.bounceOut,
+            outerAnimation: Curves.ease,
+            innerColor: Colors.teal,
+            outerColor: Colors.deepOrange,
+            child: CircleAvatar(
+              radius: 25,
+              backgroundColor: Colors.transparent,
+              backgroundImage: AssetImage('assets/images/avatar.gif'),
             ),
-          ],
+          ),
         )
       ],
     );

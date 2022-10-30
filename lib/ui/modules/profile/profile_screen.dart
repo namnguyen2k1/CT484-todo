@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'package:todoapp/ui/shared/app_settings_drawer.dart';
 import 'package:todoapp/ui/shared/dialog_utils.dart';
 import 'package:todoapp/ui/shared/rate_star.dart';
+import 'package:widget_circular_animator/widget_circular_animator.dart';
 import '../../../state/controllers/auth_controller.dart';
 
 class SalesData {
@@ -22,19 +22,30 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldAppSettingsKey =
+      GlobalKey<ScaffoldState>();
 
   void _openDrawer() {
-    _scaffoldKey.currentState!.openDrawer();
+    _scaffoldAppSettingsKey.currentState!.openDrawer();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     const double coverImageHeight = 200;
     return Scaffold(
-      key: _scaffoldKey,
+      key: _scaffoldAppSettingsKey,
       drawer: const AppDrawer(),
-      drawerEnableOpenDragGesture: false,
+      // drawerEnableOpenDragGesture: false,
       body: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
@@ -49,8 +60,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
               title: const Text("Profile Overview"),
               expandedHeight: 0,
-              floating: true,
-              snap: true,
+              floating: false,
+              snap: false,
               pinned: false,
             )
           ];
@@ -64,7 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Container(
                   color: Colors.grey,
                   child: Image.asset(
-                    'assets/images/coverImage.jpg',
+                    'assets/images/cover_image_2.jpg',
                     width: double.infinity,
                     height: coverImageHeight,
                     fit: BoxFit.fitWidth,
@@ -203,11 +214,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Container buildProfileInformations() {
     return Container(
-      margin: const EdgeInsets.all(10),
+      margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey, width: 0.5),
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
         children: const [
@@ -229,7 +240,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Container buildProfileStatistical() {
     return Container(
-      margin: const EdgeInsets.all(10),
+      margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey, width: 0.5),
@@ -266,10 +277,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const CircleAvatar(
-          radius: 50,
-          backgroundColor: Colors.transparent,
-          backgroundImage: AssetImage('assets/images/avatar.gif'),
+        const WidgetCircularAnimator(
+          size: 100,
+          innerAnimation: Curves.bounceOut,
+          outerAnimation: Curves.ease,
+          innerColor: Colors.teal,
+          outerColor: Colors.purpleAccent,
+          child: CircleAvatar(
+            radius: 50,
+            backgroundColor: Colors.transparent,
+            backgroundImage: AssetImage('assets/images/avatar.gif'),
+          ),
         ),
         const SizedBox(
           width: 10,
@@ -332,35 +350,6 @@ class buildTextInformation extends StatelessWidget {
               ),
               Text(fieldContent)
             ],
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class buildGraphActivity extends StatelessWidget {
-  const buildGraphActivity({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      child: SfCartesianChart(
-        primaryXAxis: CategoryAxis(),
-        series: <LineSeries<SalesData, String>>[
-          LineSeries<SalesData, String>(
-            dataSource: <SalesData>[
-              SalesData('Jan', 10),
-              SalesData('Feb', 2),
-              SalesData('Mar', 6),
-              SalesData('Apr', 9),
-              SalesData('May', 15)
-            ],
-            xValueMapper: (SalesData sales, _) => sales.year,
-            yValueMapper: (SalesData sales, _) => sales.sales,
           )
         ],
       ),

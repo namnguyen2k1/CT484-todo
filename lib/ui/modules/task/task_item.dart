@@ -47,9 +47,10 @@ class _TaskItemState extends State<TaskItem> {
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: Text(
                   widget.item['name'],
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     overflow: TextOverflow.ellipsis,
+                    color: Theme.of(context).textTheme.bodyText1!.color,
                   ),
                 ),
               ),
@@ -102,12 +103,17 @@ class _TaskItemState extends State<TaskItem> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      children: const [
-                        Icon(Icons.timer),
-                        SizedBox(
+                      children: [
+                        const Icon(Icons.timer),
+                        const SizedBox(
                           width: 10,
                         ),
-                        Text('10:00 AM -> 17:00 PM'),
+                        Text(
+                          '10:00 AM -> 17:00 PM',
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyText1!.color,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simple_ripple_animation/simple_ripple_animation.dart';
 import 'package:todoapp/ui/modules/category/category_item.dart';
 import 'package:todoapp/ui/modules/tip/tip_item.dart';
 import 'package:todoapp/ui/modules/utilities/fake_data.dart';
@@ -34,11 +35,11 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       final int currentTab = _tabController.index;
       if (currentTab == 0) {
         setState(() {
-          _selectedTask = -1;
+          _selectedCategory = -1;
         });
       } else if (currentTab == 1) {
         setState(() {
-          _selectedCategory = -1;
+          _selectedTask = -1;
         });
       } else {
         setState(() {});
@@ -93,29 +94,31 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       padding: const EdgeInsets.all(10),
       labelPadding: EdgeInsets.zero,
       isScrollable: false,
-      // labelColor: Colors.yellow,
-      // indicatorColor: Colors.black,
       indicatorWeight: 2,
-      // unselectedLabelColor: Colors.black,
-      indicator: const BoxDecoration(
-        borderRadius: BorderRadius.all(
+      unselectedLabelColor: Colors.black,
+      indicator: BoxDecoration(
+        borderRadius: const BorderRadius.all(
           Radius.circular(10.0),
         ),
-        color: Colors.teal,
+        color: Theme.of(context).primaryTextTheme.titleLarge!.color,
       ),
       tabs: [
         Tab(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
+            children: [
               Icon(
                 Icons.today,
+                color: Theme.of(context).primaryColor,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               Text(
                 'Today',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                ),
               ),
             ],
           ),
@@ -123,24 +126,40 @@ class _ScheduleScreenState extends State<ScheduleScreen>
         Tab(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(Icons.category),
-              SizedBox(
+            children: [
+              Icon(
+                Icons.category,
+                color: Theme.of(context).primaryColor,
+              ),
+              const SizedBox(
                 width: 10,
               ),
-              Text('Category'),
+              Text(
+                'Category',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
             ],
           ),
         ),
         Tab(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(Icons.tips_and_updates),
-              SizedBox(
+            children: [
+              Icon(
+                Icons.tips_and_updates,
+                color: Theme.of(context).primaryColor,
+              ),
+              const SizedBox(
                 width: 10,
               ),
-              Text('Tip'),
+              Text(
+                'Tip',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
             ],
           ),
         )
@@ -150,21 +169,33 @@ class _ScheduleScreenState extends State<ScheduleScreen>
 
   Widget? createFloatingActionButtonForEachTab({required int currentTab}) {
     if (currentTab == 0) {
-      return FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/workspace/schedule/todo');
-        },
-        backgroundColor: Colors.teal,
-        child: const Icon(Icons.post_add),
+      return RippleAnimation(
+        color: Colors.teal,
+        repeat: true,
+        minRadius: 30,
+        ripplesCount: 6,
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.pushNamed(context, '/workspace/schedule/todo');
+          },
+          backgroundColor: Colors.teal,
+          child: const Icon(Icons.post_add),
+        ),
       );
     }
     if (currentTab == 1) {
-      return FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/workspace/home/category');
-        },
-        backgroundColor: Colors.teal,
-        child: const Icon(Icons.playlist_add),
+      return RippleAnimation(
+        color: Colors.deepOrange,
+        repeat: true,
+        minRadius: 30,
+        ripplesCount: 6,
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.pushNamed(context, '/workspace/home/category');
+          },
+          backgroundColor: Colors.deepOrange,
+          child: const Icon(Icons.playlist_add),
+        ),
       );
     }
     return null;

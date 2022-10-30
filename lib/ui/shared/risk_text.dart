@@ -17,6 +17,9 @@ class RiskTextCustomt extends StatelessWidget {
         children: [
           TextSpan(
             text: content,
+            style: TextStyle(
+              color: Theme.of(context).textTheme.bodyText1!.color,
+            ),
           ),
           WidgetSpan(
             child: Padding(

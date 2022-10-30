@@ -1,3 +1,8 @@
+import 'dart:developer';
+
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+// import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+// import 'package:floating_bottom_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import '../../screens.dart';
 
@@ -18,13 +23,20 @@ class WorkspaceScreen extends StatefulWidget {
 }
 
 class _WorkspaceScreenState extends State<WorkspaceScreen> {
-  // int selectedScreenIndex = Provider.of<AppSettingsController>(context).selectedNavigationBar;
-  int selectedScreenIndex = 0;
+  // int _selectedScreenIndex = Provider.of<AppSettingsController>(context).selectedNavigationBar;
+  int _selectedScreenIndex = 0;
   void _handleOnItemTapped(int index) {
     setState(() {
-      selectedScreenIndex = index;
+      _selectedScreenIndex = index;
     });
   }
+
+  final List<IconData> _listIcon = [
+    Icons.home_work,
+    Icons.sticky_note_2,
+    Icons.notifications,
+    Icons.account_circle
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -36,69 +48,28 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
     return Scaffold(
       body: Center(
-        child: WorkspaceScreen._screenOptions.elementAt(selectedScreenIndex),
+        child: WorkspaceScreen._screenOptions.elementAt(_selectedScreenIndex),
       ),
-      bottomNavigationBar: NavigationBarTheme(
-        data: NavigationBarThemeData(
-          // indicatorColor: selectedBackgroundColorIcon,
-          // backgroundColor: backgroundColorNavigationBar,
-          surfaceTintColor: Colors.red,
-          labelTextStyle: MaterialStateProperty.all(
-            const TextStyle(
-              fontWeight: FontWeight.bold,
-              // color: colorLabel,
-            ),
-          ),
-        ),
-        child: NavigationBar(
-          height: 65,
-          labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-          animationDuration: animationDurationTap,
-          onDestinationSelected: _handleOnItemTapped,
-          selectedIndex: selectedScreenIndex,
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(
-                Icons.home_work_outlined,
-              ),
-              selectedIcon: Icon(
-                Icons.home_work,
-                // color: selectedColorIcon,
-              ),
-              label: 'Home',
-            ),
-            NavigationDestination(
-              icon: Icon(
-                Icons.sticky_note_2_outlined,
-              ),
-              selectedIcon: Icon(
-                Icons.sticky_note_2,
-                // color: selectedColorIcon,
-              ),
-              label: 'Schedule',
-            ),
-            NavigationDestination(
-              selectedIcon: Icon(
-                Icons.notifications,
-                // color: selectedColorIcon,
-              ),
-              icon: Icon(
-                Icons.notifications_outlined,
-              ),
-              label: 'Alarm',
-            ),
-            NavigationDestination(
-              selectedIcon: Icon(
-                Icons.account_circle,
-                // color: selectedColorIcon,
-              ),
-              icon: Icon(
-                Icons.account_circle_outlined,
-              ),
-              label: 'Profile',
-            ),
-          ],
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/workspace/schedule/todo');
+        },
+        child: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: AnimatedBottomNavigationBar(
+        backgroundColor: Theme.of(context).backgroundColor,
+        activeColor: Colors.deepOrange,
+        icons: _listIcon,
+        activeIndex: _selectedScreenIndex,
+        gapLocation: GapLocation.center,
+        notchSmoothness: NotchSmoothness.defaultEdge,
+        leftCornerRadius: 30,
+        rightCornerRadius: 30,
+        onTap: (index) {
+          _handleOnItemTapped(index);
+        },
+        //other params
       ),
     );
   }
