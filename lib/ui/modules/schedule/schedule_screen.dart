@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_ripple_animation/simple_ripple_animation.dart';
+import 'package:todoapp/state/controllers/category_controller.dart';
+import 'package:todoapp/state/controllers/task_controller.dart';
+import 'package:todoapp/state/models/task_model.dart';
 import 'package:todoapp/ui/modules/category/category_item.dart';
 import 'package:todoapp/ui/modules/tip/tip_item.dart';
 import 'package:todoapp/ui/modules/utilities/fake_data.dart';
@@ -21,6 +25,8 @@ class _ScheduleScreenState extends State<ScheduleScreen>
   late TabController _tabController;
   final int _initialIndex = 0;
   final int _tabsCount = 3;
+
+  final List<Map<String, dynamic>> _listTip = FakeData.tips;
 
   @override
   void initState() {
@@ -52,10 +58,6 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     _tabController.dispose();
     super.dispose();
   }
-
-  final List<Map<String, dynamic>> _listTask = FakeData.tasks;
-  final List<Map<String, dynamic>> _listTip = FakeData.tips;
-  final List<Map<String, dynamic>> _listCategory = FakeData.categories;
 
   @override
   Widget build(BuildContext context) {
@@ -175,6 +177,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
         minRadius: 30,
         ripplesCount: 6,
         child: FloatingActionButton(
+          heroTag: "button1",
           onPressed: () {
             Navigator.pushNamed(context, '/workspace/schedule/todo');
           },
@@ -190,6 +193,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
         minRadius: 30,
         ripplesCount: 6,
         child: FloatingActionButton(
+          heroTag: "button2",
           onPressed: () {
             Navigator.pushNamed(context, '/workspace/home/category');
           },
@@ -202,48 +206,56 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     // Not created fab for 2 index deliberately
   }
 
-  ListView buildDailyTask(BuildContext context) {
+  Widget buildDailyTask(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
-    return ListView.builder(
-      itemCount: _listTask.length,
-      itemBuilder: (BuildContext context, int index) {
-        final bool isMatch = _selectedTask == index;
-        return Container(
-          padding: const EdgeInsets.all(10),
-          width: deviceSize.width,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Theme.of(context).backgroundColor,
-                    padding: EdgeInsets.zero,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _selectedTask = index;
-                    });
-                  },
-                  child: TaskItem(
-                    item: _listTask[index],
-                    focus: isMatch,
-                  ),
-                ),
-              ),
-              isMatch
-                  ? buildTaskControlButton(context)
-                  : const SizedBox(
-                      width: 0,
+
+    return Consumer<TaskController>(
+      builder: (context, taskController, child) {
+        final listTask = taskController.allItems;
+        print('local task: ${listTask.toString()}');
+        return ListView.builder(
+          itemCount: listTask.length,
+          itemBuilder: (BuildContext context, int index) {
+            final bool isMatch = _selectedTask == index;
+            return Container(
+              padding: const EdgeInsets.all(10),
+              width: deviceSize.width,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        foregroundColor: Theme.of(context).backgroundColor,
+                        padding: EdgeInsets.zero,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _selectedTask = index;
+                        });
+                      },
+                      child: TaskItem(
+                        item: listTask[index],
+                        focus: isMatch,
+                      ),
                     ),
-            ],
-          ),
+                  ),
+                  isMatch
+                      ? buildTaskControlButton(context, listTask, index)
+                      : const SizedBox(
+                          width: 0,
+                        ),
+                ],
+              ),
+            );
+          },
         );
       },
     );
   }
 
-  Row buildTaskControlButton(BuildContext context) {
+  Row buildTaskControlButton(
+      BuildContext context, List<TaskModel> listTask, int index) {
     return Row(
       children: [
         const SizedBox(
@@ -281,7 +293,9 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                   'Hành động không thể phục hồi',
                 );
                 if (isAccept != false) {
-                  print('delete task');
+                  context.read<TaskController>().deleteItemById(
+                        listTask[index].id,
+                      );
                 }
               },
               icon: const Icon(
@@ -311,7 +325,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
               onPressed: () {
-                if (_selectedTask == _listTask.length - 1) return;
+                if (_selectedTask == listTask.length - 1) return;
                 setState(() {
                   _selectedTask = _selectedTask + 1;
                 });
@@ -326,89 +340,99 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     );
   }
 
-  ListView buildCategory(BuildContext context) {
+  Widget buildCategory(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
-
-    return ListView.builder(
-      itemCount: _listCategory.length,
-      itemBuilder: (BuildContext context, int index) {
-        final bool isMatch = _selectedCategory == index;
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _selectedCategory = index;
-                });
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context).backgroundColor,
-                padding: EdgeInsets.zero,
-              ),
-              child: CategoryItem(
-                category: _listCategory[index],
-                widthItem:
-                    isMatch ? deviceSize.width * 0.85 : deviceSize.width - 20,
-                isHorizontal: false,
-                focus: isMatch,
-              ),
-            ),
-            isMatch
-                ? Row(
-                    children: [
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Consumer<CategoryController>(
+      builder: (context, categoryController, child) {
+        final listCategory = categoryController.allItems;
+        print('local category: ${listCategory.toString()}');
+        return ListView.builder(
+          itemCount: listCategory.length,
+          itemBuilder: (BuildContext context, int index) {
+            final bool isMatch = _selectedCategory == index;
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _selectedCategory = index;
+                    });
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: Theme.of(context).backgroundColor,
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: CategoryItem(
+                    item: listCategory[index],
+                    widthItem: isMatch
+                        ? deviceSize.width * 0.85
+                        : deviceSize.width - 20,
+                    isHorizontal: false,
+                    focus: isMatch,
+                  ),
+                ),
+                isMatch
+                    ? Row(
                         children: [
                           const SizedBox(
-                            height: 10,
+                            width: 10,
                           ),
-                          IconButton(
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            onPressed: () {
-                              Navigator.pushNamed(
-                                context,
-                                '/workspace/schedule/todo',
-                              );
-                            },
-                            icon: const Icon(
-                              Icons.edit,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          IconButton(
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            onPressed: () async {
-                              final bool? isAccept = await showConfirmDialog(
-                                  context,
-                                  'Bạn muốn xoá Task này?',
-                                  'Hành động không thể phục hồi');
-                              if (isAccept != false) {
-                                print('delete task');
-                              }
-                            },
-                            icon: const Icon(
-                              Icons.delete,
-                            ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/workspace/schedule/todo',
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.edit,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                onPressed: () async {
+                                  final bool? isAccept =
+                                      await showConfirmDialog(
+                                          context,
+                                          'Bạn muốn xoá Task này?',
+                                          'Hành động không thể phục hồi');
+                                  if (isAccept != false) {
+                                    print('delete task');
+                                    await categoryController.deleteItem(
+                                      listCategory[index].id,
+                                    );
+                                  }
+                                },
+                                icon: const Icon(
+                                  Icons.delete,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
+                      )
+                    : const SizedBox(
+                        width: 0,
                       ),
-                    ],
-                  )
-                : const SizedBox(
-                    width: 0,
-                  ),
-          ],
+              ],
+            );
+          },
+          padding: const EdgeInsets.all(10),
         );
       },
-      padding: const EdgeInsets.all(10),
     );
   }
 

@@ -1,21 +1,49 @@
 import 'package:flutter/material.dart';
+
 import 'package:todoapp/ui/shared/dialog_utils.dart';
 import 'package:todoapp/ui/shared/rate_star.dart';
-
 import '../../shared/risk_text.dart';
+import '../../../state/models/task_model.dart';
 
 class TaskItem extends StatefulWidget {
-  final Map<String, dynamic> item;
+  final TaskModel? item;
   final bool focus;
 
-  const TaskItem({super.key, required this.item, required this.focus});
+  const TaskItem({super.key, this.item, required this.focus});
 
   @override
   State<TaskItem> createState() => _TaskItemState();
 }
 
 class _TaskItemState extends State<TaskItem> {
-  bool _completed = false;
+  String _id = '-1';
+  String _categoryId = '-1';
+  String _name = 'default task name';
+  int _star = 1;
+  String _color = '4294940672';
+  String _description = 'default description';
+  String _imageUrl = 'assets/images/splash_icon.png';
+  String _startTime = '31/10/2022';
+  String _finishTime = '1/11/2022';
+  bool _isCompleted = false;
+
+  @override
+  void initState() {
+    final item = widget.item;
+    if (item != null) {
+      _id = item.id;
+      _categoryId = item.categoryId;
+      _name = item.name;
+      _star = item.star;
+      _color = item.color;
+      _description = item.description;
+      _imageUrl = item.imageUrl;
+      _startTime = item.startTime;
+      _finishTime = item.finishTime;
+      _isCompleted = item.isCompleted;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +68,13 @@ class _TaskItemState extends State<TaskItem> {
                   maxWidth: deviceSize.width * 0.4,
                 ),
                 decoration: BoxDecoration(
-                  color: Color(int.parse(widget.item['color'])),
+                  color: Color(int.parse(_color)),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: Text(
-                  widget.item['name'],
+                  _name,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     overflow: TextOverflow.ellipsis,
@@ -56,7 +84,7 @@ class _TaskItemState extends State<TaskItem> {
               ),
               Row(
                 children: [
-                  RateStar(starCount: widget.item['star']),
+                  RateStar(starCount: _star),
                   const SizedBox(
                     width: 10,
                   ),
@@ -71,12 +99,12 @@ class _TaskItemState extends State<TaskItem> {
                       );
                       if (finshed!) {
                         setState(() {
-                          _completed = true;
+                          _isCompleted = true;
                         });
                       }
                     },
                     icon: Icon(
-                      _completed ? Icons.check_circle : Icons.circle_outlined,
+                      _isCompleted ? Icons.check_circle : Icons.circle_outlined,
                     ),
                   ),
                 ],
@@ -91,7 +119,7 @@ class _TaskItemState extends State<TaskItem> {
                 width: 70,
                 height: 70,
                 child: Image.asset(
-                  'assets/images/splash_icon.png',
+                  _imageUrl,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -109,7 +137,7 @@ class _TaskItemState extends State<TaskItem> {
                           width: 10,
                         ),
                         Text(
-                          '10:00 AM -> 17:00 PM',
+                          '$_startTime AM -> $_finishTime PM',
                           style: TextStyle(
                             color: Theme.of(context).textTheme.bodyText1!.color,
                           ),
@@ -130,7 +158,7 @@ class _TaskItemState extends State<TaskItem> {
                       ),
                       padding: const EdgeInsets.all(10),
                       child: RiskTextCustomt(
-                        content: widget.item['description'],
+                        content: _description,
                         lastIcon: Icons.edit,
                       ),
                     ),

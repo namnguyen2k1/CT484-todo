@@ -1,6 +1,6 @@
 class TaskModel {
-  final int id;
-  final int categoryId;
+  final String id;
+  final String categoryId;
   final String name;
   final int star;
   final String color;
@@ -24,8 +24,8 @@ class TaskModel {
   });
 
   TaskModel copyWith({
-    int? id,
-    int? categoryId,
+    String? id,
+    String? categoryId,
     String? name,
     int? star,
     String? color,
@@ -49,25 +49,33 @@ class TaskModel {
     );
   }
 
-  // Map<String, dynamic> toJson() {
-  //   return {
-  //     'name': name,
-  //     'description': description,
-  //     'imageUrl': imageUrl,
-  //     'startTime': startTime,
-  //     'finishTime': finishTime,
-  //   };
-  // }
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'categoryId': categoryId,
+      'name': name,
+      'star': star,
+      'color': color,
+      'description': description,
+      'imageUrl': imageUrl,
+      'startTime': startTime,
+      'finishTime': finishTime,
+      'isCompleted': isCompleted,
+    };
+  }
 
-  // static TaskModel fromJson(Map<String, dynamic> json) {
-  //   return TaskModel(
-  //     id: json['id'],
-  //     categoryId: json['categoryId'],
-  //     name: json['name'],
-  //     description: json['description'],
-  //     imageUrl: json['imageUrl'],
-  //     startTime: json['startTime'],
-  //     finishTime: json['finishTime'],
-  //   );
-  // }
+  static TaskModel fromJson(Map<String, dynamic> json) {
+    return TaskModel(
+      id: json['id'] as String,
+      categoryId: json['categoryId'] as String,
+      name: json['name'] as String,
+      star: json['star'] as int,
+      color: json['color'] as String,
+      description: json['description'] as String,
+      imageUrl: json['imageUrl'] as String,
+      startTime: json['startTime'] as String,
+      finishTime: json['finishTime'] as String,
+      isCompleted: json['isCompleted'] as bool,
+    );
+  }
 }

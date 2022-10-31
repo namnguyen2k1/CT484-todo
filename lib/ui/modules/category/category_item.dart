@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:todoapp/state/models/category_model.dart';
 
 import '../../shared/risk_text.dart';
 
 class CategoryItem extends StatefulWidget {
-  final Map<String, dynamic> category;
+  final CategoryModel? item;
   final double widthItem;
   final bool isHorizontal;
   final bool focus;
 
   const CategoryItem({
     super.key,
-    required this.category,
+    this.item,
     required this.widthItem,
     required this.isHorizontal,
     required this.focus,
@@ -21,6 +22,27 @@ class CategoryItem extends StatefulWidget {
 }
 
 class _CategoryItemState extends State<CategoryItem> {
+  String _id = '-1';
+  String _code = 'default';
+  String _name = 'default category name';
+  String _description = 'default category description';
+  String _color = 'default category color';
+  String _createdAt = '31/10/2022';
+
+  @override
+  void initState() {
+    final item = widget.item;
+    if (item != null) {
+      _id = item.id;
+      _code = item.code;
+      _name = item.name;
+      _description = item.description;
+      _color = item.color;
+      _createdAt = item.createdAt;
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -53,13 +75,13 @@ class _CategoryItemState extends State<CategoryItem> {
                 width: 10,
               ),
               Expanded(
-                child: buildCategoryLabel(widget.category),
+                child: buildCategoryLabel(_name, _color),
               ),
             ],
           ),
           const Divider(),
           RiskTextCustomt(
-            content: widget.category['description'],
+            content: _description,
             lastIcon: Icons.edit,
           ),
         ],
@@ -67,7 +89,7 @@ class _CategoryItemState extends State<CategoryItem> {
     );
   }
 
-  Container buildCategoryLabel(Map<String, dynamic> item) {
+  Container buildCategoryLabel(String name, String color) {
     return Container(
       padding: const EdgeInsets.symmetric(
         vertical: 10,
@@ -75,13 +97,13 @@ class _CategoryItemState extends State<CategoryItem> {
       ),
       decoration: BoxDecoration(
         color: Color(
-          int.parse(item['color']),
+          int.parse(color),
         ),
         border: Border.all(color: Colors.black, width: 1.0),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
-        '${item['title']}',
+        name,
         style: const TextStyle(
           fontWeight: FontWeight.bold,
           overflow: TextOverflow.ellipsis,

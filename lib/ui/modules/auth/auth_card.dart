@@ -64,6 +64,12 @@ class _AuthCardState extends State<AuthCard> {
     _isSubmitting.value = false;
   }
 
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   void _switchAuthMode() {
     if (_authMode == AuthMode.login) {
       setState(() {

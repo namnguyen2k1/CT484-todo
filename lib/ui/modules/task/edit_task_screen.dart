@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
-import 'package:todoapp/ui/shared/dialog_utils.dart';
-import 'package:todoapp/ui/shared/rate_star.dart';
+import 'package:todoapp/state/controllers/category_controller.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
+import 'package:todoapp/ui/shared/dialog_utils.dart';
+import 'package:todoapp/ui/shared/rate_star.dart';
+import 'package:uuid/uuid.dart';
 import '../../../state/models/task_model.dart';
 import '../../../state/controllers/task_controller.dart';
 import '../../shared/response_message.dart';
@@ -18,8 +20,8 @@ class EditTaskScreen extends StatefulWidget {
   }) {
     if (todo == null) {
       this.todo = TaskModel(
-        id: -1,
-        categoryId: -1,
+        id: '-1',
+        categoryId: '-1',
         name: '',
         star: 1,
         color: "4294940672",
@@ -41,12 +43,27 @@ class EditTaskScreen extends StatefulWidget {
 }
 
 class _EditTaskScreenState extends State<EditTaskScreen> {
-  final _imageUrlController = TextEditingController();
+  final _taskTextEditingController = TextEditingController();
   final _imageUrlFocusNode = FocusNode();
-  final _editForm = GlobalKey<FormState>();
+  final GlobalKey<FormState> _taskFormKey = GlobalKey();
   late TaskModel _editedTodo;
   var _isLoading = false;
   int _starCount = 1;
+  Color _selectedColor = Colors.white;
+  int _selectedRank = 0;
+
+  final Map<String, dynamic> _formData = {
+    'id': '-1',
+    'categoryId': '-1',
+    'name': '',
+    'star': 1,
+    'color': "4294940672",
+    'description': '',
+    'imageUrl': '',
+    'startTime': DateTime.now().day.toString(),
+    'finishTime': DateTime.now().day.toString(),
+    'isCompleted': false,
+  };
 
   bool _isValidImageUrl(String value) {
     return (value.startsWith('http') || value.startsWith('https')) &&
@@ -55,57 +72,38 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             value.endsWith('.jpeg'));
   }
 
-  Color _selectedColor = Colors.white;
-  int _selectedRank = 0;
+  Future<void> _handleSaveItem() async {
+    if (!_taskFormKey.currentState!.validate()) {
+      return;
+    }
+    _taskFormKey.currentState!.save();
+    print(_formData.toString());
+    _formData['id'] = const Uuid().v4();
+    await context.read<TaskController>().addItem(
+          TaskModel.fromJson(_formData),
+        );
+  }
 
   @override
   void initState() {
     _imageUrlFocusNode.addListener(() {
       if (!_imageUrlFocusNode.hasFocus) {
-        if (!_isValidImageUrl(_imageUrlController.text)) {
+        if (!_isValidImageUrl(_taskTextEditingController.text)) {
           return;
         }
         setState(() {});
       }
     });
     _editedTodo = widget.todo;
-    _imageUrlController.text = _editedTodo.imageUrl;
+    _taskTextEditingController.text = _editedTodo.imageUrl;
     super.initState();
   }
 
   @override
   void dispose() {
-    _imageUrlController.dispose();
+    _taskTextEditingController.dispose();
     _imageUrlFocusNode.dispose();
     super.dispose();
-  }
-
-  Future<void> _saveForm() async {
-    final isValid = _editForm.currentState!.validate();
-    if (!isValid) {
-      return;
-    }
-    _editForm.currentState!.save();
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final todosController = context.read<TaskController>();
-      if (_editedTodo.id != null) {
-        await todosController.updateTask(_editedTodo);
-      } else {
-        await todosController.addTask(_editedTodo);
-      }
-    } catch (error) {
-      await showAlearDialog(context, '', 'Something went wrong.');
-    }
-    setState(() {
-      _isLoading = false;
-    });
-    if (mounted) {
-      Navigator.of(context).pop();
-    }
   }
 
   Row buildControlButtons(BuildContext context) {
@@ -114,11 +112,12 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       children: [
         ElevatedButton.icon(
           onPressed: () {
+            _handleSaveItem();
             ScaffoldMessengerCustom.showSuccessMessage(
               context,
               'Add Task successfully',
             );
-            Navigator.pop(context);
+            // Navigator.pop(context);
           },
           icon: const Icon(Icons.save),
           label: const Text('Add'),
@@ -161,9 +160,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             return null;
           },
           onSaved: (value) {
-            // _editedTodo = _editedTodo.copyWith(
-            //   name: value,
-            // );
+            _formData['name'] = value!;
           },
         ),
       ],
@@ -197,9 +194,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             return null;
           },
           onSaved: (value) {
-            // _editedTodo = _editedTodo.copyWith(
-            //   description: value,
-            // );
+            _formData['description'] = value!;
           },
         ),
       ],
@@ -216,9 +211,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       ),
       keyboardType: TextInputType.url,
       textInputAction: TextInputAction.done,
-      controller: _imageUrlController,
+      controller: _taskTextEditingController,
       focusNode: _imageUrlFocusNode,
-      onFieldSubmitted: (value) => _saveForm(),
+      // onFieldSubmitted: (value) => _saveForm(),
       validator: (value) {
         if (value!.isEmpty) {
           return 'Please enter a image URL';
@@ -229,14 +224,12 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         return null;
       },
       onSaved: (value) {
-        // _editedTodo = _editedTodo.copyWith(
-        //   imageUrl: value,
-        // );
+        _formData['imageUrl'] = value!;
       },
     );
   }
 
-  Column buildtodoPreview() {
+  Column buildTaskImagePreview() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -257,14 +250,14 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: _imageUrlController.text.isEmpty
+              child: _taskTextEditingController.text.isEmpty
                   ? const Align(
                       alignment: Alignment.center,
                       child: Text('Review'),
                     )
                   : FittedBox(
                       child: Image.network(
-                        _imageUrlController.text,
+                        _taskTextEditingController.text,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -296,7 +289,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           : Padding(
               padding: const EdgeInsets.all(16.0),
               child: Form(
-                key: _editForm,
+                key: _taskFormKey,
                 child: ListView(
                   children: <Widget>[
                     buildNameField(),
@@ -304,7 +297,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                     buildRankField(),
                     buildCategoryList(),
                     buildFieldColor(context),
-                    buildtodoPreview(),
+                    // buildTaskImagePreview(),
                     const Divider(),
                     buildControlButtons(context)
                   ],
@@ -336,6 +329,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                 setState(() {
                   _starCount = rateStar[index];
                   _selectedRank = index;
+                  _formData['star'] = _starCount;
                 });
               },
             ),
@@ -399,6 +393,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                         TextButton(
                           child: const Text('Close'),
                           onPressed: () {
+                            _formData['color'] =
+                                _selectedColor.value.toString();
                             Navigator.pop(context);
                           },
                         ),
@@ -419,40 +415,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   }
 
   Column buildCategoryList() {
-    final _customWidths = <double>[
-      100,
-      100,
-      100,
-      100,
-      100,
-      100,
-      100,
-      100,
-      100,
-      100,
-      100,
-      100,
-      100,
-      100,
-      100
-    ];
-    final _labels = <String>[
-      'Study',
-      'Learn',
-      'More',
-      'Study',
-      'Learn',
-      'More',
-      'Study',
-      'Learn',
-      'More',
-      'Study',
-      'Learn',
-      'More',
-      'Study',
-      'Learn',
-      'More'
-    ];
+    final listCategory = context.read<CategoryController>().allItems;
+    final customWidths = List.generate(listCategory.length, (index) => 100.0);
+    final labels = listCategory.map((item) => item.name).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -465,13 +430,13 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           scrollDirection: Axis.horizontal,
           child: Scrollbar(
             child: ToggleSwitch(
-              customWidths: _customWidths,
+              customWidths: customWidths,
               activeFgColor: Colors.white,
               inactiveBgColor: Colors.grey,
               inactiveFgColor: Colors.white,
-              labels: _labels,
+              labels: labels,
               onToggle: (index) {
-                print('switched to: $index');
+                _formData['categoryId'] = listCategory[index!].id;
               },
             ),
           ),

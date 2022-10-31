@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:todoapp/state/controllers/app_settings_controller.dart';
+import 'package:todoapp/state/controllers/category_controller.dart';
+import 'package:todoapp/state/controllers/task_controller.dart';
 import 'package:todoapp/ui/routes/routes.dart' as route_config;
 
 import './ui/screens.dart';
@@ -23,6 +25,12 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (ctx) => AppSettingsController(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => CategoryController(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => TaskController(),
         ),
       ],
       child: Consumer2<AuthController, AppSettingsController>(

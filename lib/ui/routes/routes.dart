@@ -38,7 +38,7 @@ Route<dynamic> routeController(RouteSettings settings) {
 
     case customCategoryScreen:
       return MaterialPageRoute(
-        builder: (context) => const EditCategoryScreen(),
+        builder: (context) => EditCategoryScreen(null),
       );
     case scheduleScreen:
       return MaterialPageRoute(

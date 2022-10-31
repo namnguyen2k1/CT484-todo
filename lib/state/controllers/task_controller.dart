@@ -4,57 +4,45 @@ import '../services/task_service.dart';
 import '../models/task_model.dart';
 
 class TaskController with ChangeNotifier {
-  List<TaskModel> _items = [];
-  final TaskService _tasksService = TaskService();
+  final _allItems = <TaskModel>[];
+  final TaskService _service = TaskService.instance;
 
-  Future<void> fetchTasks() async {
-    _items = await _tasksService.fetchAllTasks();
+  int get itemCount => _allItems.length;
+  List<TaskModel> get allItems => List.unmodifiable(_allItems);
+
+  Future<void> getAll() async {
+    final items = await _service.getAll();
+    _allItems.clear();
+    _allItems.addAll(items);
     notifyListeners();
   }
 
-  Future<void> addTask(TaskModel task) async {
-    final newTask = await _tasksService.addTask(task);
-    if (newTask != null) {
-      _items.add(newTask);
+  Future<void> addItem(TaskModel item) async {
+    final newItem = await _service.addItem(item);
+    if (newItem != null) {
+      _allItems.add(newItem);
       notifyListeners();
     }
   }
 
-  int get itemCount {
-    return _items.length;
+  TaskModel findById(String id) {
+    return _allItems.firstWhere((item) => item.id == id);
   }
 
-  List<TaskModel> get items {
-    return [..._items];
-  }
-
-  TaskModel findById(int id) {
-    return _items.firstWhere((task) => task.id == id);
-  }
-
-  Future<void> updateTask(TaskModel task) async {
-    final index = _items.indexWhere(
-      (item) => item.id == task.id,
+  Future<void> updateItem(TaskModel newItem) async {
+    final index = _allItems.indexWhere(
+      (i) => i.id == newItem.id,
     );
-    if (index >= 0) {
-      if (await _tasksService.updateTask(task)) {
-        _items[index] = task;
-        notifyListeners();
-      }
-    }
+    _allItems[index] = newItem;
+    notifyListeners();
   }
 
-  Future<void> deleteTask(int id) async {
-    final index = _items.indexWhere(
+  Future<void> deleteItemById(String id) async {
+    final index = _allItems.indexWhere(
       (item) => item.id == id,
     );
-    TaskModel? existingTask = _items[index];
-    _items.removeAt(index);
+    _allItems.removeAt(index);
+    _service.deleteItemById(id);
     notifyListeners();
-
-    if (!await _tasksService.deleteTask(id)) {
-      _items.insert(index, existingTask);
-      notifyListeners();
-    }
   }
 }

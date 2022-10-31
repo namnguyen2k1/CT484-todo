@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:todoapp/state/controllers/app_settings_controller.dart';
+import 'package:todoapp/state/controllers/category_controller.dart';
 
 import 'package:todoapp/ui/modules/category/category_item.dart';
 import 'package:todoapp/ui/modules/task/task_item.dart';
 import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import 'package:todoapp/ui/shared/rate_star.dart';
 import 'package:widget_circular_animator/widget_circular_animator.dart';
+import '../../../state/models/task_model.dart';
 import '../utilities/convert.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,8 +20,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<Map<String, dynamic>> _listCategory = FakeData.categories;
-  final List<Map<String, dynamic>> _listTask = FakeData.tasks;
+  final _listTask = <TaskModel>[];
 
   DateTime _selectedDate = DateTime.now();
 
@@ -98,8 +99,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         Container(
           padding: const EdgeInsets.all(10),
-          child: TaskItem(
-            item: _listTask[0],
+          child: const TaskItem(
+            // item: _listTask[0],
             focus: false,
           ),
         ),
@@ -275,38 +276,43 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Column buildListCategory(double heightCategory, double widthCategory) {
-    List<Widget> listWidgetCategory = [];
+  Widget buildListCategory(double heightCategory, double widthCategory) {
+    return Consumer<CategoryController>(
+      builder: (context, categoryController, child) {
+        final listCategory = categoryController.allItems;
+        List<Widget> listWidgetCategory = [];
 
-    for (var item in _listCategory) {
-      listWidgetCategory.add(CategoryItem(
-        category: item,
-        widthItem: widthCategory,
-        isHorizontal: true,
-        focus: false,
-      ));
-    }
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            children: [
-              const Icon(Icons.view_comfortable),
-              const SizedBox(width: 10),
-              Text('Category (${_listCategory.length})'),
-            ],
-          ),
-        ),
-        Container(
-          padding: const EdgeInsets.all(10),
-          height: heightCategory,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: listWidgetCategory,
-          ),
-        ),
-      ],
+        for (var item in listCategory) {
+          listWidgetCategory.add(CategoryItem(
+            item: item,
+            widthItem: widthCategory,
+            isHorizontal: true,
+            focus: false,
+          ));
+        }
+        return Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  const Icon(Icons.view_comfortable),
+                  const SizedBox(width: 10),
+                  Text('Category (${listCategory.length})'),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(10),
+              height: heightCategory,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: listWidgetCategory,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

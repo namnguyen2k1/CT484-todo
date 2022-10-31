@@ -4,57 +4,44 @@ import '../services/category_service.dart';
 import '../models/category_model.dart';
 
 class CategoryController with ChangeNotifier {
-  List<CategoryModel> _items = [];
-  final CategoryService _categoryService = CategoryService();
+  final _allItems = <CategoryModel>[];
+  final CategoryService _service = CategoryService.instance;
 
-  Future<void> fetchAllCategories() async {
-    _items = await _categoryService.fetchAllCategories();
+  int get itemCount => _allItems.length;
+  List<CategoryModel> get allItems => List.unmodifiable(_allItems);
+
+  Future<void> getAll() async {
+    final items = await _service.getAll();
+    _allItems.clear();
+    _allItems.addAll(items);
     notifyListeners();
   }
 
-  Future<void> addCategory(CategoryModel category) async {
-    final newCategory = await _categoryService.addCategory(category);
-    if (newCategory != null) {
-      _items.add(newCategory);
-      notifyListeners();
-    }
+  Future<void> addItem(CategoryModel item) async {
+    final newItem = await _service.addItem(item);
+    print('in controller: $newItem');
+    _allItems.add(newItem);
+    notifyListeners();
   }
 
-  int get itemCount {
-    return _items.length;
+  CategoryModel findById(String id) {
+    return _allItems.firstWhere((item) => item.id == id);
   }
 
-  List<CategoryModel> get items {
-    return [..._items];
-  }
-
-  CategoryModel findById(int id) {
-    return _items.firstWhere((category) => category.id == id);
-  }
-
-  Future<void> updateCategory(CategoryModel category) async {
-    final index = _items.indexWhere(
-      (item) => item.id == category.id,
+  Future<void> updateCategory(CategoryModel newItem) async {
+    final index = _allItems.indexWhere(
+      (i) => i.id == newItem.id,
     );
-    if (index >= 0) {
-      if (await _categoryService.updateCategory(category)) {
-        _items[index] = category;
-        notifyListeners();
-      }
-    }
+    _allItems[index] = newItem;
+    notifyListeners();
   }
 
-  Future<void> deleteCategory(int id) async {
-    final index = _items.indexWhere(
+  Future<void> deleteItem(String id) async {
+    final index = _allItems.indexWhere(
       (item) => item.id == id,
     );
-    CategoryModel? existingcategory = _items[index];
-    _items.removeAt(index);
+    _service.deleteItemById(id);
+    _allItems.removeAt(index);
     notifyListeners();
-
-    if (!await _categoryService.deleteCategory(id)) {
-      _items.insert(index, existingcategory);
-      notifyListeners();
-    }
   }
 }

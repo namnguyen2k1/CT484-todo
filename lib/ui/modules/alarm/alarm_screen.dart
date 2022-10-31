@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:neon_circular_timer/neon_circular_timer.dart';
-import 'package:stream_duration/stream_duration.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:todoapp/ui/modules/task/task_item.dart';
 import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import 'package:todoapp/ui/shared/dialog_utils.dart';
 import 'package:todoapp/ui/shared/notice_drawer.dart';
 import 'package:todoapp/ui/shared/risk_text.dart';
+
+import '../../../state/models/task_model.dart';
 
 class AlarmScreen extends StatefulWidget {
   const AlarmScreen({Key? key}) : super(key: key);
@@ -25,23 +26,78 @@ class _AlarmScreenState extends State<AlarmScreen> {
     _scaffoldAlarmKey.currentState!.openDrawer();
   }
 
-  final _listTask = FakeData.tasks;
+  final _listTask = <TaskModel>[];
 
   bool _isRunningTimer = true;
   final CountDownController _timerController = CountDownController();
   final _listPromodoroTip = <Map<String, dynamic>>[
-    {"name": "Working Time", "content": "Lao dong la vinh quang"},
-    {"name": "Short BreakTime", "content": "Nghi ngoi mot chut"},
-    {"name": "Long BreakTime", "content": "Nghi ngoi mot lat"},
+    {"name": "Working Time", "content": "Lao dong la vinh quang", 'time': 5},
+    {"name": "Short BreakTime", "content": "Nghi ngoi mot chut", 'time': 1},
+    {"name": "Long BreakTime", "content": "Nghi ngoi mot lat", 'time': 2},
   ];
   int _countdownShortBreakTime = 3;
-  final int _durationSecTimes = 3;
+  int _promodoroTimeCount = 0;
 
   int _selectedPromodoroTip = 0;
 
   @override
   void initState() {
+    // setState(() {
+    //   _durationSecTimes = _listPromodoroTip[0]['time'];
+    // });
+    // _timerController.pause();
     super.initState();
+  }
+
+  void _handleOnStartTimer() {
+    print('---------------------------');
+    print('$_selectedPromodoroTip $_countdownShortBreakTime');
+    setState(() {
+      //work
+      if (_selectedPromodoroTip == 0 && _countdownShortBreakTime == 3) {
+        _selectedPromodoroTip = 1;
+        _countdownShortBreakTime = 2;
+        return;
+      }
+      //relax
+      else if (_selectedPromodoroTip == 1 && _countdownShortBreakTime == 2) {
+        _selectedPromodoroTip = 0;
+        _countdownShortBreakTime = 2;
+        return;
+      }
+      // work
+      else if (_selectedPromodoroTip == 0 && _countdownShortBreakTime == 2) {
+        _selectedPromodoroTip = 1;
+        _countdownShortBreakTime = 1;
+        return;
+        // relax
+      } else if (_selectedPromodoroTip == 1 && _countdownShortBreakTime == 1) {
+        _selectedPromodoroTip = 0;
+        _countdownShortBreakTime = 1;
+        return;
+      }
+      // work
+      else if (_selectedPromodoroTip == 0 && _countdownShortBreakTime == 1) {
+        _selectedPromodoroTip = 2;
+        _countdownShortBreakTime = 0;
+        return;
+        // logn relax
+      } else if (_selectedPromodoroTip == 2 && _countdownShortBreakTime == 0) {
+        _selectedPromodoroTip = 0;
+        _countdownShortBreakTime = 3;
+        return;
+      }
+    });
+
+    // setState(() {
+    //   _durationSecTimes = _listPromodoroTip[_selectedPromodoroTip]['time'];
+    // });
+
+    print(
+      '=> $_selectedPromodoroTip $_countdownShortBreakTime ',
+    );
+
+    // const int temp
   }
 
   @override
@@ -137,26 +193,10 @@ class _AlarmScreenState extends State<AlarmScreen> {
                 right: 10,
               ),
               child: NeonCircularTimer(
+                // onStart: _handleOnStartTimer,
                 onStart: () {
                   setState(() {
-                    if (_selectedPromodoroTip == 2) {
-                      _selectedPromodoroTip = 0;
-                      _countdownShortBreakTime = 3;
-                    }
-
-                    if (_countdownShortBreakTime == 0) {
-                      _selectedPromodoroTip = 2;
-                      return;
-                    }
-
-                    if (_selectedPromodoroTip == 0) {
-                      _selectedPromodoroTip = 1;
-                      _countdownShortBreakTime = _countdownShortBreakTime - 1;
-                      return;
-                    } else if (_selectedPromodoroTip == 1) {
-                      _selectedPromodoroTip = 0;
-                      return;
-                    }
+                    _promodoroTimeCount++;
                   });
                 },
                 onComplete: () {
@@ -169,7 +209,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                 ),
                 width: 100,
                 controller: _timerController,
-                duration: _durationSecTimes,
+                duration: 5,
                 strokeWidth: 10,
                 isTimerTextShown: true,
                 neumorphicEffect: false,
@@ -216,7 +256,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                          _listPromodoroTip[_selectedPromodoroTip]['name']),
+                        '${_listPromodoroTip[_selectedPromodoroTip]['name']} (${_promodoroTimeCount - 1})',
+                      ),
                     ),
                     RiskTextCustomt(
                       content: _listPromodoroTip[_selectedPromodoroTip]
@@ -286,8 +327,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
                 Colors.grey.withOpacity(0.9),
                 BlendMode.saturation,
               ),
-              child: TaskItem(
-                item: _listTask[_currentTask + 1],
+              child: const TaskItem(
+                // item: _listTask[_currentTask + 1],
                 focus: false,
               ),
             ),
@@ -312,7 +353,10 @@ class _AlarmScreenState extends State<AlarmScreen> {
               ),
             ),
           ),
-          TaskItem(item: _listTask[_currentTask], focus: false),
+          const TaskItem(
+            // item: _listTask[_currentTask],
+            focus: false,
+          ),
         ],
       ),
     );
