@@ -173,17 +173,19 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Expanded(
                 child: CircularPercentIndicator(
+                  circularStrokeCap: CircularStrokeCap.round,
                   radius: 60.0,
                   lineWidth: 10.0,
                   percent: 0.9,
-                  center: const Text(
+                  center: Text(
                     "90%",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      color: Theme.of(context).focusColor,
                       fontSize: 20.0,
                     ),
                   ),
-                  backgroundColor: Colors.red,
+                  backgroundColor: Colors.transparent,
                   progressColor: Colors.green,
                 ),
               ),

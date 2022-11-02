@@ -1,6 +1,9 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todoapp/state/controllers/category_controller.dart';
 import '../../screens.dart';
+import '../../shared/dialog_utils.dart';
 
 class WorkspaceScreen extends StatefulWidget {
   static const routeName = '/workspace';
@@ -35,13 +38,22 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final categoryController = context.read<CategoryController>();
     return Scaffold(
       body: Center(
         child: WorkspaceScreen._screenOptions.elementAt(_selectedScreenIndex),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/workspace/schedule/todo');
+          if (categoryController.allItems.isEmpty) {
+            showAlearDialog(
+              context,
+              'Cant create task without creating category',
+              'plese create new category!',
+            );
+          } else {
+            Navigator.pushNamed(context, '/workspace/schedule/todo');
+          }
         },
         child: const Icon(Icons.add),
       ),

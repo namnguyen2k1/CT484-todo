@@ -69,7 +69,7 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
           ),
           const AuthCard(),
-          buildQuickLogin(),
+          if (_listQuickAccount.isNotEmpty) buildQuickLogin(),
         ],
       ),
     );
@@ -93,9 +93,9 @@ class _AuthScreenState extends State<AuthScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Column(
         children: [
-          const Divider(),
+          const SizedBox(height: 10),
           const Text('Quick Login'),
-          const Divider(),
+          const SizedBox(height: 10),
           ...listWidgetLogin,
         ],
       ),

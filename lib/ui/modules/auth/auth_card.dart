@@ -91,7 +91,7 @@ class _AuthCardState extends State<AuthCard> {
       ),
       elevation: 8.0,
       child: Container(
-        height: _authMode == AuthMode.signup ? 320 : 260,
+        height: _authMode == AuthMode.signup ? 340 : 280,
         constraints: BoxConstraints(
           minHeight: _authMode == AuthMode.signup ? 320 : 260,
         ),
@@ -103,11 +103,13 @@ class _AuthCardState extends State<AuthCard> {
             child: Column(
               children: <Widget>[
                 _buildEmailField(),
+                const SizedBox(height: 10),
                 _buildPasswordField(),
-                if (_authMode == AuthMode.signup) _buildPasswordConfirmField(),
-                const SizedBox(
-                  height: 20,
-                ),
+                if (_authMode == AuthMode.signup) ...[
+                  const SizedBox(height: 10),
+                  _buildPasswordConfirmField(),
+                ],
+                const SizedBox(height: 20),
                 ValueListenableBuilder<bool>(
                   valueListenable: _isSubmitting,
                   builder: (context, isSubmitting, child) {
@@ -136,15 +138,16 @@ class _AuthCardState extends State<AuthCard> {
         TextButton(
           onPressed: _switchAuthMode,
           style: TextButton.styleFrom(
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            padding: EdgeInsets.zero,
             textStyle: TextStyle(
               color: Theme.of(context).primaryColor,
             ),
           ),
           child: Text(
             _authMode == AuthMode.login ? 'register' : 'login',
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
+              color: Theme.of(context).focusColor,
             ),
           ),
         ),
@@ -159,7 +162,7 @@ class _AuthCardState extends State<AuthCard> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme.of(context).focusColor,
         padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 10.0),
         textStyle: TextStyle(
           color: Theme.of(context).primaryTextTheme.headline6?.color,

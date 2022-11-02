@@ -193,7 +193,8 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
                 icon: Container(
                   decoration: BoxDecoration(
                     border: index == _selectedIcon
-                        ? Border.all(color: Colors.green, width: 2.0)
+                        ? Border.all(
+                            color: Theme.of(context).focusColor, width: 2.0)
                         : Border.all(color: Colors.transparent, width: 0.0),
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -423,10 +424,20 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_left),
+          label: const Text('Back'),
+        ),
+        const SizedBox(
+          width: 50,
+        ),
         if (_formData['code'] == '') ...[
           ElevatedButton.icon(
             onPressed: _handleAddItem,
-            icon: const Icon(Icons.add),
+            icon: const Icon(Icons.add_circle),
             label: const Text('Add'),
           ),
         ] else ...[
@@ -436,16 +447,6 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
             label: const Text('Save'),
           )
         ],
-        const SizedBox(
-          width: 50,
-        ),
-        ElevatedButton.icon(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.skip_previous),
-          label: const Text('Back'),
-        ),
       ],
     );
   }

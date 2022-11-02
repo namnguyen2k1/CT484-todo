@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:todoapp/state/controllers/app_settings_controller.dart';
 import 'package:todoapp/state/controllers/category_controller.dart';
 import 'package:todoapp/state/controllers/task_controller.dart';
+import 'package:todoapp/state/controllers/timer_controller.dart';
 import 'package:todoapp/ui/routes/routes.dart' as route_config;
 
 import './ui/screens.dart';
@@ -32,6 +33,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (ctx) => TaskController(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => TimerController(),
         ),
       ],
       child: Consumer2<AuthController, AppSettingsController>(
