@@ -217,7 +217,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey, width: 0.5),
+        border:
+            Border.all(color: Theme.of(context).backgroundColor, width: 2.0),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -243,7 +244,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey, width: 0.5),
+        border:
+            Border.all(color: Theme.of(context).backgroundColor, width: 2.0),
         borderRadius: const BorderRadius.all(Radius.circular(10)),
       ),
       child: Column(

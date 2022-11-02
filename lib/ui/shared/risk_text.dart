@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class RiskTextCustomt extends StatelessWidget {
+class RiskTextCustom extends StatelessWidget {
   final String content;
   final IconData lastIcon;
 
-  const RiskTextCustomt({
+  const RiskTextCustom({
     super.key,
     required this.content,
     required this.lastIcon,
@@ -29,6 +29,10 @@ class RiskTextCustomt extends StatelessWidget {
               child: Icon(
                 lastIcon,
                 size: 15,
+                color: Theme.of(context)
+                    .primaryTextTheme
+                    .bodyLarge!
+                    .backgroundColor,
               ),
             ),
           ),

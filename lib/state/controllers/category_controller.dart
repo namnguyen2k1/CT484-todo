@@ -28,20 +28,21 @@ class CategoryController with ChangeNotifier {
     return _allItems.firstWhere((item) => item.id == id);
   }
 
-  Future<void> updateCategory(CategoryModel newItem) async {
+  Future<void> updateItem(CategoryModel newItem) async {
     final index = _allItems.indexWhere(
       (i) => i.id == newItem.id,
     );
     _allItems[index] = newItem;
     notifyListeners();
+    await _service.updateItem(newItem);
   }
 
   Future<void> deleteItem(String id) async {
     final index = _allItems.indexWhere(
       (item) => item.id == id,
     );
-    _service.deleteItemById(id);
     _allItems.removeAt(index);
     notifyListeners();
+    await _service.deleteItemById(id);
   }
 }

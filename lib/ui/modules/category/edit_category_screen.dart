@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:todoapp/state/controllers/category_controller.dart';
+import 'package:todoapp/state/controllers/task_controller.dart';
 import 'package:todoapp/state/models/category_model.dart';
+import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import 'package:uuid/uuid.dart';
 import 'package:provider/provider.dart';
 
@@ -12,17 +14,18 @@ class EditCategoryScreen extends StatefulWidget {
     CategoryModel? category, {
     super.key,
   }) {
-    if (category == null) {
-      this.category = CategoryModel(
-        id: '-1',
-        code: '#123',
-        name: 'default',
-        description: 'default',
-        color: '4294940672',
-        createdAt: '01/11/2022',
-      );
-    } else {
+    if (category != null) {
       this.category = category;
+    } else {
+      this.category = CategoryModel(
+        id: const Uuid().v4(),
+        code: '',
+        name: '',
+        description: '',
+        imageUrl: '',
+        color: Colors.deepOrange.value.toString(),
+        createdAt: DateTime.now().toString(),
+      );
     }
   }
 
@@ -34,17 +37,74 @@ class EditCategoryScreen extends StatefulWidget {
 
 class _EditCategoryScreenState extends State<EditCategoryScreen> {
   bool _isEditing = true;
-  Color _selectedColor = Colors.deepOrange;
-  final Map<String, dynamic> _formData = {
-    'id': const Uuid().v4(),
-    'name': 'default',
-    'code': '#',
-    'description': 'default',
-    'color': '4294940672', // Colors.deepOrange
-    'createdAt': 'default'
+  late Color _selectedColor;
+  Map<String, dynamic> _formData = {
+    'id': '',
+    'name': '',
+    'code': '',
+    'description': '',
+    'imageUrl': FakeData.icons[0]['path'],
+    'color': '',
+    'createdAt': ''
   };
   final GlobalKey<FormState> _formKey = GlobalKey();
   final _categoryTextEditingController = TextEditingController();
+  final _listIcons = FakeData.icons;
+  int _selectedIcon = 0;
+
+  @override
+  initState() {
+    final item = widget.category;
+    _formData = {
+      'id': item.id,
+      'name': item.name,
+      'code': item.code,
+      'description': item.description,
+      'imageUrl': item.imageUrl,
+      'color': item.color,
+      'createdAt': item.createdAt
+    };
+    _selectedColor = Color(int.parse(item.color));
+    for (var index = 0; index < _listIcons.length; index++) {
+      if (_listIcons[index]['path'] == item.imageUrl) {
+        _selectedIcon = index;
+      }
+    }
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _categoryTextEditingController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleAddItem() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    _formKey.currentState!.save();
+    print(_formData.toString());
+    await context
+        .read<CategoryController>()
+        .addItem(CategoryModel.fromJson(_formData));
+
+    // resetForm
+    _formData = {
+      'id': const Uuid().v4(),
+      'name': '',
+      'code': '',
+      'description': '',
+      'color': '',
+      'createdAt': ''
+    };
+    if (mounted) {
+      ScaffoldMessengerCustom.showSuccessMessage(
+        context,
+        'Add Category successfully',
+      );
+    }
+  }
 
   Future<void> _handleSaveItem() async {
     if (!_formKey.currentState!.validate()) {
@@ -52,10 +112,16 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
     }
     _formKey.currentState!.save();
     print(_formData.toString());
-    _formData['id'] = const Uuid().v4();
-    await context.read<CategoryController>().addItem(
-          CategoryModel.fromJson(_formData),
-        );
+    await context
+        .read<CategoryController>()
+        .updateItem(CategoryModel.fromJson(_formData));
+    if (mounted) {
+      Navigator.pop(context);
+      ScaffoldMessengerCustom.showSuccessMessage(
+        context,
+        'Save Category successfully',
+      );
+    }
   }
 
   @override
@@ -64,7 +130,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: const Text('New Category'),
+        title: Text(_formData['code'] == '' ? 'New Category' : 'Edit Category'),
       ),
       body: Form(
         key: _formKey,
@@ -80,6 +146,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
               prefixIcon: Icons.code,
               label: 'Category Code',
             ),
+            buildListIcons(context),
             const Divider(),
             buildFieldDescription(
               prefixIcon: Icons.description,
@@ -92,6 +159,50 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Column buildListIcons(BuildContext context) {
+    const maxSizeImage = 60;
+    final sizeImage =
+        (MediaQuery.of(context).size.width / maxSizeImage).round();
+    return Column(
+      children: [
+        Container(
+          alignment: Alignment.topLeft,
+          padding: const EdgeInsets.all(10),
+          child: const Text('Icon'),
+        ),
+        GridView.count(
+            crossAxisCount: sizeImage,
+            crossAxisSpacing: 5,
+            mainAxisSpacing: 5,
+            physics:
+                const NeverScrollableScrollPhysics(), // to disable GridView's scrolling
+            shrinkWrap: true, // You won't see infinite size error
+            children: _listIcons.map((e) {
+              int index = _listIcons.indexOf(e);
+              return IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  setState(() {
+                    _selectedIcon = index;
+                  });
+                  _formData['imageUrl'] = e['path'];
+                },
+                icon: Container(
+                  decoration: BoxDecoration(
+                    border: index == _selectedIcon
+                        ? Border.all(color: Colors.green, width: 2.0)
+                        : Border.all(color: Colors.transparent, width: 0.0),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: EdgeInsets.zero,
+                  child: Image.asset(e['path']),
+                ),
+              );
+            }).toList()),
+      ],
     );
   }
 
@@ -125,13 +236,6 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
             Expanded(
               child: TextFormField(
                 keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value!.isEmpty || value.length < 3) {
-                    return 'Invalid color!';
-                  }
-                  return null;
-                },
-                initialValue: _selectedColor.value.toString(),
                 onSaved: (value) {
                   _formData['color'] = _selectedColor.value.toString();
                 },
@@ -168,6 +272,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
                           child: const Text('Close'),
                           onPressed: () {
                             Navigator.pop(context);
+                            setState(() {});
                           },
                         ),
                       ],
@@ -175,9 +280,10 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
                   },
                 );
               },
-              child: const Icon(
+              child: Icon(
                 Icons.color_lens,
                 size: 60,
+                color: Theme.of(context).focusColor,
               ),
             ),
           ],
@@ -197,7 +303,8 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
           _isEditing = true;
         });
       },
-      controller: _categoryTextEditingController,
+      // controller: _categoryTextEditingController,
+      initialValue: _formData['name'],
       validator: (value) {
         if (value!.isEmpty || value.length < 3) {
           return 'Invalid name!';
@@ -248,6 +355,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
       onSaved: (value) {
         _formData['code'] = value!;
       },
+      initialValue: _formData['code'],
       keyboardType: TextInputType.name,
       obscureText: false,
       decoration: InputDecoration(
@@ -289,6 +397,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
       onSaved: (value) {
         _formData['description'] = value!;
       },
+      initialValue: _formData['description'],
       keyboardType: TextInputType.name,
       obscureText: false,
       decoration: InputDecoration(
@@ -314,18 +423,19 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ElevatedButton.icon(
-          onPressed: () {
-            _handleSaveItem();
-            ScaffoldMessengerCustom.showSuccessMessage(
-              context,
-              'Add Category successfully',
-            );
-            // Navigator.pop(context);
-          },
-          icon: const Icon(Icons.save),
-          label: const Text('Add'),
-        ),
+        if (_formData['code'] == '') ...[
+          ElevatedButton.icon(
+            onPressed: _handleAddItem,
+            icon: const Icon(Icons.add),
+            label: const Text('Add'),
+          ),
+        ] else ...[
+          ElevatedButton.icon(
+            onPressed: _handleSaveItem,
+            icon: const Icon(Icons.save),
+            label: const Text('Save'),
+          )
+        ],
         const SizedBox(
           width: 50,
         ),

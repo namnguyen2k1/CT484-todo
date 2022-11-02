@@ -2,30 +2,6 @@
 // import '../../../state/models/category_model.dart';
 
 class FakeData {
-  static final List<Map<String, dynamic>> categories = [
-    {
-      "id": 1,
-      "title": "Study",
-      "color": "4294940672",
-      "code": "001",
-      "description": "Hoc an hoc noi hoc goi hoc mo"
-    },
-    {
-      "id": 2,
-      "title": "Eat",
-      "code": "002",
-      "color": "4278238420",
-      "description": "An va ngu la dieu khong the thieu"
-    },
-    {
-      "id": 3,
-      "title": "Relax",
-      "code": "003",
-      "color": "4283215696",
-      "description": "Thu gian hop ly giup tang cuong suc khoe"
-    }
-  ];
-
   static final List<Map<String, dynamic>> tips = [
     {'id': 1, 'name': 'Học không khó, chỉ khó ở bản thân mình'},
     {
@@ -40,38 +16,34 @@ class FakeData {
     },
   ];
 
-  static final List<Map<String, dynamic>> tasks = [
+  static List<Map<String, dynamic>> icons = [
+    {'name': 'always_on_top.png', 'path': 'assets/icons/always_on_top.png'},
+    {'name': 'artist.png', 'path': 'assets/icons/artist.png'},
+    {'name': 'backpack.png', 'path': 'assets/icons/backpack.png'},
+    {'name': 'bed.png', 'path': 'assets/icons/bed.png'},
+    {'name': 'cuisines.png', 'path': 'assets/icons/cuisines.png'},
+    {'name': 'dresser.png', 'path': 'assets/icons/dresser.png'},
+    {'name': 'drying_machine.png', 'path': 'assets/icons/drying_machine.png'},
+    {'name': 'garbage_can.png', 'path': 'assets/icons/garbage_can.png'},
+    {'name': 'gear.png', 'path': 'assets/icons/gear.png'},
+    {'name': 'heart.png', 'path': 'assets/icons/heart.png'},
+    {'name': 'lawn_mower.png', 'path': 'assets/icons/lawn_mower.png'},
+    {'name': 'music_ringtones.png', 'path': 'assets/icons/music_ringtones.png'},
+    {'name': 'photographer.png', 'path': 'assets/icons/photographer.png'},
+    {'name': 'rice_cooker.png', 'path': 'assets/icons/rice_cooker.png'},
     {
-      'id': 1,
-      'categoryId': 1,
-      'name': 'Học Lập Trình Flutter',
-      "star": 3,
-      "color": "4294940672",
-      "description":
-          "Flutter là một framework tuyệt vời để phát triển ứng dụng đa nền tảng",
-      "imageUrl":
-          "https://i.pinimg.com/564x/9d/84/09/9d8409f31712045b9741288acef0059e.jpg",
+      'name': 'service_electricity.png',
+      'path': 'assets/icons/service_electricity.png'
     },
     {
-      'id': 2,
-      'categoryId': 1,
-      'name': 'Học NestJs',
-      "star": 2,
-      "color": "4294940503",
-      "description": "NestJs là một framework tuyệt vời để phát triển server",
-      "imageUrl":
-          "https://i.pinimg.com/564x/c0/e3/9d/c0e39dd52919d4cac185f7c84a53fb17.jpg",
+      'name': 'service_waste_disposal.png',
+      'path': 'assets/icons/service_waste_disposal.png'
     },
-    {
-      'id': 2,
-      'categoryId': 1,
-      'name': 'Học PostgreSQL',
-      "star": 1,
-      "color": "4283215696",
-      "description": "PostgreSQL là hệ quản trị cơ sở dữ liệu mã nguồn mở",
-      "imageUrl":
-          "https://i.pinimg.com/564x/76/00/82/760082bc1a8d81ac06e14dbd8aad6ede.jpg",
-    },
+    {'name': 'shopping_cart.png', 'path': 'assets/icons/shopping_cart.png'},
+    {'name': 'shower.png', 'path': 'assets/icons/shower.png'},
+    {'name': 'study.png', 'path': 'assets/icons/study.png'},
+    {'name': 'tea.png', 'path': 'assets/icons/tea.png'},
+    {'name': 'theme.png', 'path': 'assets/icons/theme.png'},
   ];
 
   //

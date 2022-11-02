@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todoapp/state/controllers/task_controller.dart';
+import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 
 import 'package:todoapp/ui/shared/dialog_utils.dart';
 import 'package:todoapp/ui/shared/rate_star.dart';
@@ -7,24 +10,26 @@ import '../../../state/models/task_model.dart';
 
 class TaskItem extends StatefulWidget {
   final TaskModel? item;
-  final bool focus;
 
-  const TaskItem({super.key, this.item, required this.focus});
+  const TaskItem({
+    super.key,
+    this.item,
+  });
 
   @override
   State<TaskItem> createState() => _TaskItemState();
 }
 
 class _TaskItemState extends State<TaskItem> {
-  String _id = '-1';
-  String _categoryId = '-1';
-  String _name = 'default task name';
+  String _id = '';
+  String _categoryId = '';
+  String _name = '';
   int _star = 1;
-  String _color = '4294940672';
-  String _description = 'default description';
-  String _imageUrl = 'assets/images/splash_icon.png';
-  String _startTime = '31/10/2022';
-  String _finishTime = '1/11/2022';
+  String _color = '';
+  String _description = '';
+  String _imageUrl = FakeData.icons[0]['path'];
+  String _startTime = '';
+  String _finishTime = '';
   bool _isCompleted = false;
 
   @override
@@ -50,125 +55,151 @@ class _TaskItemState extends State<TaskItem> {
     final deviceSize = MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.transparent,
-        border: widget.focus
-            ? Border.all(color: Colors.green, width: 2.0)
-            : Border.all(color: Colors.grey, width: 1.0),
+        color: Color(int.parse(_color)),
         borderRadius: BorderRadius.circular(10),
       ),
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(5),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                constraints: BoxConstraints(
-                  minWidth: deviceSize.width * 0.4,
-                  maxWidth: deviceSize.width * 0.4,
-                ),
-                decoration: BoxDecoration(
-                  color: Color(int.parse(_color)),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: Text(
-                  _name,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    overflow: TextOverflow.ellipsis,
-                    color: Theme.of(context).textTheme.bodyText1!.color,
-                  ),
-                ),
-              ),
-              Row(
-                children: [
-                  RateStar(starCount: _star),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  IconButton(
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    onPressed: () async {
-                      final bool? finshed = await showConfirmDialog(
-                        context,
-                        'Đánh dấu hoành thành công việc?',
-                        DateTime.now().toString(),
-                      );
-                      if (finshed!) {
-                        setState(() {
-                          _isCompleted = true;
-                        });
-                      }
-                    },
-                    icon: Icon(
-                      _isCompleted ? Icons.check_circle : Icons.circle_outlined,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+          buildTaskHeader(deviceSize, context),
+          const SizedBox(
+            height: 5,
           ),
-          const Divider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: 70,
-                height: 70,
-                child: Image.asset(
-                  _imageUrl,
-                  fit: BoxFit.cover,
-                ),
+          buildTaskBody(context),
+        ],
+      ),
+    );
+  }
+
+  Container buildTaskHeader(Size deviceSize, BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColor,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              _name,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                overflow: TextOverflow.ellipsis,
+                color: Theme.of(context).textTheme.bodyText1!.color,
               ),
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Row(
+            children: [
+              RateStar(starCount: _star),
               const SizedBox(
                 width: 10,
               ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                onPressed: () async {
+                  final bool? finshed = await showConfirmDialog(
+                    context,
+                    _isCompleted
+                        ? 'Bỏ đánh dấu hoàn thành công việc?'
+                        : 'Đánh dấu hoàn thành công việc?',
+                    DateTime.now().toString(),
+                  );
+                  if (finshed!) {
+                    setState(() {
+                      _isCompleted = !_isCompleted;
+                    });
+                  }
+                  if (widget.item != null) {
+                    if (mounted) {
+                      await context.read<TaskController>().updateItem(
+                            TaskModel(
+                              id: _id,
+                              categoryId: _categoryId,
+                              name: _name,
+                              star: _star,
+                              color: _color,
+                              description: _description,
+                              imageUrl: _imageUrl,
+                              startTime: _startTime,
+                              finishTime: _finishTime,
+                              isCompleted: _isCompleted,
+                            ),
+                          );
+                    }
+                  }
+                },
+                icon: Icon(
+                  _isCompleted ? Icons.check_circle : Icons.circle_outlined,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Row buildTaskBody(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 50,
+          height: 50,
+          child: Image.asset(
+            _imageUrl,
+            fit: BoxFit.cover,
+          ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        Expanded(
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.circular(5),
+            ),
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.timer),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          '$_startTime AM -> $_finishTime PM',
-                          style: TextStyle(
-                            color: Theme.of(context).textTheme.bodyText1!.color,
-                          ),
-                        ),
-                      ],
+                    Icon(
+                      Icons.timer,
+                      color: Color(int.parse(_color)),
                     ),
                     const SizedBox(
-                      height: 10,
+                      width: 10,
                     ),
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 1.0,
-                        ),
-                      ),
-                      padding: const EdgeInsets.all(10),
-                      child: RiskTextCustomt(
-                        content: _description,
-                        lastIcon: Icons.edit,
+                    Text(
+                      '${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}',
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyText1!.color,
                       ),
                     ),
                   ],
                 ),
-              )
-            ],
-          )
-        ],
-      ),
+                const Divider(),
+                RiskTextCustom(
+                  content: _description,
+                  lastIcon: Icons.edit,
+                ),
+              ],
+            ),
+          ),
+        )
+      ],
     );
   }
 }

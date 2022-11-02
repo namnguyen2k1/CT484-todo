@@ -3,6 +3,7 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:todoapp/state/controllers/app_settings_controller.dart';
 import 'package:todoapp/state/controllers/category_controller.dart';
+import 'package:todoapp/state/controllers/task_controller.dart';
 
 import 'package:todoapp/ui/modules/category/category_item.dart';
 import 'package:todoapp/ui/modules/task/task_item.dart';
@@ -10,6 +11,7 @@ import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import 'package:todoapp/ui/shared/rate_star.dart';
 import 'package:widget_circular_animator/widget_circular_animator.dart';
 import '../../../state/models/task_model.dart';
+import '../../shared/empty_box.dart';
 import '../utilities/convert.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -35,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView(
         children: [
           buildListCategory(heightCategory, widthCategory),
-          buildCurrentTask(),
+          buildCurrentTask(context),
           buildTaskStatistical(context),
         ],
       ),
@@ -81,30 +83,38 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Column buildCurrentTask() {
-    return Column(
-      children: [
-        Container(
-          alignment: Alignment.topLeft,
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            children: const [
-              Icon(Icons.pending),
-              SizedBox(
-                width: 10,
+  Widget buildCurrentTask(BuildContext context) {
+    return Consumer<TaskController>(
+      builder: (context, taskController, child) {
+        final listTask = taskController.allItems;
+
+        return Column(
+          children: [
+            Container(
+              alignment: Alignment.topLeft,
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.pending,
+                    color: Theme.of(context).focusColor,
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  const Text('Đang diễn ra'),
+                ],
               ),
-              Text('Đang diễn ra'),
-            ],
-          ),
-        ),
-        Container(
-          padding: const EdgeInsets.all(10),
-          child: const TaskItem(
-            // item: _listTask[0],
-            focus: false,
-          ),
-        ),
-      ],
+            ),
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: listTask.isEmpty
+                  ? const EmptyBox(message: 'No Task')
+                  : TaskItem(item: listTask[0]),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -282,21 +292,28 @@ class _HomeScreenState extends State<HomeScreen> {
         final listCategory = categoryController.allItems;
         List<Widget> listWidgetCategory = [];
 
-        for (var item in listCategory) {
-          listWidgetCategory.add(CategoryItem(
-            item: item,
-            widthItem: widthCategory,
-            isHorizontal: true,
-            focus: false,
-          ));
+        if (listCategory.isNotEmpty) {
+          for (var item in listCategory) {
+            listWidgetCategory.add(
+              CategoryItem(
+                item,
+                widthItem: widthCategory,
+                isHorizontal: true,
+              ),
+            );
+          }
         }
+
         return Column(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               child: Row(
                 children: [
-                  const Icon(Icons.view_comfortable),
+                  Icon(
+                    Icons.view_comfortable,
+                    color: Theme.of(context).focusColor,
+                  ),
                   const SizedBox(width: 10),
                   Text('Category (${listCategory.length})'),
                 ],
@@ -305,11 +322,13 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               padding: const EdgeInsets.all(10),
               height: heightCategory,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: listWidgetCategory,
-              ),
-            ),
+              child: listCategory.isNotEmpty
+                  ? ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: listWidgetCategory,
+                    )
+                  : const EmptyBox(message: 'No Category'),
+            )
           ],
         );
       },

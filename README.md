@@ -1,5 +1,7 @@
 # todoapp
 
+-- Lỗi color: render và init state in editing task screen
+
 A new Flutter project.
 
 ## Getting Started

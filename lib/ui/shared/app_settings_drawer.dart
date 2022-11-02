@@ -44,6 +44,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   initialLabelIndex: _themeOptions.indexOf(
                     appSettingsController.isDarkTheme ? 'dark' : 'light',
                   ),
+                  activeFgColor: Theme.of(context).bottomAppBarColor,
                   fontSize: 16.0,
                   totalSwitches: _themeOptions.length,
                   labels: _themeOptions,

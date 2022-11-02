@@ -35,6 +35,7 @@ class TaskController with ChangeNotifier {
     );
     _allItems[index] = newItem;
     notifyListeners();
+    await _service.updateItem(newItem);
   }
 
   Future<void> deleteItemById(String id) async {
@@ -42,7 +43,7 @@ class TaskController with ChangeNotifier {
       (item) => item.id == id,
     );
     _allItems.removeAt(index);
-    _service.deleteItemById(id);
     notifyListeners();
+    await _service.deleteItemById(id);
   }
 }

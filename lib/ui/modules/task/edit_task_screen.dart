@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
 import 'package:todoapp/state/controllers/category_controller.dart';
+import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 import 'package:todoapp/ui/shared/dialog_utils.dart';
@@ -20,13 +21,13 @@ class EditTaskScreen extends StatefulWidget {
   }) {
     if (todo == null) {
       this.todo = TaskModel(
-        id: '-1',
-        categoryId: '-1',
+        id: const Uuid().v4(),
+        categoryId: '-99', // find item by string
         name: '',
         star: 1,
-        color: "4294940672",
+        color: Colors.deepOrange.value.toString(),
         description: '',
-        imageUrl: '',
+        imageUrl: 'assets/images/splash_icon.png',
         startTime: DateTime.now().toString(),
         finishTime: DateTime.now().toString(),
         isCompleted: false,
@@ -43,27 +44,67 @@ class EditTaskScreen extends StatefulWidget {
 }
 
 class _EditTaskScreenState extends State<EditTaskScreen> {
-  final _taskTextEditingController = TextEditingController();
-  final _imageUrlFocusNode = FocusNode();
   final GlobalKey<FormState> _taskFormKey = GlobalKey();
-  late TaskModel _editedTodo;
-  var _isLoading = false;
-  int _starCount = 1;
-  Color _selectedColor = Colors.white;
-  int _selectedRank = 0;
+  final _taskTextEditingController = TextEditingController();
+  // final _imageUrlFocusNode = FocusNode();
+  late int _starCount;
+  late Color _selectedColor;
+  final _listIcons = FakeData.icons;
+  int _selectedIcon = 0;
 
-  final Map<String, dynamic> _formData = {
-    'id': '-1',
-    'categoryId': '-1',
+  Map<String, dynamic> _formData = {
+    'id': '',
+    'categoryId': '',
     'name': '',
     'star': 1,
-    'color': "4294940672",
+    'color': "",
     'description': '',
     'imageUrl': '',
-    'startTime': DateTime.now().day.toString(),
-    'finishTime': DateTime.now().day.toString(),
+    'startTime': '',
+    'finishTime': '',
     'isCompleted': false,
   };
+
+  @override
+  void initState() {
+    // _imageUrlFocusNode.addListener(() {
+    //   if (!_imageUrlFocusNode.hasFocus) {
+    //     if (!_isValidImageUrl(_taskTextEditingController.text)) {
+    //       return;
+    //     }
+    //     setState(() {});
+    //   }
+    // });
+    final item = widget.todo;
+    _formData = {
+      'id': item.id,
+      'categoryId': item.categoryId,
+      'name': item.name,
+      'star': item.star,
+      'color': item.color,
+      'description': item.description,
+      'imageUrl': item.imageUrl,
+      'startTime': item.startTime,
+      'finishTime': item.finishTime,
+      'isCompleted': item.isCompleted
+    };
+    // _taskTextEditingController.text = _editedTodo.imageUrl;
+    _selectedColor = Color(int.parse(item.color));
+    _starCount = item.star;
+    for (var index = 0; index < _listIcons.length; index++) {
+      if (_listIcons[index]['path'] == item.imageUrl) {
+        _selectedIcon = index;
+      }
+    }
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _taskTextEditingController.dispose();
+    // _imageUrlFocusNode.dispose();
+    super.dispose();
+  }
 
   bool _isValidImageUrl(String value) {
     return (value.startsWith('http') || value.startsWith('https')) &&
@@ -72,67 +113,84 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             value.endsWith('.jpeg'));
   }
 
+  Future<void> _handleAddItem() async {
+    if (!_taskFormKey.currentState!.validate()) {
+      return;
+    }
+    _taskFormKey.currentState!.save();
+    print(_formData.toString());
+    await context.read<TaskController>().addItem(
+          TaskModel.fromJson(_formData),
+        );
+
+    // _resetForm
+    _formData = {
+      'id': const Uuid().v4(),
+      'categoryId': '',
+      'name': '',
+      'star': 1,
+      'color': '',
+      'description': '',
+      'imageUrl': '',
+      'startTime': '',
+      'finishTime': '',
+      'isCompleted': false,
+    };
+
+    if (mounted) {
+      ScaffoldMessengerCustom.showSuccessMessage(
+        context,
+        'Add Task successfully',
+      );
+    }
+  }
+
   Future<void> _handleSaveItem() async {
     if (!_taskFormKey.currentState!.validate()) {
       return;
     }
     _taskFormKey.currentState!.save();
     print(_formData.toString());
-    _formData['id'] = const Uuid().v4();
-    await context.read<TaskController>().addItem(
-          TaskModel.fromJson(_formData),
-        );
+    await context
+        .read<TaskController>()
+        .updateItem(TaskModel.fromJson(_formData));
+
+    if (mounted) {
+      Navigator.pop(context);
+      ScaffoldMessengerCustom.showSuccessMessage(
+        context,
+        'Save Task successfully',
+      );
+    }
   }
 
   @override
-  void initState() {
-    _imageUrlFocusNode.addListener(() {
-      if (!_imageUrlFocusNode.hasFocus) {
-        if (!_isValidImageUrl(_taskTextEditingController.text)) {
-          return;
-        }
-        setState(() {});
-      }
-    });
-    _editedTodo = widget.todo;
-    _taskTextEditingController.text = _editedTodo.imageUrl;
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _taskTextEditingController.dispose();
-    _imageUrlFocusNode.dispose();
-    super.dispose();
-  }
-
-  Row buildControlButtons(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ElevatedButton.icon(
-          onPressed: () {
-            _handleSaveItem();
-            ScaffoldMessengerCustom.showSuccessMessage(
-              context,
-              'Add Task successfully',
-            );
-            // Navigator.pop(context);
-          },
-          icon: const Icon(Icons.save),
-          label: const Text('Add'),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        title: Text(_formData['name'] == '' ? 'New Task' : 'Edit Task'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _taskFormKey,
+          child: ListView(
+            children: <Widget>[
+              buildNameField(),
+              buildDescriptionField(),
+              buildListIcons(context),
+              buildRankField(),
+              buildCategoryList(),
+              buildFieldColor(context),
+              // buildTaskImagePreview(),
+              const Divider(),
+              buildControlButtons(context)
+            ],
+          ),
         ),
-        const SizedBox(
-          width: 50,
-        ),
-        ElevatedButton.icon(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.skip_previous),
-          label: const Text('Back'),
-        ),
-      ],
+      ),
     );
   }
 
@@ -145,7 +203,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           child: Text('Name'),
         ),
         TextFormField(
-          initialValue: _editedTodo.name,
+          initialValue: _formData['name'],
           decoration: const InputDecoration(
             isDense: true,
             contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -176,7 +234,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           child: Text('Description'),
         ),
         TextFormField(
-          initialValue: _editedTodo.description,
+          initialValue: _formData['description'],
           decoration: const InputDecoration(
             isDense: true,
             contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -201,6 +259,50 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     );
   }
 
+  Column buildListIcons(BuildContext context) {
+    const maxSizeImage = 60;
+    final sizeImage =
+        (MediaQuery.of(context).size.width / maxSizeImage).round();
+    return Column(
+      children: [
+        Container(
+          alignment: Alignment.topLeft,
+          padding: const EdgeInsets.all(10),
+          child: const Text('Icon'),
+        ),
+        GridView.count(
+            crossAxisCount: sizeImage,
+            crossAxisSpacing: 5,
+            mainAxisSpacing: 5,
+            physics:
+                const NeverScrollableScrollPhysics(), // to disable GridView's scrolling
+            shrinkWrap: true, // You won't see infinite size error
+            children: _listIcons.map((e) {
+              int index = _listIcons.indexOf(e);
+              return IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  setState(() {
+                    _selectedIcon = index;
+                  });
+                  _formData['imageUrl'] = e['path'];
+                },
+                icon: Container(
+                  decoration: BoxDecoration(
+                    border: index == _selectedIcon
+                        ? Border.all(color: Colors.green, width: 2.0)
+                        : Border.all(color: Colors.transparent, width: 0.0),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: EdgeInsets.zero,
+                  child: Image.asset(e['path']),
+                ),
+              );
+            }).toList()),
+      ],
+    );
+  }
+
   TextFormField buildImageURLField() {
     return TextFormField(
       decoration: const InputDecoration(
@@ -211,8 +313,10 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       ),
       keyboardType: TextInputType.url,
       textInputAction: TextInputAction.done,
-      controller: _taskTextEditingController,
-      focusNode: _imageUrlFocusNode,
+
+      initialValue: _formData['imageUrl'],
+      // controller: _taskTextEditingController,
+      // focusNode: _imageUrlFocusNode,
       // onFieldSubmitted: (value) => _saveForm(),
       validator: (value) {
         if (value!.isEmpty) {
@@ -257,7 +361,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                     )
                   : FittedBox(
                       child: Image.network(
-                        _taskTextEditingController.text,
+                        _formData['imageUrl'],
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -274,40 +378,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        title: const Text('New Task'),
-      ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: _taskFormKey,
-                child: ListView(
-                  children: <Widget>[
-                    buildNameField(),
-                    buildDescriptionField(),
-                    buildRankField(),
-                    buildCategoryList(),
-                    buildFieldColor(context),
-                    // buildTaskImagePreview(),
-                    const Divider(),
-                    buildControlButtons(context)
-                  ],
-                ),
-              ),
-            ),
-    );
-  }
-
   Column buildRankField() {
+    const listRank = ['Easy', 'Middle', 'Hard'];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -320,15 +392,13 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           children: [
             RateStar(starCount: _starCount),
             ToggleSwitch(
-              initialLabelIndex: _selectedRank,
+              initialLabelIndex: _starCount - 1,
               totalSwitches: 3,
-              labels: const ['Easy', 'Middle', 'Hard'],
+              labels: listRank,
               onToggle: (index) {
-                final rateStar = <int>[1, 2, 3];
-                print('switched to: $index ${rateStar[index!]}');
+                print('switched to: $index ${listRank[index!]}');
                 setState(() {
-                  _starCount = rateStar[index];
-                  _selectedRank = index;
+                  _starCount = index + 1;
                   _formData['star'] = _starCount;
                 });
               },
@@ -364,12 +434,17 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               width: 10,
             ),
             Expanded(
-              child: TextField(
+              child: TextFormField(
                 keyboardType: TextInputType.number,
+                onSaved: (value) {
+                  _formData['color'] = _selectedColor.value.toString();
+                },
                 decoration: InputDecoration(
                   isDense: true,
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 10,
+                  ),
                   label: Text(_selectedColor.value.toString()),
                   border: const OutlineInputBorder(),
                 ),
@@ -393,8 +468,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                         TextButton(
                           child: const Text('Close'),
                           onPressed: () {
-                            _formData['color'] =
-                                _selectedColor.value.toString();
                             Navigator.pop(context);
                           },
                         ),
@@ -403,9 +476,10 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                   },
                 );
               },
-              child: const Icon(
+              child: Icon(
                 Icons.color_lens,
                 size: 50,
+                color: Theme.of(context).focusColor,
               ),
             ),
           ],
@@ -415,7 +489,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   }
 
   Column buildCategoryList() {
-    final listCategory = context.read<CategoryController>().allItems;
+    var listCategory = context.read<CategoryController>().allItems;
+// bug khi chưa build Category
     final customWidths = List.generate(listCategory.length, (index) => 100.0);
     final labels = listCategory.map((item) => item.name).toList();
 
@@ -440,6 +515,37 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               },
             ),
           ),
+        ),
+      ],
+    );
+  }
+
+  Row buildControlButtons(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (_formData['name'] == '') ...[
+          ElevatedButton.icon(
+            onPressed: _handleAddItem,
+            icon: const Icon(Icons.add),
+            label: const Text('Add'),
+          ),
+        ] else ...[
+          ElevatedButton.icon(
+            onPressed: _handleSaveItem,
+            icon: const Icon(Icons.save),
+            label: const Text('Save'),
+          ),
+        ],
+        const SizedBox(
+          width: 50,
+        ),
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.skip_previous),
+          label: const Text('Back'),
         ),
       ],
     );

@@ -1,33 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/state/models/category_model.dart';
+import 'package:todoapp/ui/modules/utilities/fake_data.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../shared/risk_text.dart';
 
 class CategoryItem extends StatefulWidget {
-  final CategoryModel? item;
-  final double widthItem;
-  final bool isHorizontal;
-  final bool focus;
-
-  const CategoryItem({
+  CategoryItem(
+    CategoryModel? item, {
     super.key,
-    this.item,
     required this.widthItem,
     required this.isHorizontal,
-    required this.focus,
-  });
+  }) {
+    if (item != null) {
+      this.item = item;
+    } else {
+      this.item = CategoryModel(
+        id: const Uuid().v4(),
+        code: '',
+        name: '',
+        description: '',
+        imageUrl: FakeData.icons[0]['path'],
+        color: Colors.deepOrange.value.toString(),
+        createdAt: DateTime.now().toString(),
+      );
+    }
+  }
+
+  late CategoryModel? item;
+  late double widthItem;
+  late bool isHorizontal;
 
   @override
   State<CategoryItem> createState() => _CategoryItemState();
 }
 
 class _CategoryItemState extends State<CategoryItem> {
-  String _id = '-1';
-  String _code = 'default';
-  String _name = 'default category name';
-  String _description = 'default category description';
-  String _color = 'default category color';
-  String _createdAt = '31/10/2022';
+  String _id = '';
+  String _code = '';
+  String _name = '';
+  String _description = '';
+  String _imageUrl = '';
+  String _color = '';
+  String _createdAt = '';
 
   @override
   void initState() {
@@ -37,6 +52,7 @@ class _CategoryItemState extends State<CategoryItem> {
       _code = item.code;
       _name = item.name;
       _description = item.description;
+      _imageUrl = item.imageUrl;
       _color = item.color;
       _createdAt = item.createdAt;
     }
@@ -53,21 +69,24 @@ class _CategoryItemState extends State<CategoryItem> {
       ),
       width: widget.widthItem,
       decoration: BoxDecoration(
-        border: widget.focus
-            ? Border.all(color: Colors.green, width: 2.0)
-            : Border.all(color: Colors.grey, width: 1.0),
+        color: Color(int.parse(_color)),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          buildCategoryLabel(_name, _color),
+          const SizedBox(
+            height: 5,
+          ),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: 40,
-                height: 40,
+                width: 50,
+                height: 50,
                 child: Image.asset(
-                  'assets/images/splash_icon.png',
+                  _imageUrl,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -75,14 +94,19 @@ class _CategoryItemState extends State<CategoryItem> {
                 width: 10,
               ),
               Expanded(
-                child: buildCategoryLabel(_name, _color),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: RiskTextCustom(
+                    content: _description,
+                    lastIcon: Icons.edit,
+                  ),
+                ),
               ),
             ],
-          ),
-          const Divider(),
-          RiskTextCustomt(
-            content: _description,
-            lastIcon: Icons.edit,
           ),
         ],
       ),
@@ -91,20 +115,19 @@ class _CategoryItemState extends State<CategoryItem> {
 
   Container buildCategoryLabel(String name, String color) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.symmetric(
         vertical: 10,
         horizontal: 10,
       ),
       decoration: BoxDecoration(
-        color: Color(
-          int.parse(color),
-        ),
-        border: Border.all(color: Colors.black, width: 1.0),
+        color: Theme.of(context).primaryColor,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
         name,
-        style: const TextStyle(
+        style: TextStyle(
+          color: Theme.of(context).textTheme.bodyText1!.color,
           fontWeight: FontWeight.bold,
           overflow: TextOverflow.ellipsis,
         ),

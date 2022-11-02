@@ -3,11 +3,17 @@ import 'package:provider/provider.dart';
 import 'package:simple_ripple_animation/simple_ripple_animation.dart';
 import 'package:todoapp/state/controllers/category_controller.dart';
 import 'package:todoapp/state/controllers/task_controller.dart';
+import 'package:todoapp/state/models/category_model.dart';
 import 'package:todoapp/state/models/task_model.dart';
 import 'package:todoapp/ui/modules/category/category_item.dart';
+import 'package:todoapp/ui/modules/category/edit_category_screen.dart';
+import 'package:todoapp/ui/modules/schedule/list_tip_screen.dart';
+import 'package:todoapp/ui/modules/task/edit_task_screen.dart';
 import 'package:todoapp/ui/modules/tip/tip_item.dart';
 import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import 'package:todoapp/ui/shared/dialog_utils.dart';
+import 'package:todoapp/ui/shared/empty_box.dart';
+import 'package:todoapp/ui/shared/response_message.dart';
 
 import '../task/task_item.dart';
 
@@ -25,8 +31,6 @@ class _ScheduleScreenState extends State<ScheduleScreen>
   late TabController _tabController;
   final int _initialIndex = 0;
   final int _tabsCount = 3;
-
-  final List<Map<String, dynamic>> _listTip = FakeData.tips;
 
   @override
   void initState() {
@@ -76,15 +80,15 @@ class _ScheduleScreenState extends State<ScheduleScreen>
         ],
         bottom: buildTabBar(),
       ),
-      floatingActionButton: createFloatingActionButtonForEachTab(
+      floatingActionButton: createFloatingActionButton(
         currentTab: _tabController.index,
       ),
       body: TabBarView(
         controller: _tabController,
         children: <Widget>[
-          buildDailyTask(context),
-          buildCategory(context),
-          buildTaskTips()
+          buildDailyTaskTabBody(context),
+          buildCategoryTabBody(context),
+          const ListTipScreen(),
         ],
       ),
     );
@@ -97,80 +101,17 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       labelPadding: EdgeInsets.zero,
       isScrollable: false,
       indicatorWeight: 2,
-      unselectedLabelColor: Colors.black,
-      indicator: BoxDecoration(
-        borderRadius: const BorderRadius.all(
-          Radius.circular(10.0),
-        ),
-        color: Theme.of(context).primaryTextTheme.titleLarge!.color,
-      ),
-      tabs: [
-        Tab(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.today,
-                color: Theme.of(context).primaryColor,
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Text(
-                'Today',
-                style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Tab(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.category,
-                color: Theme.of(context).primaryColor,
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Text(
-                'Category',
-                style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Tab(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.tips_and_updates,
-                color: Theme.of(context).primaryColor,
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Text(
-                'Tip',
-                style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-            ],
-          ),
-        )
+      tabs: const [
+        Tab(child: Text('Task')),
+        Tab(child: Text('Category')),
+        Tab(child: Text('Tip')),
       ],
     );
   }
 
-  Widget? createFloatingActionButtonForEachTab({required int currentTab}) {
+  Widget? createFloatingActionButton({required int currentTab}) {
     if (currentTab == 0) {
+      final categoryController = context.read<CategoryController>();
       return RippleAnimation(
         color: Colors.teal,
         repeat: true,
@@ -179,7 +120,15 @@ class _ScheduleScreenState extends State<ScheduleScreen>
         child: FloatingActionButton(
           heroTag: "button1",
           onPressed: () {
-            Navigator.pushNamed(context, '/workspace/schedule/todo');
+            if (categoryController.allItems.isEmpty) {
+              showAlearDialog(
+                context,
+                'Cant create task without creating category',
+                'swiper right and create new category',
+              );
+            } else {
+              Navigator.pushNamed(context, '/workspace/schedule/todo');
+            }
           },
           backgroundColor: Colors.teal,
           child: const Icon(Icons.post_add),
@@ -206,85 +155,88 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     // Not created fab for 2 index deliberately
   }
 
-  Widget buildDailyTask(BuildContext context) {
+  Widget buildDailyTaskTabBody(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
 
     return Consumer<TaskController>(
       builder: (context, taskController, child) {
         final listTask = taskController.allItems;
-        print('local task: ${listTask.toString()}');
-        return ListView.builder(
-          itemCount: listTask.length,
-          itemBuilder: (BuildContext context, int index) {
-            final bool isMatch = _selectedTask == index;
-            return Container(
-              padding: const EdgeInsets.all(10),
-              width: deviceSize.width,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        foregroundColor: Theme.of(context).backgroundColor,
-                        padding: EdgeInsets.zero,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _selectedTask = index;
-                        });
-                      },
-                      child: TaskItem(
-                        item: listTask[index],
-                        focus: isMatch,
-                      ),
-                    ),
-                  ),
-                  isMatch
-                      ? buildTaskControlButton(context, listTask, index)
-                      : const SizedBox(
-                          width: 0,
+        print('local task');
+        for (var item in listTask) {
+          print(item.toString());
+        }
+        return listTask.isNotEmpty
+            ? ListView.builder(
+                itemCount: listTask.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final bool isMatch = _selectedTask == index;
+                  return Container(
+                    padding: const EdgeInsets.all(10),
+                    width: deviceSize.width,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              foregroundColor:
+                                  Theme.of(context).backgroundColor,
+                              padding: EdgeInsets.zero,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _selectedTask = index;
+                              });
+                            },
+                            child: TaskItem(
+                              // bug item
+                              item: listTask[index],
+                            ),
+                          ),
                         ),
-                ],
-              ),
-            );
-          },
-        );
+                        isMatch
+                            ? buildTaskControlButton(context, listTask, index)
+                            : const SizedBox(
+                                width: 0,
+                              ),
+                      ],
+                    ),
+                  );
+                },
+              )
+            : const EmptyBox(message: 'No Task');
       },
     );
   }
 
   Row buildTaskControlButton(
       BuildContext context, List<TaskModel> listTask, int index) {
+    final taskController = context.read<TaskController>();
+    const EdgeInsetsGeometry paddingButton = EdgeInsets.all(5.0);
     return Row(
       children: [
         const SizedBox(
           width: 10,
         ),
         Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SizedBox(
-              height: 10,
-            ),
             IconButton(
-              padding: EdgeInsets.zero,
+              padding: paddingButton,
               constraints: const BoxConstraints(),
-              onPressed: () {
-                Navigator.pushNamed(
-                  context,
-                  '/workspace/schedule/todo',
+              onPressed: () async {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => EditTaskScreen(listTask[index]),
+                  ),
                 );
+                // re-build task
               },
               icon: const Icon(
                 Icons.edit,
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
             IconButton(
-              padding: EdgeInsets.zero,
+              padding: paddingButton,
               constraints: const BoxConstraints(),
               onPressed: () async {
                 final bool? isAccept = await showConfirmDialog(
@@ -293,20 +245,17 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                   'Hành động không thể phục hồi',
                 );
                 if (isAccept != false) {
-                  context.read<TaskController>().deleteItemById(
-                        listTask[index].id,
-                      );
+                  await taskController.deleteItemById(
+                    listTask[index].id,
+                  );
                 }
               },
               icon: const Icon(
                 Icons.delete,
               ),
             ),
-            const SizedBox(
-              height: 30,
-            ),
             IconButton(
-              padding: EdgeInsets.zero,
+              padding: paddingButton,
               constraints: const BoxConstraints(),
               onPressed: () {
                 if (_selectedTask == 0) return;
@@ -318,11 +267,8 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                 Icons.arrow_circle_up,
               ),
             ),
-            const SizedBox(
-              height: 2,
-            ),
             IconButton(
-              padding: EdgeInsets.zero,
+              padding: paddingButton,
               constraints: const BoxConstraints(),
               onPressed: () {
                 if (_selectedTask == listTask.length - 1) return;
@@ -340,113 +286,117 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     );
   }
 
-  Widget buildCategory(BuildContext context) {
+  Widget buildCategoryTabBody(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     return Consumer<CategoryController>(
       builder: (context, categoryController, child) {
         final listCategory = categoryController.allItems;
-        print('local category: ${listCategory.toString()}');
-        return ListView.builder(
-          itemCount: listCategory.length,
-          itemBuilder: (BuildContext context, int index) {
-            final bool isMatch = _selectedCategory == index;
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _selectedCategory = index;
-                    });
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: Theme.of(context).backgroundColor,
-                    padding: EdgeInsets.zero,
-                  ),
-                  child: CategoryItem(
-                    item: listCategory[index],
-                    widthItem: isMatch
-                        ? deviceSize.width * 0.85
-                        : deviceSize.width - 20,
-                    isHorizontal: false,
-                    focus: isMatch,
-                  ),
-                ),
-                isMatch
-                    ? Row(
-                        children: [
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              IconButton(
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                onPressed: () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/workspace/schedule/todo',
-                                  );
-                                },
-                                icon: const Icon(
-                                  Icons.edit,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              IconButton(
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                onPressed: () async {
-                                  final bool? isAccept =
-                                      await showConfirmDialog(
-                                          context,
-                                          'Bạn muốn xoá Task này?',
-                                          'Hành động không thể phục hồi');
-                                  if (isAccept != false) {
-                                    print('delete task');
-                                    await categoryController.deleteItem(
-                                      listCategory[index].id,
-                                    );
-                                  }
-                                },
-                                icon: const Icon(
-                                  Icons.delete,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      )
-                    : const SizedBox(
-                        width: 0,
+        print('local task');
+        for (var item in listCategory) {
+          print(item.toString());
+        }
+        return listCategory.isNotEmpty
+            ? ListView.builder(
+                itemCount: listCategory.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final bool isMatch = _selectedCategory == index;
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _selectedCategory = index;
+                          });
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Theme.of(context).backgroundColor,
+                          padding: EdgeInsets.zero,
+                        ),
+                        child: CategoryItem(
+                          listCategory[index],
+                          widthItem: isMatch
+                              ? deviceSize.width * 0.85
+                              : deviceSize.width - 20,
+                          isHorizontal: false,
+                        ),
                       ),
-              ],
-            );
-          },
-          padding: const EdgeInsets.all(10),
-        );
+                      isMatch
+                          ? buildCategoryControlButton(
+                              context,
+                              listCategory,
+                              index,
+                            )
+                          : const SizedBox(
+                              width: 0,
+                            ),
+                    ],
+                  );
+                },
+                padding: const EdgeInsets.all(10),
+              )
+            : const EmptyBox(message: 'No Category');
       },
     );
   }
 
-  ListView buildTaskTips() {
-    List<Widget> listItem = <Widget>[];
-
-    for (var item in _listTip) {
-      listItem.add(TipItem(tip: item));
-      listItem.add(const Divider());
-    }
-
-    return ListView(
-      padding: const EdgeInsets.all(10),
-      children: listItem,
+  Row buildCategoryControlButton(
+    BuildContext context,
+    List<CategoryModel> listCategory,
+    int index,
+  ) {
+    final categoryController = context.read<CategoryController>();
+    return Row(
+      children: [
+        const SizedBox(
+          width: 10,
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const SizedBox(
+              height: 10,
+            ),
+            IconButton(
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              onPressed: () async {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => EditCategoryScreen(
+                      listCategory[index],
+                    ),
+                  ),
+                );
+                // re-build category
+              },
+              icon: const Icon(
+                Icons.edit,
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            IconButton(
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              onPressed: () async {
+                final bool? isAccept = await showConfirmDialog(context,
+                    'Bạn muốn xoá Task này?', 'Hành động không thể phục hồi');
+                if (isAccept != false) {
+                  print('delete task');
+                  await categoryController.deleteItem(
+                    listCategory[index].id,
+                  );
+                }
+              },
+              icon: const Icon(
+                Icons.delete,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

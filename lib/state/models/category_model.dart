@@ -4,6 +4,7 @@ class CategoryModel {
   final String name;
   final String description;
   final String color;
+  final String imageUrl;
   final String createdAt;
 
   CategoryModel({
@@ -11,6 +12,7 @@ class CategoryModel {
     required this.code,
     required this.name,
     required this.description,
+    required this.imageUrl,
     required this.color,
     required this.createdAt,
   });
@@ -20,6 +22,7 @@ class CategoryModel {
     String? code,
     String? name,
     String? description,
+    String? imageUrl,
     String? color,
     String? createdAt,
   }) {
@@ -28,6 +31,7 @@ class CategoryModel {
       code: code ?? this.code,
       name: name ?? this.name,
       description: description ?? this.description,
+      imageUrl: imageUrl ?? this.imageUrl,
       color: color ?? this.color,
       createdAt: createdAt ?? this.createdAt,
     );
@@ -39,6 +43,7 @@ class CategoryModel {
       code: json['code'] as String,
       name: json['name'] as String,
       description: json['description'] as String,
+      imageUrl: json['imageUrl'] as String,
       color: json['color'] as String,
       createdAt: json['createdAt'] as String,
     );
@@ -50,8 +55,14 @@ class CategoryModel {
       'code': code,
       'name': name,
       'description': description,
+      'imageUrl': imageUrl,
       'color': color,
       'createdAt': createdAt,
     };
+  }
+
+  @override
+  String toString() {
+    return '$id $name $description $imageUrl $color $createdAt';
   }
 }

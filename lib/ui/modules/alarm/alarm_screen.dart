@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:neon_circular_timer/neon_circular_timer.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:provider/provider.dart';
+import 'package:todoapp/state/controllers/task_controller.dart';
 import 'package:todoapp/ui/modules/task/task_item.dart';
 import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import 'package:todoapp/ui/shared/dialog_utils.dart';
+import 'package:todoapp/ui/shared/empty_box.dart';
 import 'package:todoapp/ui/shared/notice_drawer.dart';
 import 'package:todoapp/ui/shared/risk_text.dart';
 
@@ -115,7 +118,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
       appBar: buildAlarmAppBar(),
       body: ListView(
         children: [
-          buildCurrentTask(),
+          buildCurrentTask(context),
           buildNextTask(heightScroll, lineWidth),
           buildPomodoro()
         ],
@@ -259,7 +262,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                         '${_listPromodoroTip[_selectedPromodoroTip]['name']} (${_promodoroTimeCount - 1})',
                       ),
                     ),
-                    RiskTextCustomt(
+                    RiskTextCustom(
                       content: _listPromodoroTip[_selectedPromodoroTip]
                           ['content'],
                       lastIcon: Icons.edit,
@@ -288,198 +291,89 @@ class _AlarmScreenState extends State<AlarmScreen> {
     );
   }
 
-  Container buildNextTask(double heightScroll, double lineWidth) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      height: heightScroll,
-      child: ListView(
-        // physics: const NeverScrollableScrollPhysics(),
-        scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        children: [
-          Container(
-            margin: const EdgeInsets.only(left: 20),
-            width: heightScroll,
-            child: CircularPercentIndicator(
-              radius: (heightScroll - 2 * lineWidth) * 0.5,
-              lineWidth: lineWidth,
-              percent: 0.9,
-              center: const Text(
-                "01:30:00",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20.0,
-                ),
-              ),
-              backgroundColor: Colors.red,
-              progressColor: Colors.green,
-            ),
-          ),
-          Container(
-            clipBehavior: Clip.hardEdge,
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            width: 350,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: ColorFiltered(
-              colorFilter: ColorFilter.mode(
-                Colors.grey.withOpacity(0.9),
-                BlendMode.saturation,
-              ),
-              child: const TaskItem(
-                // item: _listTask[_currentTask + 1],
-                focus: false,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Container buildCurrentTask() {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: const Text(
-              'Đang diễn ra',
-              style: TextStyle(
-                color: Colors.teal,
-              ),
-            ),
-          ),
-          const TaskItem(
-            // item: _listTask[_currentTask],
-            focus: false,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Container buildTaskDaily(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Card(
-            // color: Colors.black87,
-            margin: const EdgeInsets.only(top: 10),
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero,
-            ),
-            child: ClipPath(
-              clipper: const ShapeBorderClipper(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero,
-                ),
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(0),
-                decoration: const BoxDecoration(
-                  border: Border(
-                      // bottom: BorderSide(color: Colors.green, width: 3),
+  Widget buildNextTask(double heightScroll, double lineWidth) {
+    return Consumer<TaskController>(
+      builder: (context, taskController, child) {
+        final listTasks = taskController.allItems;
+        return listTasks.isNotEmpty
+            ? Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                height: heightScroll,
+                child: ListView(
+                  // physics: const NeverScrollableScrollPhysics(),
+                  scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(left: 20),
+                      width: heightScroll,
+                      child: CircularPercentIndicator(
+                        radius: (heightScroll - 2 * lineWidth) * 0.5,
+                        lineWidth: lineWidth,
+                        percent: 0.9,
+                        center: const Text(
+                          "01:30:00",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.0,
+                          ),
+                        ),
+                        backgroundColor: Colors.red,
+                        progressColor: Colors.green,
                       ),
-                ),
-                child: ListTile(
-                  // contentPadding: EdgeInsets.zero,
-                  title: const Text(
-                    'Next Task On Day',
-                    style: TextStyle(
-                      // color: Colors.white,
-                      fontWeight: FontWeight.bold,
                     ),
-                  ),
-                  trailing: const Icon(
-                    Icons.circle_outlined,
-                  ),
-                  onTap: () {
-                    showConfirmDialog(
-                      context,
-                      'Đánh dấu hoành thành công việc?',
-                      'Chuyển sang việc tiếp theo',
-                    );
-                  },
+                    Container(
+                      clipBehavior: Clip.hardEdge,
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      width: 350,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ColorFiltered(
+                        colorFilter: ColorFilter.mode(
+                          Colors.grey.withOpacity(0.9),
+                          BlendMode.saturation,
+                        ),
+                        child: listTasks.isNotEmpty
+                            ? TaskItem(item: listTasks[1])
+                            : const Text('No Next Task'),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ),
-          ),
-          Container(
-            alignment: Alignment.topLeft,
-            padding: const EdgeInsets.only(left: 10, top: 10),
-            child: const Text(
-              'Sắp đến',
-              style: TextStyle(
-                color: Colors.teal,
-              ),
-            ),
-          ),
-          Card(
-            margin: const EdgeInsets.all(10),
-            child: ListTile(
-              leading: const Icon(
-                Icons.book,
-                size: 40,
-              ),
-              title: const Text('Learn Flutter'),
-              subtitle: const Text('Học Fluter trong 1 tuần'),
-              trailing: const Icon(Icons.info),
-              onTap: () {
-                showAlearDialog(
-                  context,
-                  'Learn Flutter',
-                  'Flutter là một nền tảng đáng để học hỏi...',
-                );
-              },
-            ),
-          ),
-          const Divider(),
-          Card(
-            margin: const EdgeInsets.all(10),
-            child: ListTile(
-              leading: const Icon(
-                Icons.book,
-                size: 40,
-              ),
-              title: const Text('Learn Flutter'),
-              subtitle: const Text('Học Fluter trong 1 tuần'),
-              trailing: const Icon(Icons.info),
-              onTap: () {
-                showAlearDialog(
-                  context,
-                  'Học Flutter',
-                  'Flutter là một nền tảng đáng để học hỏi...',
-                );
-              },
-            ),
-          ),
-          const Divider(),
-          Card(
-            margin: const EdgeInsets.all(10),
-            child: ListTile(
-              leading: const Icon(
-                Icons.book,
-                size: 40,
-              ),
-              title: const Text('Learn Flutter'),
-              subtitle: const Text('Học Fluter trong 1 tuần'),
-              trailing: const Icon(Icons.info),
-              onTap: () {
-                showAlearDialog(
-                  context,
-                  'Learn Flutter',
-                  'Flutter là một nền tảng đáng để học hỏi...',
-                );
-              },
-            ),
-          ),
-          const Divider(),
-        ],
-      ),
+              )
+            : const EmptyBox(message: 'No Next Task');
+      },
+    );
+  }
+
+  Widget buildCurrentTask(BuildContext context) {
+    return Consumer<TaskController>(
+      builder: (context, taskController, child) {
+        final listTasks = taskController.allItems;
+        return listTasks.isNotEmpty
+            ? Container(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      child: const Text(
+                        'Đang diễn ra',
+                        style: TextStyle(
+                          color: Colors.teal,
+                        ),
+                      ),
+                    ),
+                    listTasks.isNotEmpty
+                        ? TaskItem(item: listTasks[0])
+                        : const EmptyBox(message: 'No Current Task'),
+                  ],
+                ),
+              )
+            : const EmptyBox(message: 'No Current Task');
+      },
     );
   }
 }

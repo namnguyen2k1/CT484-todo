@@ -8,7 +8,12 @@ class TaskModel {
   final String imageUrl;
   final String startTime;
   final String finishTime;
-  final bool isCompleted;
+  bool isCompleted;
+
+  get taskIsCompleted => isCompleted;
+  set setTaskCompleted(bool result) {
+    isCompleted = result;
+  }
 
   TaskModel({
     required this.id,
@@ -77,5 +82,10 @@ class TaskModel {
       finishTime: json['finishTime'] as String,
       isCompleted: json['isCompleted'] as bool,
     );
+  }
+
+  @override
+  String toString() {
+    return '$id $categoryId $name $description $star $color $startTime $finishTime';
   }
 }

@@ -46,6 +46,7 @@ class CategoryService {
       name $textType,
       code $textType,
       description $textType,
+      imageUrl $textType,
       color $textType,
       createdAt $textType
     )''');
