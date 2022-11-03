@@ -13,7 +13,7 @@ class _ScheduleSearchScreenState extends State<ScheduleSearchScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Search task'),
+        title: const Text('Tìm Kiếm'),
       ),
       body: ListView(
         children: [

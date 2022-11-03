@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todoapp/state/controllers/category_controller.dart';
 import '../../screens.dart';
-import '../../shared/dialog_utils.dart';
+import '../../shared/custom_dialog.dart';
 
 class WorkspaceScreen extends StatefulWidget {
   static const routeName = '/workspace';
@@ -46,7 +46,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (categoryController.allItems.isEmpty) {
-            showAlearDialog(
+            CustomDialog.showAlert(
               context,
               'Cant create task without creating category',
               'plese create new category!',

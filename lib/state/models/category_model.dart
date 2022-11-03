@@ -63,6 +63,6 @@ class CategoryModel {
 
   @override
   String toString() {
-    return '$id $name $description $imageUrl $color $createdAt';
+    return 'CategoryModel($id $name $description $imageUrl $color $createdAt)';
   }
 }

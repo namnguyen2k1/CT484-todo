@@ -13,7 +13,6 @@ class AppDrawer extends StatefulWidget {
 
 class _AppDrawerState extends State<AppDrawer> {
   final _themeOptions = ['dark', 'light'];
-  final _languageOptions = ['eng', 'vi'];
 
   @override
   Widget build(BuildContext context) {
@@ -59,37 +58,6 @@ class _AppDrawerState extends State<AppDrawer> {
               ],
             ),
           ),
-          const Divider(),
-          Container(
-            padding: const EdgeInsets.only(
-              left: settingOptionPadding,
-              right: settingOptionPadding,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                appSettingsController.isEnglishLanguage
-                    ? const Text('English')
-                    : const Text('Vietnamese'),
-                ToggleSwitch(
-                  initialLabelIndex: _languageOptions.indexOf(
-                    appSettingsController.isEnglishLanguage ? 'eng' : 'vi',
-                  ),
-                  fontSize: 16.0,
-                  totalSwitches: _languageOptions.length,
-                  labels: _languageOptions,
-                  onToggle: (index) {
-                    final String selectedLanguage =
-                        _languageOptions[index!].toString();
-                    appSettingsController.changeAppLanguage(
-                      language: selectedLanguage,
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-          const Divider(),
         ],
       ),
     );

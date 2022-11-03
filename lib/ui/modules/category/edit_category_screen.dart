@@ -7,7 +7,7 @@ import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import 'package:uuid/uuid.dart';
 import 'package:provider/provider.dart';
 
-import 'package:todoapp/ui/shared/response_message.dart';
+import 'package:todoapp/ui/shared/custom_snackbar.dart';
 
 class EditCategoryScreen extends StatefulWidget {
   EditCategoryScreen(
@@ -95,11 +95,12 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
       'name': '',
       'code': '',
       'description': '',
+      'imageUrl': FakeData.icons[0]['path'],
       'color': '',
-      'createdAt': ''
+      'createdAt': DateTime.now().toString(),
     };
     if (mounted) {
-      ScaffoldMessengerCustom.showSuccessMessage(
+      SnackBarCustom.showSuccessMessage(
         context,
         'Add Category successfully',
       );
@@ -117,7 +118,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
         .updateItem(CategoryModel.fromJson(_formData));
     if (mounted) {
       Navigator.pop(context);
-      ScaffoldMessengerCustom.showSuccessMessage(
+      SnackBarCustom.showSuccessMessage(
         context,
         'Save Category successfully',
       );

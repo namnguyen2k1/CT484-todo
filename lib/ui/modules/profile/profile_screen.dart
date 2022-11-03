@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
-import 'package:todoapp/ui/shared/app_settings_drawer.dart';
-import 'package:todoapp/ui/shared/dialog_utils.dart';
+import 'package:todoapp/ui/modules/profile/profile_drawer.dart';
+import 'package:todoapp/ui/shared/custom_dialog.dart';
 import 'package:todoapp/ui/shared/rate_star.dart';
 import 'package:widget_circular_animator/widget_circular_animator.dart';
 import '../../../state/controllers/auth_controller.dart';
@@ -54,11 +54,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               actions: [
                 IconButton(
                   icon: const Icon(Icons.settings),
-                  tooltip: 'Setting',
+                  tooltip: 'Cài đặc',
                   onPressed: _openDrawer,
                 ),
               ],
-              title: const Text("Profile Overview"),
+              title: const Text("Tổng Quan"),
               expandedHeight: 0,
               floating: false,
               snap: false,
@@ -120,7 +120,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 footer: const Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Text(
-                    'Finished more than 19 task to upgrade rank',
+                    'Hoàn thành 19 công việc để nâng cấp lên 2 sao',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -137,23 +137,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  AppBar buildProfileAppBar() {
-    return AppBar(
-      title: const Text('Profile Overview'),
-      // leadingWidth: 0,
-      // titleSpacing: 0,
-      automaticallyImplyLeading: false,
-      // backgroundColor: Colors.black87,
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.settings),
-          tooltip: 'Setting',
-          onPressed: _openDrawer,
-        ),
-      ],
-    );
-  }
-
   Column buildProfileControls(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -164,17 +147,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Delete Account',
+                'Xoá tài khoản cục bộ',
                 style: TextStyle(color: Colors.red),
               ),
               IconButton(
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                   onPressed: () {
-                    showConfirmDialog(
+                    CustomDialog.showConfirm(
                       context,
                       'Xác nhận muốn xoá tài khoản?',
-                      '*Lưu ý: hành động không thể phục hồi!',
+                      '*không thể phục hồi tài khoản',
                     );
                   },
                   icon: const Icon(
@@ -191,7 +174,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Logout',
+                'Đăng xuất',
                 style: TextStyle(color: Colors.teal),
               ),
               IconButton(

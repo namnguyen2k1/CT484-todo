@@ -1,4 +1,4 @@
-String convertDateInLocalArea({
+String formatTimeLocalArea({
   required DateTime time,
   String prefix = '/',
   area = 'vi',

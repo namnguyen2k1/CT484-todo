@@ -1,27 +1,27 @@
 import 'package:flutter/foundation.dart';
 
-import '../services/category_service.dart';
+import '../services/sqflite_service.dart';
 import '../models/category_model.dart';
 
 class CategoryController with ChangeNotifier {
+  final SqfliteService _service = SqfliteService.instance;
+
   final _allItems = <CategoryModel>[];
-  final CategoryService _service = CategoryService.instance;
 
   int get itemCount => _allItems.length;
   List<CategoryModel> get allItems => List.unmodifiable(_allItems);
 
   Future<void> getAll() async {
-    final items = await _service.getAll();
+    final items = await _service.getAllCategories();
     _allItems.clear();
     _allItems.addAll(items);
     notifyListeners();
   }
 
   Future<void> addItem(CategoryModel item) async {
-    final newItem = await _service.addItem(item);
-    print('in controller: $newItem');
-    _allItems.add(newItem);
+    _allItems.add(item);
     notifyListeners();
+    await _service.addCategory(item);
   }
 
   CategoryModel findById(String id) {
@@ -34,7 +34,7 @@ class CategoryController with ChangeNotifier {
     );
     _allItems[index] = newItem;
     notifyListeners();
-    await _service.updateItem(newItem);
+    await _service.updateCategory(newItem);
   }
 
   Future<void> deleteItem(String id) async {
@@ -43,6 +43,6 @@ class CategoryController with ChangeNotifier {
     );
     _allItems.removeAt(index);
     notifyListeners();
-    await _service.deleteItemById(id);
+    await _service.deleteCategoryById(id);
   }
 }

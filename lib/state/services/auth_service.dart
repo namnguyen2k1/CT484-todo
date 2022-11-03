@@ -5,7 +5,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../common/http_exception.dart';
 import '../models/auth_token_model.dart';
-import './local_key.dart';
 import './shared_preference_service.dart';
 
 class AuthService {
@@ -62,7 +61,7 @@ class AuthService {
 
   Future<void> _saveAuthToken(AuthTokenModel authToken) async {
     await SharedPreferencesSerivce().setString(
-      LocalSavedKey.authTokenKey,
+      SharedKey.authTokenKey,
       json.encode(authToken.toJson()),
     );
   }
@@ -80,7 +79,7 @@ class AuthService {
       savedData.add(json.encode(account));
     }
     await SharedPreferencesSerivce().setStringList(
-      LocalSavedKey.localAccountKey,
+      SharedKey.localAccountKey,
       savedData,
     );
   }
@@ -102,7 +101,7 @@ class AuthService {
       savedData.add(json.encode(account));
     }
     await SharedPreferencesSerivce().setStringList(
-      LocalSavedKey.localAccountKey,
+      SharedKey.localAccountKey,
       savedData,
     );
   }
@@ -110,13 +109,13 @@ class AuthService {
   Future<List<Map<String, dynamic>>> getAllLocalAccounts() async {
     final result = <Map<String, dynamic>>[];
     final bool isExisted = await SharedPreferencesSerivce().isExisted(
-      LocalSavedKey.localAccountKey,
+      SharedKey.localAccountKey,
     );
     if (!isExisted) {
       return result;
     }
     final savedAccountList = await SharedPreferencesSerivce().getStringList(
-          LocalSavedKey.localAccountKey,
+          SharedKey.localAccountKey,
         ) ??
         [];
     for (var account in savedAccountList) {
@@ -143,7 +142,7 @@ class AuthService {
 
   Future<AuthTokenModel?> loadSavedAuthToken() async {
     final bool isExisted = await SharedPreferencesSerivce().isExisted(
-      LocalSavedKey.authTokenKey,
+      SharedKey.authTokenKey,
     );
 
     if (!isExisted) {
@@ -151,7 +150,7 @@ class AuthService {
     }
 
     final savedToken = await SharedPreferencesSerivce().getString(
-      LocalSavedKey.authTokenKey,
+      SharedKey.authTokenKey,
     );
 
     final authToken = AuthTokenModel.fromJson(json.decode(savedToken));
@@ -163,7 +162,7 @@ class AuthService {
 
   Future<void> clearSavedAuthToken() async {
     await SharedPreferencesSerivce().removeStorage(
-      LocalSavedKey.authTokenKey,
+      SharedKey.authTokenKey,
     );
   }
 }

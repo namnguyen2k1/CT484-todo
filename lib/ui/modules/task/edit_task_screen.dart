@@ -5,15 +5,15 @@ import 'package:todoapp/state/controllers/category_controller.dart';
 import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
-import 'package:todoapp/ui/shared/dialog_utils.dart';
+import 'package:todoapp/ui/shared/custom_dialog.dart';
 import 'package:todoapp/ui/shared/rate_star.dart';
 import 'package:uuid/uuid.dart';
 import '../../../state/models/task_model.dart';
 import '../../../state/controllers/task_controller.dart';
-import '../../shared/response_message.dart';
+import '../../shared/custom_snackbar.dart';
 
 class EditTaskScreen extends StatefulWidget {
-  static const routeName = '/edit-task';
+  late final TaskModel todo;
 
   EditTaskScreen(
     TaskModel? todo, {
@@ -22,22 +22,20 @@ class EditTaskScreen extends StatefulWidget {
     if (todo == null) {
       this.todo = TaskModel(
         id: const Uuid().v4(),
-        categoryId: '-99', // find item by string
+        categoryId: '',
         name: '',
         star: 1,
         color: Colors.deepOrange.value.toString(),
         description: '',
         imageUrl: 'assets/images/splash_icon.png',
-        startTime: DateTime.now().toString(),
-        finishTime: DateTime.now().toString(),
+        workingTime: '1800',
+        createdAt: DateTime.now().toString(),
         isCompleted: false,
       );
     } else {
       this.todo = todo;
     }
   }
-
-  late final TaskModel todo;
 
   @override
   State<EditTaskScreen> createState() => _EditTaskScreenState();
@@ -46,10 +44,9 @@ class EditTaskScreen extends StatefulWidget {
 class _EditTaskScreenState extends State<EditTaskScreen> {
   final GlobalKey<FormState> _taskFormKey = GlobalKey();
   final _taskTextEditingController = TextEditingController();
-  // final _imageUrlFocusNode = FocusNode();
+  final _listIcons = FakeData.icons;
   late int _starCount;
   late Color _selectedColor;
-  final _listIcons = FakeData.icons;
   int _selectedIcon = 0;
 
   Map<String, dynamic> _formData = {
@@ -60,21 +57,13 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     'color': "",
     'description': '',
     'imageUrl': '',
-    'startTime': '',
-    'finishTime': '',
+    'workingTime': '',
+    'createdAt': '',
     'isCompleted': false,
   };
 
   @override
   void initState() {
-    // _imageUrlFocusNode.addListener(() {
-    //   if (!_imageUrlFocusNode.hasFocus) {
-    //     if (!_isValidImageUrl(_taskTextEditingController.text)) {
-    //       return;
-    //     }
-    //     setState(() {});
-    //   }
-    // });
     final item = widget.todo;
     _formData = {
       'id': item.id,
@@ -84,11 +73,10 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       'color': item.color,
       'description': item.description,
       'imageUrl': item.imageUrl,
-      'startTime': item.startTime,
-      'finishTime': item.finishTime,
+      'workingTime': item.workingTime,
+      'createdAt': item.createdAt,
       'isCompleted': item.isCompleted
     };
-    // _taskTextEditingController.text = _editedTodo.imageUrl;
     _selectedColor = Color(int.parse(item.color));
     _starCount = item.star;
     for (var index = 0; index < _listIcons.length; index++) {
@@ -129,18 +117,18 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       'categoryId': '',
       'name': '',
       'star': 1,
-      'color': '',
+      'color': Colors.deepOrange.value.toString(),
       'description': '',
-      'imageUrl': '',
-      'startTime': '',
-      'finishTime': '',
+      'imageUrl': 'assets/images/splash_icon.png',
+      'workingTime': '30:00',
+      'createdAt': DateTime.now().toString(),
       'isCompleted': false,
     };
 
     if (mounted) {
-      ScaffoldMessengerCustom.showSuccessMessage(
+      SnackBarCustom.showSuccessMessage(
         context,
-        'Add Task successfully',
+        'Tạo công việc mới thành công!',
       );
     }
   }
@@ -157,9 +145,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
     if (mounted) {
       Navigator.pop(context);
-      ScaffoldMessengerCustom.showSuccessMessage(
+      SnackBarCustom.showSuccessMessage(
         context,
-        'Save Task successfully',
+        'Lưu thông tin công việc thành công',
       );
     }
   }
@@ -170,7 +158,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: Text(_formData['name'] == '' ? 'New Task' : 'Edit Task'),
+        title: Text(_formData['name'] == ''
+            ? 'Tạo công việc mới'
+            : 'Chỉnh sửa công việc'),
       ),
       body: Form(
         key: _taskFormKey,

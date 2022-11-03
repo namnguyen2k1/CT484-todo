@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todoapp/ui/shared/response_message.dart';
+import 'package:todoapp/ui/shared/custom_snackbar.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -15,7 +15,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Profile')),
+      appBar: AppBar(title: const Text('Chỉnh Sửa')),
       body: ListView(
         children: [
           Container(
@@ -35,7 +35,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   size: 20,
                 ),
                 border: OutlineInputBorder(),
-                labelText: 'Username',
+                labelText: 'Tên người dùng',
                 labelStyle: TextStyle(
                   // color: Colors.black87,
                   fontWeight: FontWeight.bold,
@@ -85,7 +85,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   size: 20,
                 ),
                 border: OutlineInputBorder(),
-                labelText: 'Password',
+                labelText: 'Mật khẩu',
                 labelStyle: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
@@ -96,11 +96,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: ElevatedButton.icon(
               onPressed: () {
                 Navigator.pop(context);
-                ScaffoldMessengerCustom.showSuccessMessage(
-                    context, 'Saved Profile!');
+                SnackBarCustom.showSuccessMessage(context, 'Đã lưu thay đổi!');
               },
               icon: const Icon(Icons.save),
-              label: const Text('Save Changed'),
+              label: const Text('Lưu'),
             ),
           ),
         ],

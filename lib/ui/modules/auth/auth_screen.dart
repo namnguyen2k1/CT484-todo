@@ -5,7 +5,7 @@ import 'package:todoapp/state/controllers/app_settings_controller.dart';
 
 import 'package:todoapp/state/controllers/auth_controller.dart';
 import 'package:todoapp/state/services/auth_service.dart';
-import 'package:todoapp/ui/shared/dialog_utils.dart';
+import 'package:todoapp/ui/shared/custom_dialog.dart';
 
 import 'auth_card.dart';
 
@@ -135,7 +135,7 @@ class _AuthScreenState extends State<AuthScreen> {
             IconButton(
               onPressed: () async {
                 print('[Remove] $email');
-                final isAccepted = await showConfirmDialog(
+                final isAccepted = await CustomDialog.showConfirm(
                   context,
                   'Remove this account from your device?',
                   "*Bạn phải nhập lại thông tin ở lần đăng nhập sau.",

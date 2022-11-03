@@ -1,2 +1,7 @@
-export './dark_theme.dart';
-export './light_theme.dart';
+import './light_theme.dart';
+import './dark_theme.dart';
+
+class AppTheme {
+  static final light = LightTheme.value;
+  static final dark = DarkTheme.value;
+}

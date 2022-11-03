@@ -1,28 +1,26 @@
 import 'package:flutter/foundation.dart';
 
-import '../services/task_service.dart';
+import 'package:todoapp/state/services/sqflite_service.dart';
 import '../models/task_model.dart';
 
 class TaskController with ChangeNotifier {
   final _allItems = <TaskModel>[];
-  final TaskService _service = TaskService.instance;
+  final SqfliteService _service = SqfliteService.instance;
 
   int get itemCount => _allItems.length;
   List<TaskModel> get allItems => List.unmodifiable(_allItems);
 
   Future<void> getAll() async {
-    final items = await _service.getAll();
+    final items = await _service.getAllTasks();
     _allItems.clear();
     _allItems.addAll(items);
     notifyListeners();
   }
 
   Future<void> addItem(TaskModel item) async {
-    final newItem = await _service.addItem(item);
-    if (newItem != null) {
-      _allItems.add(newItem);
-      notifyListeners();
-    }
+    _allItems.add(item);
+    notifyListeners();
+    await _service.addTask(item);
   }
 
   TaskModel findById(String id) {
@@ -35,7 +33,7 @@ class TaskController with ChangeNotifier {
     );
     _allItems[index] = newItem;
     notifyListeners();
-    await _service.updateItem(newItem);
+    await _service.updateTask(newItem);
   }
 
   Future<void> deleteItemById(String id) async {
@@ -44,6 +42,6 @@ class TaskController with ChangeNotifier {
     );
     _allItems.removeAt(index);
     notifyListeners();
-    await _service.deleteItemById(id);
+    await _service.deleteTaskById(id);
   }
 }

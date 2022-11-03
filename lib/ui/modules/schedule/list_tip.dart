@@ -1,8 +1,5 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:todoapp/ui/modules/utilities/fake_data.dart';
-
+import 'package:flutter/material.dart';
+import '../utilities/fake_data.dart';
 import '../tip/tip_item.dart';
 
 class ListTipScreen extends StatelessWidget {

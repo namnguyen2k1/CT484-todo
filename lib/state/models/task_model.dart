@@ -6,14 +6,9 @@ class TaskModel {
   final String color;
   final String description;
   final String imageUrl;
-  final String startTime;
-  final String finishTime;
-  bool isCompleted;
-
-  get taskIsCompleted => isCompleted;
-  set setTaskCompleted(bool result) {
-    isCompleted = result;
-  }
+  final String workingTime;
+  final String createdAt;
+  final bool isCompleted;
 
   TaskModel({
     required this.id,
@@ -23,8 +18,8 @@ class TaskModel {
     required this.color,
     required this.description,
     required this.imageUrl,
-    required this.startTime,
-    required this.finishTime,
+    required this.workingTime,
+    required this.createdAt,
     required this.isCompleted,
   });
 
@@ -36,8 +31,8 @@ class TaskModel {
     String? color,
     String? description,
     String? imageUrl,
-    String? startTime,
-    String? finishTime,
+    String? workingTime,
+    String? createdAt,
     bool? isCompleted,
   }) {
     return TaskModel(
@@ -48,8 +43,8 @@ class TaskModel {
       color: color ?? this.color,
       description: description ?? this.description,
       imageUrl: imageUrl ?? this.imageUrl,
-      startTime: startTime ?? this.startTime,
-      finishTime: finishTime ?? this.finishTime,
+      workingTime: workingTime ?? this.workingTime,
+      createdAt: createdAt ?? this.createdAt,
       isCompleted: isCompleted ?? this.isCompleted,
     );
   }
@@ -63,8 +58,8 @@ class TaskModel {
       'color': color,
       'description': description,
       'imageUrl': imageUrl,
-      'startTime': startTime,
-      'finishTime': finishTime,
+      'workingTime': workingTime,
+      'createdAt': createdAt,
       'isCompleted': isCompleted,
     };
   }
@@ -78,14 +73,14 @@ class TaskModel {
       color: json['color'] as String,
       description: json['description'] as String,
       imageUrl: json['imageUrl'] as String,
-      startTime: json['startTime'] as String,
-      finishTime: json['finishTime'] as String,
+      workingTime: json['workingTime'] as String,
+      createdAt: json['createdAt'] as String,
       isCompleted: json['isCompleted'] as bool,
     );
   }
 
   @override
   String toString() {
-    return '$id $categoryId $name $description $star $color $startTime $finishTime';
+    return 'TaskModel($id $categoryId $name $description $star $color $workingTime $createdAt)';
   }
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
 import '../services/shared_preference_service.dart';
-import '../services/local_key.dart';
 
 // 'light', 'dark', 'system'
 enum ThemMode { light, dark, system }
@@ -20,7 +19,7 @@ class AppSettingsController with ChangeNotifier {
   Future<void> _initValue() async {
     // Load Theme
     final String currentTheme = await SharedPreferencesSerivce().getString(
-      LocalSavedKey.appThemeKey,
+      SharedKey.appThemeKey,
     );
     if (currentTheme == 'light') {
       _theme = ThemMode.light;
@@ -30,7 +29,7 @@ class AppSettingsController with ChangeNotifier {
 
     // Load language
     final String currentLanguage = await SharedPreferencesSerivce().getString(
-      LocalSavedKey.appLanguageKey,
+      SharedKey.appLanguageKey,
     );
     if (currentLanguage == 'vi') {
       _language = LanguageMode.vietnamese;
@@ -52,7 +51,7 @@ class AppSettingsController with ChangeNotifier {
       _theme = ThemMode.light;
     }
     await SharedPreferencesSerivce().setString(
-      LocalSavedKey.appThemeKey,
+      SharedKey.appThemeKey,
       theme,
     );
     notifyListeners();
@@ -65,7 +64,7 @@ class AppSettingsController with ChangeNotifier {
       _language = LanguageMode.english;
     }
     await SharedPreferencesSerivce().setString(
-      LocalSavedKey.appLanguageKey,
+      SharedKey.appLanguageKey,
       language,
     );
     notifyListeners();

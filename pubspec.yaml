@@ -26,8 +26,6 @@ dependencies:
   animated_text_kit: ^4.2.2
   intl: ^0.17.0
   flutter_colorpicker: ^1.0.3
-  slide_countdown: ^0.3.4 # stream_duration: disable
-  stream_duration: ^2.0.4 # stream_duration: disable
   neon_circular_timer: ^0.0.7
   widget_circular_animator: ^1.0.0
   simple_ripple_animation: ^0.0.3

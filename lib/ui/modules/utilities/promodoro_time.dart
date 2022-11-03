@@ -1,6 +1,6 @@
-class WorkTimer {
+class PromodoroTime {
   // 25p = 60 * 25 giay
-  static int pomodoroTime =
+  static int workingTime =
       DateTime.now().millisecondsSinceEpoch + 1000 * 60 * 25;
 
   // 5p = 60 * 5 giay

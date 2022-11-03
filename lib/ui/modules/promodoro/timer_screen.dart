@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 
 import '../../../state/controllers/timer_controller.dart';
 
@@ -12,9 +11,10 @@ class TimerScreen extends StatefulWidget {
 }
 
 class _TimerScreenState extends State<TimerScreen> {
-  int _promodoroSecond = 60;
+  int _pomodoroSecond = 60;
+  bool _autoReplay = false;
 
-  final _listPromodoroTimeOptions = <String>[
+  final _listPomodoroTimeOptions = <String>[
     '00:25:00',
     '00:30:00',
     '00:35:00',
@@ -29,10 +29,10 @@ class _TimerScreenState extends State<TimerScreen> {
 
   @override
   void initState() {
-    _promodoroSecond = _converTextTimeToSecond(
-      _listPromodoroTimeOptions[_selectedPromodoroTime],
+    _pomodoroSecond = _converTextTimeToSecond(
+      _listPomodoroTimeOptions[_selectedPromodoroTime],
     );
-    context.read<TimerController>().initialize(_promodoroSecond);
+    context.read<TimerController>().initialize(_pomodoroSecond);
     super.initState();
   }
 
@@ -44,9 +44,9 @@ class _TimerScreenState extends State<TimerScreen> {
 
   void _handleSetDuration(int second) async {
     setState(() {
-      _promodoroSecond = second;
+      _pomodoroSecond = second;
     });
-    context.read<TimerController>().initialize(_promodoroSecond);
+    context.read<TimerController>().initialize(_pomodoroSecond);
   }
 
   int _converTextTimeToSecond(String textTime) {
@@ -63,9 +63,9 @@ class _TimerScreenState extends State<TimerScreen> {
     final int m = int.parse(list[1]);
     final int s = int.parse(list[2]);
     String result = '';
-    if (h != 0) result = result + '$h giờ ';
-    if (m != 0) result = result + '$m phút ';
-    if (s != 0) result = result + '$h giây';
+    if (h != 0) result = '$result$h giờ ';
+    if (m != 0) result = '$result$m phút ';
+    if (s != 0) result = '$result$h giây';
     return result;
   }
 
@@ -92,11 +92,11 @@ class _TimerScreenState extends State<TimerScreen> {
             child: const ButtonsContainer(),
           ),
           const Spacer(flex: 2),
+          buildSwitchAuthBox(context),
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: buildPromodoroSelectBox(),
           ),
-          const Spacer(flex: 2),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -116,6 +116,43 @@ class _TimerScreenState extends State<TimerScreen> {
     );
   }
 
+  Container buildSwitchAuthBox(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 30),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.replay),
+              const SizedBox(width: 10),
+              Text(
+                'Tự động lặp lại',
+                style: TextStyle(
+                  color: Theme.of(context).focusColor,
+                ),
+              ),
+            ],
+          ),
+          IconButton(
+            padding: EdgeInsets.zero,
+            onPressed: () {
+              setState(() {
+                _autoReplay = !_autoReplay;
+              });
+            },
+            icon: Icon(
+              _autoReplay ? Icons.toggle_on : Icons.toggle_off,
+              size: 50,
+              color:
+                  _autoReplay ? Theme.of(context).focusColor : Colors.black87,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
   Column buildPromodoroSelectBox() {
     const double maxSizeImage = 80;
     return Column(
@@ -130,7 +167,7 @@ class _TimerScreenState extends State<TimerScreen> {
                   const Icon(Icons.timelapse),
                   const SizedBox(width: 10),
                   Text(
-                    'Duration Time',
+                    'Thời gian làm việc',
                     style: TextStyle(
                       color: Theme.of(context).focusColor,
                     ),
@@ -139,7 +176,7 @@ class _TimerScreenState extends State<TimerScreen> {
               ),
               Text(
                 _converSecondsToText(
-                  _listPromodoroTimeOptions[_selectedPromodoroTime],
+                  _listPomodoroTimeOptions[_selectedPromodoroTime],
                 ),
               )
             ],
@@ -149,8 +186,8 @@ class _TimerScreenState extends State<TimerScreen> {
         Wrap(
           runSpacing: 10.0, // column spacing
           spacing: 10.0, // row spacing
-          children: _listPromodoroTimeOptions.map((e) {
-            int index = _listPromodoroTimeOptions.indexOf(e);
+          children: _listPomodoroTimeOptions.map((e) {
+            int index = _listPomodoroTimeOptions.indexOf(e);
             return IconButton(
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(
@@ -159,7 +196,7 @@ class _TimerScreenState extends State<TimerScreen> {
               ),
               onPressed: () {
                 final int second = _converTextTimeToSecond(
-                  _listPromodoroTimeOptions[index],
+                  _listPomodoroTimeOptions[index],
                 );
                 _handleSetDuration(second);
                 setState(() {
@@ -167,18 +204,17 @@ class _TimerScreenState extends State<TimerScreen> {
                 });
               },
               icon: Container(
-                width: 200,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   border: index == _selectedPromodoroTime
                       ? Border.all(
-                          color: Theme.of(context).focusColor, width: 2.0)
+                          color: Theme.of(context).focusColor, width: 3.0)
                       : Border.all(color: Colors.transparent, width: 0.0),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 padding: const EdgeInsets.all(10),
                 child: Text(
-                  _listPromodoroTimeOptions[index],
+                  _listPomodoroTimeOptions[index],
                   style: TextStyle(
                     color: Theme.of(context)
                         .floatingActionButtonTheme

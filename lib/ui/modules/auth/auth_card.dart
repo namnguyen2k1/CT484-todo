@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../common/http_exception.dart';
-import '../../shared/dialog_utils.dart';
+import '../../shared/custom_dialog.dart';
 
 import '../../../state/controllers/auth_controller.dart';
 
@@ -55,7 +55,7 @@ class _AuthCardState extends State<AuthCard> {
             );
       }
     } catch (error) {
-      showAlearDialog(
+      CustomDialog.showAlert(
         context,
         '',
         (error is HttpException) ? error.toString() : 'Authentication failed',

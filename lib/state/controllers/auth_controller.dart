@@ -5,7 +5,7 @@ import '../models/auth_token_model.dart';
 import '../services/auth_service.dart';
 
 class AuthController with ChangeNotifier {
-  AuthTokenModel? _user;
+  AuthTokenModel? _authToken;
   Timer? _authTimer;
 
   final AuthService _authService = AuthService();
@@ -15,12 +15,12 @@ class AuthController with ChangeNotifier {
   }
 
   AuthTokenModel? get authToken {
-    return _user;
+    return _authToken;
   }
 
   void _setAuthToken(AuthTokenModel token) {
-    _user = token;
-    _autoLogout(); // Bậc timer tự động logout
+    _authToken = token;
+    _autoLogout();
     notifyListeners();
   }
 
@@ -49,24 +49,24 @@ class AuthController with ChangeNotifier {
   Future<void> removeLocalAccount(String email) async {
     await _authService.deleteLocalAccount(email);
     notifyListeners();
-    _authService.clearSavedAuthToken();
+    await _authService.clearSavedAuthToken();
   }
 
   Future<void> logout() async {
-    _user = null;
+    _authToken = null;
     if (_authTimer != null) {
       _authTimer!.cancel();
       _authTimer = null;
     }
     notifyListeners();
-    _authService.clearSavedAuthToken();
+    await _authService.clearSavedAuthToken();
   }
 
   void _autoLogout() {
     if (_authTimer != null) {
       _authTimer!.cancel();
     }
-    final timeToExpiry = _user!.expiryDate
+    final timeToExpiry = _authToken!.expiryDate
         .difference(
           DateTime.now(),
         )

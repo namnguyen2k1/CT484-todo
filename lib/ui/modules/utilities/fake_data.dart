@@ -1,18 +1,67 @@
-// import '../../../state/models/task_model.dart';
-// import '../../../state/models/category_model.dart';
-
 class FakeData {
   static final List<Map<String, dynamic>> tips = [
-    {'id': 1, 'name': 'Học không khó, chỉ khó ở bản thân mình'},
+    {
+      'id': 1,
+      'name':
+          'Dành thời gian tìm hiểu nhiều hơn về promodoro để cải thiện hiệu quả làm việc'
+    },
     {
       'id': 2,
-      'name':
-          'Học không khó, chỉ khó ở bản thân mình. Học không khó, chỉ khó ở bản thân mình.',
+      'name': 'Không nên ngồi quá 45 phút, bạn cần thư giãn giữa giờ',
     },
     {
       'id': 3,
+      'name': 'Tập trung cao độ giúp cải thiện hiệu quả làm việc',
+    },
+    {
+      'id': 4,
       'name':
-          'Học không khó, chỉ khó ở bản thân mình. Học không khó, chỉ khó ở bản thân mình. Học không khó, chỉ khó ở bản thân mình',
+          'Các thể loại nhạc nên nghe: Nhạc sóng não Alpha, Baroque, Instrumental (Nhạc hòa tấu)',
+    },
+    {
+      'id': 5,
+      'name':
+          'Luyện tập, rèn luyện cơ thể khỏe mạnh, đạt trạng thái tốt nhất khi học tập và làm việc',
+    },
+    {
+      'id': 6,
+      'name': 'Tạo một môi trường học tập trong lành',
+    },
+    {
+      'id': 7,
+      'name': 'Ưu tiên và tập trung vào những nhiệm vụ quan trọng trước',
+    },
+    {
+      'id': 8,
+      'name': 'Đặt mục tiêu phấn đấu cụ thể, rõ ràng',
+    },
+    {
+      'id': 9,
+      'name': 'Quản lý và tận dụng thời gian hợp lý',
+    },
+    {
+      'id': 10,
+      'name': 'Có phương pháp tổng hợp thông tin tiếp thu được',
+    },
+    {
+      'id': 11,
+      'name': 'Phân chia thời gian học hợp lý',
+    },
+    {
+      'id': 12,
+      'name': 'Ứng dụng kiến thức để thực hành',
+    },
+    {
+      'id': 13,
+      'name': 'Làm việc nhóm, luôn đặt câu hỏi và phản biện',
+    },
+    {
+      'id': 14,
+      'name': 'Có chiến lược học tập rõ ràng',
+    },
+    {
+      'id': 15,
+      'name': 'Đánh giá và ghi nhận kết quả đạt được',
     },
   ];
 
@@ -46,5 +95,10 @@ class FakeData {
     {'name': 'theme.png', 'path': 'assets/icons/theme.png'},
   ];
 
+  static List<Map<String, dynamic>> coverImages = [
+    {"name": "cover_image_2.png", "path": "assets/images/cover_image_2.png"},
+    {"name": "cover_image_3.png", "path": "assets/images/cover_image_3.png"},
+    {"name": "cover_image_4.png", "path": "assets/images/cover_image_4.png"},
+  ];
   //
 }
