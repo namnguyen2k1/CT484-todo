@@ -58,7 +58,9 @@ class _AuthCardState extends State<AuthCard> {
       CustomDialog.showAlert(
         context,
         '',
-        (error is HttpException) ? error.toString() : 'Authentication failed',
+        (error is HttpException)
+            ? error.toString()
+            : 'Xác thực người dùng thất bại',
       );
     }
     _isSubmitting.value = false;
@@ -84,7 +86,6 @@ class _AuthCardState extends State<AuthCard> {
 
   @override
   Widget build(BuildContext context) {
-    final deviceSize = MediaQuery.of(context).size;
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -133,7 +134,9 @@ class _AuthCardState extends State<AuthCard> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          _authMode == AuthMode.login ? 'First time here?' : 'Already account?',
+          _authMode == AuthMode.login
+              ? 'Bạn là người mới? '
+              : 'Đã có tài khoản? ',
         ),
         TextButton(
           onPressed: _switchAuthMode,
@@ -144,7 +147,7 @@ class _AuthCardState extends State<AuthCard> {
             ),
           ),
           child: Text(
-            _authMode == AuthMode.login ? 'register' : 'login',
+            _authMode == AuthMode.login ? 'đăng kí' : 'đăng nhập',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).focusColor,
@@ -169,7 +172,7 @@ class _AuthCardState extends State<AuthCard> {
         ),
       ),
       child: Text(
-        _authMode == AuthMode.login ? 'LOGIN' : 'REGISTER',
+        _authMode == AuthMode.login ? 'ĐĂNG NHẬP' : 'ĐĂNG KÍ',
       ),
     );
   }
@@ -178,7 +181,7 @@ class _AuthCardState extends State<AuthCard> {
     return TextFormField(
       enabled: _authMode == AuthMode.signup,
       decoration: InputDecoration(
-        labelText: 'Confirm password',
+        labelText: 'Xác nhận mật khẩu',
         prefixIcon: const Padding(
           padding: EdgeInsets.only(left: 10, right: 10),
           child: Icon(
@@ -201,7 +204,7 @@ class _AuthCardState extends State<AuthCard> {
       validator: _authMode == AuthMode.signup
           ? (value) {
               if (value != _passwordController.text) {
-                return 'Passwords do not match!';
+                return 'Mật khẩu nhập không khớp!';
               }
               return null;
             }
@@ -213,7 +216,7 @@ class _AuthCardState extends State<AuthCard> {
     return TextFormField(
       obscureText: !_passwordVisible,
       decoration: InputDecoration(
-        labelText: 'Password',
+        labelText: 'Mật khẩu',
         prefixIcon: const Padding(
           padding: EdgeInsets.only(left: 10, right: 10),
           child: Icon(
@@ -235,7 +238,7 @@ class _AuthCardState extends State<AuthCard> {
       controller: _passwordController,
       validator: (value) {
         if (value == null || value.length < 5) {
-          return 'Password is too short!';
+          return 'Mật khẩu phải trên 5 kí tự!';
         }
         return null;
       },
@@ -248,7 +251,7 @@ class _AuthCardState extends State<AuthCard> {
   Widget _buildEmailField() {
     return TextFormField(
       decoration: const InputDecoration(
-        labelText: 'Email address',
+        labelText: 'Email',
         prefixIcon: Padding(
           padding: EdgeInsets.only(left: 10, right: 10),
           child: Icon(
@@ -259,7 +262,7 @@ class _AuthCardState extends State<AuthCard> {
       keyboardType: TextInputType.emailAddress,
       validator: (value) {
         if (value!.isEmpty || !value.contains('@')) {
-          return 'Invalid email!';
+          return 'Email không họp lệ!';
         }
         return null;
       },

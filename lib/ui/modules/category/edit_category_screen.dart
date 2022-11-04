@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:todoapp/state/controllers/category_controller.dart';
-import 'package:todoapp/state/controllers/task_controller.dart';
-import 'package:todoapp/state/models/category_model.dart';
-import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import 'package:uuid/uuid.dart';
 import 'package:provider/provider.dart';
 
+import 'package:todoapp/state/controllers/category_controller.dart';
+import 'package:todoapp/state/models/category_model.dart';
+import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import 'package:todoapp/ui/shared/custom_snackbar.dart';
 
 class EditCategoryScreen extends StatefulWidget {
@@ -23,7 +22,7 @@ class EditCategoryScreen extends StatefulWidget {
         name: '',
         description: '',
         imageUrl: '',
-        color: Colors.deepOrange.value.toString(),
+        color: Colors.greenAccent.value.toString(),
         createdAt: DateTime.now().toString(),
       );
     }
@@ -131,7 +130,8 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: Text(_formData['code'] == '' ? 'New Category' : 'Edit Category'),
+        title: Text(
+            _formData['code'] == '' ? 'Danh mục mới' : 'Chỉnh sửa danh mục'),
       ),
       body: Form(
         key: _formKey,
@@ -140,18 +140,18 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
           children: [
             buildFieldName(
               prefixIcon: Icons.note,
-              label: 'Category Name',
+              label: 'Tên danh mục',
             ),
             const Divider(),
             buildFieldCode(
               prefixIcon: Icons.code,
-              label: 'Category Code',
+              label: 'Mã danh mục',
             ),
             buildListIcons(context),
             const Divider(),
             buildFieldDescription(
               prefixIcon: Icons.description,
-              label: 'Description',
+              label: 'Mô tả',
             ),
             const Divider(),
             buildFieldColor(context),
@@ -172,7 +172,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
         Container(
           alignment: Alignment.topLeft,
           padding: const EdgeInsets.all(10),
-          child: const Text('Icon'),
+          child: const Text('Chọn icon:'),
         ),
         GridView.count(
             crossAxisCount: sizeImage,
@@ -212,7 +212,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Pick Color'),
+        const Text('Chọn màu sắc:'),
         const SizedBox(
           width: 10,
         ),
@@ -271,7 +271,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
                       ),
                       actions: [
                         TextButton(
-                          child: const Text('Close'),
+                          child: const Text('Đóng'),
                           onPressed: () {
                             Navigator.pop(context);
                             setState(() {});
@@ -392,7 +392,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
       },
       validator: (value) {
         if (value!.isEmpty || value.length < 3) {
-          return 'Invalid description!';
+          return 'Mô tả phải nhiều hơn 3 kí tự!';
         }
         return null;
       },
@@ -430,7 +430,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
             Navigator.pop(context);
           },
           icon: const Icon(Icons.arrow_left),
-          label: const Text('Back'),
+          label: const Text('Quay lại'),
         ),
         const SizedBox(
           width: 50,
@@ -439,13 +439,13 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
           ElevatedButton.icon(
             onPressed: _handleAddItem,
             icon: const Icon(Icons.add_circle),
-            label: const Text('Add'),
+            label: const Text('Thêm'),
           ),
         ] else ...[
           ElevatedButton.icon(
             onPressed: _handleSaveItem,
             icon: const Icon(Icons.save),
-            label: const Text('Save'),
+            label: const Text('Lưu'),
           )
         ],
       ],

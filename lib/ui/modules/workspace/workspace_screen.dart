@@ -48,8 +48,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           if (categoryController.allItems.isEmpty) {
             CustomDialog.showAlert(
               context,
-              'Cant create task without creating category',
-              'plese create new category!',
+              'Không thể tạo công việc mới nếu chưa tạo danh mục',
+              '*tạo danh mục trước khi tạo công việc mới',
             );
           } else {
             Navigator.pushNamed(context, '/workspace/schedule/todo');

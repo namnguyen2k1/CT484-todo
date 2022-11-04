@@ -1,12 +1,16 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:todoapp/state/controllers/category_controller.dart';
 
 import 'package:todoapp/ui/modules/profile/profile_drawer.dart';
 import 'package:todoapp/ui/shared/custom_dialog.dart';
 import 'package:todoapp/ui/shared/rate_star.dart';
 import 'package:widget_circular_animator/widget_circular_animator.dart';
 import '../../../state/controllers/auth_controller.dart';
+import '../../../state/controllers/task_controller.dart';
 
 class SalesData {
   SalesData(this.year, this.sales);
@@ -29,6 +33,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _scaffoldAppSettingsKey.currentState!.openDrawer();
   }
 
+  int _starCountFollowingTaskCompleted() {
+    final tasks = context.read<TaskController>().allItems;
+    print(tasks.length);
+    var completedTask = 0;
+    for (var element in tasks) {
+      if (element.isCompleted == true) completedTask++;
+    }
+    print(completedTask);
+    var starCount = 1;
+    if (completedTask >= 10) starCount = 2;
+    if (completedTask >= 50) starCount = 3;
+    print(starCount);
+    return 1;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -45,7 +64,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       key: _scaffoldAppSettingsKey,
       drawer: const AppDrawer(),
-      // drawerEnableOpenDragGesture: false,
       body: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
@@ -83,49 +101,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 Positioned(
                   bottom: 10,
-                  right: 10,
-                  child: CircleAvatar(
-                    radius: 15,
-                    backgroundColor: Colors.white,
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/workspace/profile/edit');
-                      },
-                      icon: const Icon(
-                        Icons.build,
-                        size: 15,
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 10,
                   left: 20,
                   child: buildProfileHeader(),
                 )
               ],
             ),
             buildProfileInformations(),
-            buildProfileStatistical(),
-            Center(
-              child: CircularPercentIndicator(
-                radius: 60.0,
-                lineWidth: 10.0,
-                percent: 0.9,
-                center: const Center(child: RateStar(starCount: 2)),
-                backgroundColor: Colors.red,
-                progressColor: Colors.green,
-                footer: const Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Text(
-                    'Hoàn thành 19 công việc để nâng cấp lên 2 sao',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ),
             const Divider(),
             buildProfileControls(context),
             const SizedBox(
@@ -142,7 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -169,7 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         const Divider(),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -178,71 +159,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: TextStyle(color: Colors.teal),
               ),
               IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  onPressed: () {
-                    context.read<AuthController>().logout();
-                    print('[logout]');
-                  },
-                  icon: const Icon(
-                    Icons.exit_to_app,
-                    color: Colors.teal,
-                  ))
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                onPressed: () {
+                  context.read<AuthController>().logout();
+                  print('[logout]');
+                },
+                icon: const Icon(
+                  Icons.exit_to_app,
+                  color: Colors.teal,
+                ),
+              )
             ],
           ),
         ),
+        const Divider(),
       ],
     );
   }
 
   Container buildProfileInformations() {
+    final tasks = context.read<TaskController>().allItems;
+    final easy = tasks.where((element) => element.star == 1).toList().length;
+    final medium = tasks.where((element) => element.star == 2).toList().length;
+    final hard = tasks.where((element) => element.star == 3).toList().length;
+    final categories = context.read<CategoryController>().allItems;
     return Container(
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        border:
-            Border.all(color: Theme.of(context).backgroundColor, width: 2.0),
-        borderRadius: BorderRadius.circular(10),
-      ),
       child: Column(
-        children: const [
-          buildTextInformation(
+        children: [
+          const buildTextInformation(
             icon: Icons.email,
             fieldTitle: 'Email',
             fieldContent: 'nanam133hg@gmail.com',
           ),
-          Divider(),
-          buildTextInformation(
+          const Divider(),
+          const buildTextInformation(
             icon: Icons.home,
-            fieldTitle: 'Address',
-            fieldContent: 'Đại học Cần Thơ, Ninh Kiều Cần Thơ',
+            fieldTitle: 'Địa Chỉ',
+            fieldContent: '../../../..',
           ),
-        ],
-      ),
-    );
-  }
-
-  Container buildProfileStatistical() {
-    return Container(
-      margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        border:
-            Border.all(color: Theme.of(context).backgroundColor, width: 2.0),
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-      ),
-      child: Column(
-        children: const [
+          const Divider(),
           buildTextInformation(
             icon: Icons.task,
-            fieldTitle: 'Task',
-            fieldContent: '103 easy, 56 middle, 19 hard',
+            fieldTitle: 'Tổng quan công việc',
+            fieldContent: '$easy dễ, $medium trung bình, $hard khó',
           ),
-          Divider(),
+          const Divider(),
           buildTextInformation(
-            icon: Icons.category,
-            fieldTitle: 'Category',
-            fieldContent: '9 category',
+            icon: Icons.view_comfortable,
+            fieldTitle: 'Tổng quan danh mục',
+            fieldContent: '${categories.length} danh mục',
           ),
         ],
       ),
@@ -278,19 +246,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
           width: 10,
         ),
         Column(
-          children: const [
+          children: [
             Text(
               'Nguyen Anh Nam',
               style: TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
+                color:
+                    Theme.of(context).floatingActionButtonTheme.backgroundColor,
                 shadows: textShadow,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: paddingSize * 4,
             ),
-            RateStar(starCount: 3),
+            RateStar(starCount: _starCountFollowingTaskCompleted()),
           ],
         ),
       ],
@@ -321,19 +291,26 @@ class buildTextInformation extends StatelessWidget {
             size: 30,
           ),
           const SizedBox(
-            width: 10,
+            width: 15,
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 '$fieldTitle:',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(
-                height: 5,
+                height: 10,
               ),
-              Text(fieldContent)
+              Text(
+                fieldContent,
+                style: TextStyle(
+                  color: Theme.of(context).focusColor,
+                ),
+              ),
             ],
           )
         ],

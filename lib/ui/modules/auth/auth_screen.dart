@@ -94,7 +94,7 @@ class _AuthScreenState extends State<AuthScreen> {
       child: Column(
         children: [
           const SizedBox(height: 10),
-          const Text('Quick Login'),
+          const Text('Đăng nhập nhanh'),
           const SizedBox(height: 10),
           ...listWidgetLogin,
         ],
@@ -137,7 +137,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 print('[Remove] $email');
                 final isAccepted = await CustomDialog.showConfirm(
                   context,
-                  'Remove this account from your device?',
+                  'Xoá thông tin tài khoản này?',
                   "*Bạn phải nhập lại thông tin ở lần đăng nhập sau.",
                 );
                 if (isAccepted != false) {

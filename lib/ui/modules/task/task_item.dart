@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todoapp/state/controllers/category_controller.dart';
 import 'package:todoapp/state/controllers/task_controller.dart';
 import 'package:todoapp/ui/modules/utilities/fake_data.dart';
+import 'package:todoapp/ui/modules/utilities/format_time.dart';
 
 import 'package:todoapp/ui/shared/custom_dialog.dart';
 import 'package:todoapp/ui/shared/rate_star.dart';
@@ -50,37 +52,6 @@ class _TaskItemState extends State<TaskItem> {
     super.initState();
   }
 
-  String _convertTimeStringToFormatTimer(String time) {
-    final timeMap = DateTime.parse(_createdAt);
-    final int h = timeMap.hour;
-    final int m = timeMap.minute;
-    final int s = timeMap.second;
-    final int day = timeMap.day;
-    final int month = timeMap.month;
-    final int year = timeMap.year;
-    String createdTime = '';
-    createdTime = '$createdTime${h.toString().padLeft(2, '0')}:';
-    createdTime = '$createdTime${m.toString().padLeft(2, '0')}:';
-    createdTime = createdTime + s.toString().padLeft(2, '0');
-    if (h >= 12) {
-      createdTime = '$createdTime PM';
-    }
-    createdTime = '$createdTime AM';
-    String createdDay = '$day/$month/$year';
-    return '$createdTime  $createdDay';
-  }
-
-  String _converSecondsToText(int seconds) {
-    final h = (seconds / 3600).floor();
-    final m = ((seconds / 60) % 60).floor();
-    final s = (seconds % 60).floor();
-    String result = '';
-    if (h != 0) result = '$result$h giờ ';
-    if (m != 0) result = '$result$m phút ';
-    if (s != 0) result = '$result$h giây';
-    return result;
-  }
-
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
@@ -103,6 +74,9 @@ class _TaskItemState extends State<TaskItem> {
   }
 
   Container buildTaskHeader(Size deviceSize, BuildContext context) {
+    final categoryController = context.read<CategoryController>();
+    final taskController = context.read<TaskController>();
+    final category = categoryController.findById(_categoryId);
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
@@ -112,6 +86,21 @@ class _TaskItemState extends State<TaskItem> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          SizedBox(
+            width: 40,
+            child: Container(
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: Color(int.parse(category.color)),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Text(
+                category.code,
+                style: const TextStyle(overflow: TextOverflow.ellipsis),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
           Expanded(
             child: Text(
               _name,
@@ -148,22 +137,20 @@ class _TaskItemState extends State<TaskItem> {
                     });
                   }
                   if (widget.item != null) {
-                    if (mounted) {
-                      await context.read<TaskController>().updateItem(
-                            TaskModel(
-                              id: _id,
-                              categoryId: _categoryId,
-                              name: _name,
-                              star: _star,
-                              color: _color,
-                              description: _description,
-                              imageUrl: _imageUrl,
-                              createdAt: _createdAt,
-                              workingTime: _workingTime,
-                              isCompleted: _isCompleted,
-                            ),
-                          );
-                    }
+                    await taskController.updateItem(
+                      TaskModel(
+                        id: _id,
+                        categoryId: _categoryId,
+                        name: _name,
+                        star: _star,
+                        color: _color,
+                        description: _description,
+                        imageUrl: _imageUrl,
+                        createdAt: _createdAt,
+                        workingTime: _workingTime,
+                        isCompleted: _isCompleted,
+                      ),
+                    );
                   }
                 },
                 icon: Icon(
@@ -191,7 +178,7 @@ class _TaskItemState extends State<TaskItem> {
           ),
         ),
         const SizedBox(
-          width: 10,
+          width: 5,
         ),
         Expanded(
           child: Container(
@@ -214,21 +201,35 @@ class _TaskItemState extends State<TaskItem> {
                           color: Color(int.parse(_color)),
                         ),
                         const SizedBox(
-                          width: 10,
+                          width: 5,
                         ),
                         Text(
-                          _converSecondsToText(1200),
+                          FormatTime.converSecondsToText(
+                              int.parse(_workingTime)),
                           style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            overflow: TextOverflow.ellipsis,
                             color: Theme.of(context).textTheme.bodyText1!.color,
                           ),
                         ),
                       ],
                     ),
-                    Text(
-                      _convertTimeStringToFormatTimer(_createdAt),
-                      style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyText1!.color,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          FormatTime.convertTimestampToFormatTimer(_createdAt),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            overflow: TextOverflow.ellipsis,
+                            color: Theme.of(context).textTheme.bodyText1!.color,
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        Icon(
+                          Icons.query_builder,
+                          color: Color(int.parse(_color)),
+                        ),
+                      ],
                     ),
                   ],
                 ),

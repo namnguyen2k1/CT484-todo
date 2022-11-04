@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
 
 import 'package:todoapp/state/services/sqflite_service.dart';
+import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import '../models/task_model.dart';
 
 class TaskController with ChangeNotifier {
-  final _allItems = <TaskModel>[];
+  final _allItems = <TaskModel>[...FakeData.tasks];
   final SqfliteService _service = SqfliteService.instance;
 
   int get itemCount => _allItems.length;
@@ -13,7 +14,7 @@ class TaskController with ChangeNotifier {
   Future<void> getAll() async {
     final items = await _service.getAllTasks();
     _allItems.clear();
-    _allItems.addAll(items);
+    _allItems.addAll([...items]);
     notifyListeners();
   }
 
@@ -27,6 +28,10 @@ class TaskController with ChangeNotifier {
     return _allItems.firstWhere((item) => item.id == id);
   }
 
+  List<TaskModel> findTasksByCategoryId(String id) {
+    return _allItems.where((element) => element.categoryId == id).toList();
+  }
+
   Future<void> updateItem(TaskModel newItem) async {
     final index = _allItems.indexWhere(
       (i) => i.id == newItem.id,
@@ -34,6 +39,12 @@ class TaskController with ChangeNotifier {
     _allItems[index] = newItem;
     notifyListeners();
     await _service.updateTask(newItem);
+  }
+
+  Future<void> swapTwoItem(int first, int second) async {
+    final temp = _allItems[first];
+    _allItems[first] = _allItems[second];
+    _allItems[second] = temp;
   }
 
   Future<void> deleteItemById(String id) async {

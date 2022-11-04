@@ -19,11 +19,26 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _starCountFollowingTaskCompleted() {
+    final tasks = context.read<TaskController>().allItems;
+    print(tasks.length);
+    var completedTask = 0;
+    for (var element in tasks) {
+      if (element.isCompleted == true) completedTask++;
+    }
+    print(completedTask);
+    var starCount = 1;
+    if (completedTask >= 10) starCount = 2;
+    if (completedTask >= 50) starCount = 3;
+    print(starCount);
+    return 1;
+  }
+
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
-    final double widthCategory = deviceSize.width * 0.5;
-    const double heightCategory = 150.00;
+    final double widthCategory = deviceSize.width * 0.7;
+    const double heightCategory = 170.00;
 
     return Scaffold(
       appBar: buildHomeScreenAppBar(context),
@@ -39,14 +54,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   AppBar buildHomeScreenAppBar(BuildContext context) {
     return AppBar(
-      title: Row(children: const [
-        Text(
+      title: Row(children: [
+        const Text(
           'Nguyen Nam',
         ),
-        SizedBox(
+        const SizedBox(
           width: 10,
         ),
-        RateStar(starCount: 3)
+        RateStar(
+          starCount: _starCountFollowingTaskCompleted(),
+        ),
       ]),
       actions: [
         TextButton(
@@ -57,19 +74,10 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () {
             Navigator.pushNamed(context, '/workspace/profile');
           },
-          child: const WidgetCircularAnimator(
-            size: 50,
-            innerIconsSize: 1,
-            outerIconsSize: 2,
-            innerAnimation: Curves.bounceOut,
-            outerAnimation: Curves.ease,
-            innerColor: Colors.teal,
-            outerColor: Colors.deepOrange,
-            child: CircleAvatar(
-              radius: 25,
-              backgroundColor: Colors.transparent,
-              backgroundImage: AssetImage('assets/images/avatar.gif'),
-            ),
+          child: const CircleAvatar(
+            radius: 20,
+            backgroundColor: Colors.transparent,
+            backgroundImage: AssetImage('assets/images/avatar.gif'),
           ),
         )
       ],
@@ -77,37 +85,38 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildCurrentTask(BuildContext context) {
-    return Consumer<TaskController>(
-      builder: (context, taskController, child) {
-        final listTask = taskController.allItems;
-
-        return Column(
-          children: [
-            Container(
-              alignment: Alignment.topLeft,
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.pending,
-                    color: Theme.of(context).focusColor,
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  const Text('Công việc hiện tại'),
-                ],
+    final listTaskPending = context
+        .read<TaskController>()
+        .allItems
+        .where((element) => element.isCompleted == false)
+        .toList();
+    final taskPending =
+        listTaskPending.indexWhere((e) => e.isCompleted == false);
+    return Column(
+      children: [
+        Container(
+          alignment: Alignment.topLeft,
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            children: [
+              Icon(
+                Icons.pending,
+                color: Theme.of(context).focusColor,
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: listTask.isEmpty
-                  ? const EmptyBox(message: 'Hiện chưa có công việc')
-                  : TaskItem(item: listTask[0]),
-            ),
-          ],
-        );
-      },
+              const SizedBox(
+                width: 10,
+              ),
+              const Text('Công việc hiện tại'),
+            ],
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(10),
+          child: listTaskPending.isEmpty
+              ? const EmptyBox(message: 'Hiện chưa có công việc mới')
+              : TaskItem(item: listTaskPending[taskPending]),
+        ),
+      ],
     );
   }
 
@@ -140,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Theme.of(context).focusColor,
                   ),
                   const SizedBox(width: 10),
-                  Text('Thể loại (${listCategory.length})'),
+                  Text('Danh mục (${listCategory.length})'),
                 ],
               ),
             ),
@@ -152,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       scrollDirection: Axis.horizontal,
                       children: listWidgetCategory,
                     )
-                  : const EmptyBox(message: 'Hiện chưa có thể loại'),
+                  : const EmptyBox(message: 'Hiện chưa có danh mục'),
             )
           ],
         );

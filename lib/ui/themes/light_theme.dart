@@ -15,7 +15,7 @@ class LightTheme {
           borderRadius: BorderRadius.circular(
             15.0,
           ),
-          color: Colors.white,
+          color: Colors.teal,
           border: Border.all(
             color: Colors.green,
             width: 2.0,

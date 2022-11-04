@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
+
 import 'package:todoapp/state/controllers/category_controller.dart';
 import 'package:todoapp/ui/modules/utilities/fake_data.dart';
+import 'package:todoapp/ui/modules/utilities/format_time.dart';
 import 'package:toggle_switch/toggle_switch.dart';
-
-import 'package:todoapp/ui/shared/custom_dialog.dart';
 import 'package:todoapp/ui/shared/rate_star.dart';
 import 'package:uuid/uuid.dart';
 import '../../../state/models/task_model.dart';
@@ -25,7 +25,7 @@ class EditTaskScreen extends StatefulWidget {
         categoryId: '',
         name: '',
         star: 1,
-        color: Colors.deepOrange.value.toString(),
+        color: Colors.deepPurpleAccent.value.toString(),
         description: '',
         imageUrl: 'assets/images/splash_icon.png',
         workingTime: '1800',
@@ -47,6 +47,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   final _listIcons = FakeData.icons;
   late int _starCount;
   late Color _selectedColor;
+  int _selectedCategoryIndex = 0;
   int _selectedIcon = 0;
 
   Map<String, dynamic> _formData = {
@@ -61,6 +62,10 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     'createdAt': '',
     'isCompleted': false,
   };
+
+  final int _minSlider = 5;
+  final int _maxSlider = 120;
+  late int _currentSliderValue;
 
   @override
   void initState() {
@@ -77,11 +82,18 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       'createdAt': item.createdAt,
       'isCompleted': item.isCompleted
     };
+    _currentSliderValue = int.parse(item.workingTime) ~/ 60;
     _selectedColor = Color(int.parse(item.color));
     _starCount = item.star;
     for (var index = 0; index < _listIcons.length; index++) {
       if (_listIcons[index]['path'] == item.imageUrl) {
         _selectedIcon = index;
+      }
+    }
+    final category = context.read<CategoryController>().allItems;
+    for (var index = 0; index < category.length; index++) {
+      if (category[index].id == item.categoryId) {
+        _selectedCategoryIndex = index;
       }
     }
     super.initState();
@@ -90,7 +102,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   @override
   void dispose() {
     _taskTextEditingController.dispose();
-    // _imageUrlFocusNode.dispose();
     super.dispose();
   }
 
@@ -106,6 +117,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       return;
     }
     _taskFormKey.currentState!.save();
+    _formData['workingTime'] = '${_currentSliderValue * 60}';
     print(_formData.toString());
     await context.read<TaskController>().addItem(
           TaskModel.fromJson(_formData),
@@ -154,6 +166,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentColor = Theme.of(context).focusColor;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -169,11 +182,45 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           children: <Widget>[
             buildNameField(),
             buildDescriptionField(),
-            buildListIcons(context),
-            buildRankField(),
+            const Divider(),
             buildCategoryList(),
+            const Divider(),
+            Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Chon thoi gian:'),
+                      Text(
+                        FormatTime.converSecondsToText(
+                            _currentSliderValue * 60),
+                      )
+                    ],
+                  ),
+                ),
+                Slider(
+                  inactiveColor: currentColor.withOpacity(0.2),
+                  activeColor: currentColor,
+                  value: _currentSliderValue.toDouble(),
+                  min: _minSlider.toDouble(),
+                  max: _maxSlider.toDouble(),
+                  divisions: _maxSlider ~/ _minSlider - 1,
+                  onChanged: (double value) {
+                    setState(() {
+                      _currentSliderValue = value.toInt();
+                    });
+                  },
+                ),
+              ],
+            ),
+            const Divider(),
+            buildListIcons(context),
+            const Divider(),
+            buildRankField(),
+            const Divider(),
             buildFieldColor(context),
-            // buildTaskImagePreview(),
             const Divider(),
             buildControlButtons(context)
           ],
@@ -188,7 +235,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       children: [
         const Padding(
           padding: EdgeInsets.all(8.0),
-          child: Text('Name'),
+          child: Text('Tên công việc:'),
         ),
         TextFormField(
           initialValue: _formData['name'],
@@ -201,7 +248,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           // autofocus: true,
           validator: (value) {
             if (value!.isEmpty) {
-              return 'Please provide a value.';
+              return 'Vui lòng nhập tên công việc!';
             }
             return null;
           },
@@ -219,7 +266,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       children: [
         const Padding(
           padding: EdgeInsets.all(8.0),
-          child: Text('Description'),
+          child: Text('Mô tả công việc:'),
         ),
         TextFormField(
           initialValue: _formData['description'],
@@ -232,10 +279,10 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           keyboardType: TextInputType.multiline,
           validator: (value) {
             if (value!.isEmpty) {
-              return 'Please enter a description.';
+              return 'Vui lòng nhập mô tả công việc!';
             }
             if (value.length < 10) {
-              return 'Should be at least 10 characters long.';
+              return 'Nhập mô tả nhiều hơn 10 kí tự!';
             }
             return null;
           },
@@ -256,7 +303,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         Container(
           alignment: Alignment.topLeft,
           padding: const EdgeInsets.all(10),
-          child: const Text('Icon'),
+          child: const Text('Chọn icon:'),
         ),
         GridView.count(
             crossAxisCount: sizeImage,
@@ -292,89 +339,14 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     );
   }
 
-  TextFormField buildImageURLField() {
-    return TextFormField(
-      decoration: const InputDecoration(
-        isDense: true,
-        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        border: OutlineInputBorder(),
-        labelText: 'Enter image url',
-      ),
-      keyboardType: TextInputType.url,
-      textInputAction: TextInputAction.done,
-
-      initialValue: _formData['imageUrl'],
-      // controller: _taskTextEditingController,
-      // focusNode: _imageUrlFocusNode,
-      // onFieldSubmitted: (value) => _saveForm(),
-      validator: (value) {
-        if (value!.isEmpty) {
-          return 'Please enter a image URL';
-        }
-        if (!_isValidImageUrl(value)) {
-          return 'Please enter a valid image URL';
-        }
-        return null;
-      },
-      onSaved: (value) {
-        _formData['imageUrl'] = value!;
-      },
-    );
-  }
-
-  Column buildTaskImagePreview() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text('Image'),
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 1,
-                  color: Colors.grey,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: _taskTextEditingController.text.isEmpty
-                  ? const Align(
-                      alignment: Alignment.center,
-                      child: Text('Review'),
-                    )
-                  : FittedBox(
-                      child: Image.network(
-                        _formData['imageUrl'],
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: buildImageURLField(),
-            )
-          ],
-        ),
-      ],
-    );
-  }
-
   Column buildRankField() {
-    const listRank = ['Easy', 'Middle', 'Hard'];
+    const listRank = ['Dễ', 'Trung bình', 'Khó'];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
           padding: EdgeInsets.all(10),
-          child: Text('Rank'),
+          child: Text('Chọn độ khó:'),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -383,6 +355,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             ToggleSwitch(
               initialLabelIndex: _starCount - 1,
               totalSwitches: 3,
+              minWidth: 90,
               labels: listRank,
               onToggle: (index) {
                 print('switched to: $index ${listRank[index!]}');
@@ -404,7 +377,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       children: [
         const Padding(
           padding: EdgeInsets.all(10),
-          child: Text('Color'),
+          child: Text('Chọn màu sắc:'),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -455,7 +428,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                       ),
                       actions: [
                         TextButton(
-                          child: const Text('Close'),
+                          child: const Text('Đóng'),
                           onPressed: () {
                             Navigator.pop(context);
                           },
@@ -488,7 +461,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       children: [
         const Padding(
           padding: EdgeInsets.all(10),
-          child: Text('Category Tag'),
+          child: Text('Chọn danh mục:'),
         ),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -498,6 +471,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               activeFgColor: Colors.white,
               inactiveBgColor: Colors.grey,
               inactiveFgColor: Colors.white,
+              initialLabelIndex: _selectedCategoryIndex,
               labels: labels,
               onToggle: (index) {
                 _formData['categoryId'] = listCategory[index!].id;
@@ -518,7 +492,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             Navigator.pop(context);
           },
           icon: const Icon(Icons.arrow_left),
-          label: const Text('Back'),
+          label: const Text('Đóng'),
         ),
         const SizedBox(
           width: 50,
@@ -527,13 +501,13 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           ElevatedButton.icon(
             onPressed: _handleAddItem,
             icon: const Icon(Icons.add_circle),
-            label: const Text('Add'),
+            label: const Text('Thêm'),
           ),
         ] else ...[
           ElevatedButton.icon(
             onPressed: _handleSaveItem,
             icon: const Icon(Icons.save),
-            label: const Text('Save'),
+            label: const Text('Lưu'),
           ),
         ],
       ],

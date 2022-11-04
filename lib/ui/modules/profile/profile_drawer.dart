@@ -22,7 +22,7 @@ class _AppDrawerState extends State<AppDrawer> {
       child: Column(
         children: <Widget>[
           AppBar(
-            title: const Text('App Settings'),
+            title: const Text('Cài đặc'),
             automaticallyImplyLeading: false,
           ),
           const Divider(),

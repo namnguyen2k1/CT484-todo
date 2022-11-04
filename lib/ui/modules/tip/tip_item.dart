@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
 class TipItem extends StatelessWidget {
-  const TipItem({super.key, required this.tip});
+  const TipItem({super.key, required this.tip, required this.colorTip});
+
+  final Color colorTip;
 
   final Map<String, dynamic> tip;
 
@@ -16,9 +18,7 @@ class TipItem extends StatelessWidget {
         children: [
           Icon(
             Icons.tips_and_updates,
-            color: Color(
-              (math.Random().nextDouble() * 0xFFFFFF).toInt(),
-            ).withOpacity(1.0),
+            color: colorTip,
           ),
           const SizedBox(
             width: 10,

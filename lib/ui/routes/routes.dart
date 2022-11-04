@@ -15,7 +15,6 @@ const String alarmScreen = '/workspace/alarm';
 const String alarmPromodoroScreen = '/workspace/alarm/promodoro';
 
 const String profileScreen = '/workspace/profile';
-const String editProfileScreen = '/workspace/profile/edit';
 
 const String profileSettingScreen = '/workspace/profile/setting';
 
@@ -69,11 +68,6 @@ Route<dynamic> routeController(RouteSettings settings) {
     case profileScreen:
       return MaterialPageRoute(
         builder: (context) => const ProfileScreen(),
-      );
-
-    case editProfileScreen:
-      return MaterialPageRoute(
-        builder: (context) => const EditProfileScreen(),
       );
 
     case workspaceScreen:

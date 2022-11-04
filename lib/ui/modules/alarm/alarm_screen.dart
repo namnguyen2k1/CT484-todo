@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:neon_circular_timer/neon_circular_timer.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:todoapp/state/controllers/task_controller.dart';
 import 'package:todoapp/ui/modules/task/task_item.dart';
+import 'package:todoapp/ui/modules/utilities/format_time.dart';
 import 'package:todoapp/ui/screens.dart';
 import 'package:todoapp/ui/shared/empty_box.dart';
+
+import '../../../state/models/task_model.dart';
 
 class AlarmScreen extends StatefulWidget {
   const AlarmScreen({Key? key}) : super(key: key);
@@ -15,7 +19,8 @@ class AlarmScreen extends StatefulWidget {
 
 class _AlarmScreenState extends State<AlarmScreen> {
   final GlobalKey<ScaffoldState> _scaffoldAlarmKey = GlobalKey<ScaffoldState>();
-  int _currentTask = 0;
+  final CountDownController _countDowncontroller = CountDownController();
+  int secondsCount = 20;
 
   @override
   void initState() {
@@ -29,14 +34,95 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const double heightScroll = 190;
-    const double lineWidth = 15;
+    final alltasks = context.read<TaskController>().allItems;
+    final listTasks =
+        alltasks.where((element) => element.isCompleted == false).toList();
     return Scaffold(
       key: _scaffoldAlarmKey,
       appBar: buildAlarmAppBar(),
       body: ListView(
         children: [
-          buildCurrentTaskTimer(heightScroll, lineWidth),
+          if (listTasks.isEmpty) ...[
+            const EmptyBox(message: 'Hiện tại không có công việc')
+          ],
+          if (listTasks.length == 1) ...[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                buildTask(listTasks[0]),
+                buildCircularTimer(listTasks[0], context),
+              ],
+            ),
+          ] else if (listTasks.length >= 2) ...[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                buildTask(listTasks[0]),
+                buildCircularTimer(listTasks[0], context),
+                buildTask(listTasks[1], isCurentTask: false),
+              ],
+            ),
+          ]
+        ],
+      ),
+    );
+  }
+
+  NeonCircularTimer buildCircularTimer(TaskModel task, BuildContext context) {
+    return NeonCircularTimer(
+      width: 160,
+      duration: int.parse(task.workingTime),
+      isReverse: true,
+      controller: _countDowncontroller,
+      isTimerTextShown: true,
+      textFormat: TextFormat.HH_MM_SS,
+      strokeWidth: 15,
+      textStyle: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 30,
+      ),
+      neumorphicEffect: false,
+      innerFillGradient: LinearGradient(colors: [
+        Theme.of(context).focusColor,
+        Theme.of(context).floatingActionButtonTheme.backgroundColor!
+      ]),
+      neonGradient: LinearGradient(colors: [
+        Theme.of(context).focusColor,
+        Theme.of(context).floatingActionButtonTheme.backgroundColor!
+      ]),
+    );
+  }
+
+  Container buildTask(TaskModel task, {bool isCurentTask = true}) {
+    const double paddingSize = 15;
+    return Container(
+      padding: const EdgeInsets.only(
+        top: 0,
+        right: paddingSize,
+        left: paddingSize,
+        bottom: paddingSize * 2,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(paddingSize),
+            child: Row(
+              children: [
+                Icon(isCurentTask ? Icons.query_builder : Icons.pending),
+                const SizedBox(width: 10),
+                Text(
+                  isCurentTask ? 'Đang diễn ra' : 'Sắp tới',
+                  style: TextStyle(
+                    color: Theme.of(context).focusColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          TaskItem(
+            item: task,
+          ),
         ],
       ),
     );
@@ -58,106 +144,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
           },
         ),
       ],
-    );
-  }
-
-  Widget buildCurrentTaskTimer(double heightScroll, double lineWidth) {
-    const double paddingSize = 15;
-    return Consumer<TaskController>(
-      builder: (context, taskController, child) {
-        final listTasks = taskController.allItems;
-        if (listTasks.isNotEmpty) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.only(
-                  top: 0,
-                  right: paddingSize,
-                  left: paddingSize,
-                  bottom: paddingSize * 2,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(paddingSize),
-                      child: Row(
-                        children: const [
-                          Icon(Icons.build),
-                          SizedBox(width: 10),
-                          Text(
-                            'Đang diễn ra',
-                            style: TextStyle(
-                              color: Colors.teal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (listTasks.isNotEmpty)
-                      TaskItem(
-                        item: listTasks[_currentTask],
-                      ),
-                  ],
-                ),
-              ),
-              CircularPercentIndicator(
-                radius: (heightScroll - 2 * lineWidth) * 0.5,
-                lineWidth: lineWidth,
-                percent: 0.9,
-                center: const Text(
-                  "01:30:00",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0,
-                  ),
-                ),
-                backgroundColor: Colors.red,
-                progressColor: Colors.green,
-              ),
-              Container(
-                padding: const EdgeInsets.only(
-                  top: 0,
-                  left: paddingSize,
-                  right: paddingSize,
-                  bottom: paddingSize,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(paddingSize),
-                      child: Row(
-                        children: const [
-                          Icon(Icons.pending),
-                          SizedBox(width: 10),
-                          Text(
-                            'Sắp tới',
-                            style: TextStyle(
-                              color: Colors.teal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (listTasks.isNotEmpty)
-                      TaskItem(
-                        item: listTasks[_currentTask + 1],
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        } else {
-          return const EmptyBox(
-              message: 'Not Current Task. Lets create new task!');
-        }
-      },
     );
   }
 }

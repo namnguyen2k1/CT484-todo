@@ -1,4 +1,76 @@
+import 'package:todoapp/state/models/category_model.dart';
+import 'package:todoapp/state/models/task_model.dart';
+import 'package:flutter/material.dart';
+
 class FakeData {
+  static final List<CategoryModel> categorise = [
+    CategoryModel(
+      id: '1',
+      name: 'Danh mục 1',
+      code: '123',
+      color: Colors.deepOrange.value.toString(),
+      description: 'Mô tả danh mục 1',
+      imageUrl: icons[0]['path'],
+      createdAt: DateTime.now().toString(),
+    ),
+    CategoryModel(
+      id: '2',
+      name: 'Danh mục 2',
+      code: '124',
+      color: Colors.green.value.toString(),
+      description: 'Mô tả danh mục 2',
+      imageUrl: icons[1]['path'],
+      createdAt: DateTime.now().toString(),
+    ),
+    CategoryModel(
+      id: '3',
+      name: 'Danh mục 3',
+      code: '125',
+      color: Colors.yellow.value.toString(),
+      description: 'Mô tả danh mục 3',
+      imageUrl: icons[2]['path'],
+      createdAt: DateTime.now().toString(),
+    ),
+  ];
+  static final List<TaskModel> tasks = [
+    TaskModel(
+      id: '1',
+      categoryId: '1',
+      name: 'Công việc 1',
+      star: 1,
+      color: Colors.deepOrange.value.toString(),
+      description: 'Mô tả công việc 1',
+      imageUrl: icons[0]['path'],
+      workingTime: '1800',
+      createdAt: DateTime.now().toString(),
+      isCompleted: true,
+    ),
+    TaskModel(
+      id: '2',
+      categoryId: '2',
+      name: 'Công việc 2',
+      star: 2,
+      color: Colors.purple.value.toString(),
+      description: 'Mô tả công việc 2',
+      imageUrl: icons[4]['path'],
+      workingTime: '3800',
+      createdAt: DateTime.now().toString(),
+      isCompleted: true,
+    ),
+    TaskModel(
+      id: '3',
+      categoryId: '2',
+      name: 'Công việc 3',
+      star: 2,
+      color: Colors.blue.value.toString(),
+      description: 'Mô tả công việc 3',
+      imageUrl: icons[9]['path'],
+      workingTime: '120',
+      createdAt: DateTime.now().toString(),
+      isCompleted: false,
+    ),
+  ];
+
   static final List<Map<String, dynamic>> tips = [
     {
       'id': 1,

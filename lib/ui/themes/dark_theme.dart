@@ -16,7 +16,7 @@ class DarkTheme {
           borderRadius: BorderRadius.circular(
             15.0,
           ),
-          color: Colors.white,
+          color: Colors.orange,
           border: Border.all(
             color: Colors.deepOrange,
             width: 2.0,

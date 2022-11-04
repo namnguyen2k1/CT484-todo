@@ -7,6 +7,7 @@ import '../../shared/custom_dialog.dart';
 import '../../shared/empty_box.dart';
 import '../task/edit_task_screen.dart';
 import '../task/task_item.dart';
+import '../utilities/format_time.dart';
 
 class ListTask extends StatefulWidget {
   const ListTask({super.key});
@@ -17,57 +18,117 @@ class ListTask extends StatefulWidget {
 
 class _ListTaskState extends State<ListTask> {
   int _selectedTask = -1;
+  DateTime _selectedDate = DateTime.now();
+
+  List<TaskModel> _fillterTaskDaily(List<TaskModel> tasks) {
+    final filterTasks = tasks
+        .where((element) =>
+            FormatTime.convertTimestampToFormatTimer(element.createdAt) ==
+            FormatTime.convertTimestampToFormatTimer(_selectedDate.toString()))
+        .toList();
+    return filterTasks;
+  }
 
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
+    final taskController = context.read<TaskController>();
+    final listTask = _fillterTaskDaily(taskController.allItems);
+    for (var item in listTask) {
+      print(item.toString());
+    }
 
-    return Consumer<TaskController>(
-      builder: (context, taskController, child) {
-        final listTask = taskController.allItems;
-        for (var item in listTask) {
-          print(item.toString());
-        }
-        return listTask.isNotEmpty
-            ? ListView.builder(
-                itemCount: listTask.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final bool isMatch = _selectedTask == index;
-                  return Container(
-                    padding: const EdgeInsets.all(10),
-                    width: deviceSize.width,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                              foregroundColor:
-                                  Theme.of(context).backgroundColor,
-                              padding: EdgeInsets.zero,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _selectedTask = index;
-                              });
-                            },
-                            child: TaskItem(
-                              item: listTask[index],
+    return Column(
+      children: [
+        buildTaskHeader(context),
+        Expanded(
+          child: listTask.isNotEmpty
+              ? ListView.builder(
+                  itemCount: listTask.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final bool isMatch = _selectedTask == index;
+                    return Container(
+                      padding: const EdgeInsets.all(10),
+                      width: deviceSize.width,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                foregroundColor:
+                                    Theme.of(context).backgroundColor,
+                                padding: EdgeInsets.zero,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _selectedTask = index;
+                                });
+                              },
+                              child: TaskItem(
+                                item: listTask[index],
+                              ),
                             ),
                           ),
-                        ),
-                        isMatch
-                            ? buildTaskControlButton(context, listTask, index)
-                            : const SizedBox(
-                                width: 0,
-                              ),
-                      ],
-                    ),
-                  );
-                },
-              )
-            : const EmptyBox(message: 'Chưa có nhiệm vụ nào được tạo');
-      },
+                          isMatch
+                              ? buildTaskControlButton(context, listTask, index)
+                              : const SizedBox(
+                                  width: 0,
+                                ),
+                        ],
+                      ),
+                    );
+                  },
+                )
+              : const EmptyBox(message: 'Chưa có nhiệm vụ nào được tạo'),
+        ),
+      ],
+    );
+  }
+
+  Container buildTaskHeader(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.date_range_rounded,
+                color: Theme.of(context).focusColor,
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Text(
+                FormatTime.formatTimeLocalArea(time: _selectedDate),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            icon: Icon(
+              Icons.manage_search,
+              color: Theme.of(context).focusColor,
+            ),
+            onPressed: () async {
+              final currentDate = DateTime.now();
+              final selectedDate = await showDatePicker(
+                context: context,
+                initialDate: currentDate,
+                firstDate: DateTime(currentDate.year - 1),
+                lastDate: DateTime(currentDate.year + 1),
+              );
+              setState(() {
+                _selectedDate = selectedDate!;
+              });
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -120,6 +181,7 @@ class _ListTaskState extends State<ListTask> {
               constraints: const BoxConstraints(),
               onPressed: () {
                 if (_selectedTask == 0) return;
+                taskController.swapTwoItem(_selectedTask, _selectedTask - 1);
                 setState(() {
                   _selectedTask = _selectedTask - 1;
                 });
@@ -133,6 +195,7 @@ class _ListTaskState extends State<ListTask> {
               constraints: const BoxConstraints(),
               onPressed: () {
                 if (_selectedTask == listTask.length - 1) return;
+                taskController.swapTwoItem(_selectedTask, _selectedTask + 1);
                 setState(() {
                   _selectedTask = _selectedTask + 1;
                 });

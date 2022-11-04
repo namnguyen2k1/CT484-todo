@@ -79,6 +79,8 @@ class SqfliteService {
       FOREIGN KEY (categoryId) REFERENCES $_categoryTableName(id) ON DELETE SET NULL
     )''',
     );
+
+    //
   }
 
   void close() {
@@ -144,7 +146,7 @@ class SqfliteService {
     final db = await _database;
     final result = await db.query(
       _taskTableName,
-      orderBy: 'startTime DESC',
+      orderBy: 'createdAt DESC',
     );
     return result.map((item) => TaskModel.fromJson(item)).toList();
   }

@@ -93,7 +93,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       indicatorWeight: 2,
       tabs: const [
         Tab(child: Text('Công việc')),
-        Tab(child: Text('Thể loại')),
+        Tab(child: Text('Danh mục')),
         Tab(child: Text('Mẹo')),
       ],
     );
