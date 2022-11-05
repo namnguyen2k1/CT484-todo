@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todoapp/state/controllers/app_settings_controller.dart';
 
 import '../../../state/controllers/timer_controller.dart';
+import 'timer_buttons.dart';
 
 class TimerScreen extends StatefulWidget {
   const TimerScreen({super.key});
@@ -25,14 +27,18 @@ class _TimerScreenState extends State<TimerScreen> {
     '01:30:00'
   ];
 
-  int _selectedPromodoroTime = 0;
+  int _selectedPomodoroTime = 0;
 
   @override
   void initState() {
     _pomodoroSecond = _converTextTimeToSecond(
-      _listPomodoroTimeOptions[_selectedPromodoroTime],
+      _listPomodoroTimeOptions[_selectedPomodoroTime],
     );
     context.read<TimerController>().initialize(_pomodoroSecond);
+
+    final appSettingController = context.read<AppSettingsController>();
+    _autoReplay = appSettingController.isAutoReplayPomodoroTimer;
+
     super.initState();
   }
 
@@ -75,7 +81,7 @@ class _TimerScreenState extends State<TimerScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Promodoro Timer'),
+        title: const Text('Quản lý thời gian Pomodoro'),
         automaticallyImplyLeading: false,
       ),
       body: Column(
@@ -92,10 +98,10 @@ class _TimerScreenState extends State<TimerScreen> {
             child: const ButtonsContainer(),
           ),
           const Spacer(flex: 2),
-          buildSwitchAuthBox(context),
+          buildSwitchAutoReplay(context),
           Padding(
             padding: const EdgeInsets.all(10.0),
-            child: buildPromodoroSelectBox(),
+            child: buildPomodoroSelectBox(),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -106,7 +112,7 @@ class _TimerScreenState extends State<TimerScreen> {
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.arrow_left),
-                label: const Text('Back'),
+                label: const Text('Đóng'),
               ),
             ],
           ),
@@ -116,7 +122,8 @@ class _TimerScreenState extends State<TimerScreen> {
     );
   }
 
-  Container buildSwitchAuthBox(BuildContext context) {
+  Container buildSwitchAutoReplay(BuildContext context) {
+    final appSettingController = context.read<AppSettingsController>();
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Row(
@@ -136,10 +143,13 @@ class _TimerScreenState extends State<TimerScreen> {
           ),
           IconButton(
             padding: EdgeInsets.zero,
-            onPressed: () {
+            onPressed: () async {
               setState(() {
                 _autoReplay = !_autoReplay;
               });
+              await appSettingController.changeStateAutoReplayPomodoroTimer(
+                autoReplay: _autoReplay,
+              );
             },
             icon: Icon(
               _autoReplay ? Icons.toggle_on : Icons.toggle_off,
@@ -153,7 +163,7 @@ class _TimerScreenState extends State<TimerScreen> {
     );
   }
 
-  Column buildPromodoroSelectBox() {
+  Column buildPomodoroSelectBox() {
     const double maxSizeImage = 80;
     return Column(
       children: [
@@ -176,7 +186,7 @@ class _TimerScreenState extends State<TimerScreen> {
               ),
               Text(
                 _converSecondsToText(
-                  _listPomodoroTimeOptions[_selectedPromodoroTime],
+                  _listPomodoroTimeOptions[_selectedPomodoroTime],
                 ),
               )
             ],
@@ -200,13 +210,13 @@ class _TimerScreenState extends State<TimerScreen> {
                 );
                 _handleSetDuration(second);
                 setState(() {
-                  _selectedPromodoroTime = index;
+                  _selectedPomodoroTime = index;
                 });
               },
               icon: Container(
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  border: index == _selectedPromodoroTime
+                  border: index == _selectedPomodoroTime
                       ? Border.all(
                           color: Theme.of(context).focusColor, width: 3.0)
                       : Border.all(color: Colors.transparent, width: 0.0),
@@ -238,7 +248,7 @@ class TimerTextWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<String>(
       builder: (context, timeLeft, child) {
-        return buildPromodoroTimer(
+        return buildPomodoroTimer(
           context,
           timeLeft,
         );
@@ -246,7 +256,7 @@ class TimerTextWidget extends StatelessWidget {
     );
   }
 
-  Container buildPromodoroTimer(BuildContext context, String timerText) {
+  Container buildPomodoroTimer(BuildContext context, String timerText) {
     final listCurrentTime = timerText.split(':');
     const double numberSize = 60;
     const double timeWidth = 100;
@@ -310,75 +320,4 @@ class TimerTextWidget extends StatelessWidget {
   }
 
   //
-}
-
-class ButtonsContainer extends StatelessWidget {
-  const ButtonsContainer({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<ButtonState>(
-      builder: (context, buttonState, child) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (buttonState == ButtonState.initial) const StartButton(),
-            if (buttonState == ButtonState.started) ...[
-              const PauseButton(),
-              const SizedBox(width: 20),
-              const ResetButton()
-            ],
-            if (buttonState == ButtonState.paused) ...[
-              const StartButton(),
-              const SizedBox(width: 20),
-              const ResetButton()
-            ],
-            if (buttonState == ButtonState.finished) const ResetButton()
-          ],
-        );
-      },
-    );
-  }
-}
-
-class StartButton extends StatelessWidget {
-  const StartButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () {
-        context.read<TimerController>().start();
-      },
-      child: const Icon(Icons.play_arrow),
-    );
-  }
-}
-
-class PauseButton extends StatelessWidget {
-  const PauseButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () {
-        context.read<TimerController>().pause();
-      },
-      child: const Icon(Icons.pause),
-    );
-  }
-}
-
-class ResetButton extends StatelessWidget {
-  const ResetButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () {
-        context.read<TimerController>().reset();
-      },
-      child: const Icon(Icons.replay),
-    );
-  }
 }

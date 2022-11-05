@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:neon_circular_timer/neon_circular_timer.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
+
 import 'package:todoapp/state/controllers/task_controller.dart';
 import 'package:todoapp/ui/modules/task/task_item.dart';
-import 'package:todoapp/ui/modules/utilities/format_time.dart';
-import 'package:todoapp/ui/screens.dart';
 import 'package:todoapp/ui/shared/empty_box.dart';
 
 import '../../../state/models/task_model.dart';
@@ -130,16 +128,16 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
   AppBar buildAlarmAppBar() {
     return AppBar(
-      title: const Text('Task Notice'),
+      title: const Text('Quản lý tiến độ công việc'),
       automaticallyImplyLeading: false,
       actions: [
         IconButton(
           icon: const Icon(Icons.self_improvement),
-          tooltip: 'Setting',
+          tooltip: 'Pomodoro',
           onPressed: () {
             Navigator.pushNamed(
               _scaffoldAlarmKey.currentContext!,
-              '/workspace/alarm/promodoro',
+              '/workspace/alarm/timer',
             );
           },
         ),

@@ -60,7 +60,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     'imageUrl': '',
     'workingTime': '',
     'createdAt': '',
-    'isCompleted': false,
+    'isCompleted': 0,
   };
 
   final int _minSlider = 5;
@@ -80,7 +80,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       'imageUrl': item.imageUrl,
       'workingTime': item.workingTime,
       'createdAt': item.createdAt,
-      'isCompleted': item.isCompleted
+      'isCompleted': item.isCompleted ? 1 : 0
     };
     _currentSliderValue = int.parse(item.workingTime) ~/ 60;
     _selectedColor = Color(int.parse(item.color));
@@ -123,21 +123,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           TaskModel.fromJson(_formData),
         );
 
-    // _resetForm
-    _formData = {
-      'id': const Uuid().v4(),
-      'categoryId': '',
-      'name': '',
-      'star': 1,
-      'color': Colors.deepOrange.value.toString(),
-      'description': '',
-      'imageUrl': 'assets/images/splash_icon.png',
-      'workingTime': '30:00',
-      'createdAt': DateTime.now().toString(),
-      'isCompleted': false,
-    };
-
     if (mounted) {
+      Navigator.pop(context);
       SnackBarCustom.showSuccessMessage(
         context,
         'Tạo công việc mới thành công!',
@@ -150,6 +137,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       return;
     }
     _taskFormKey.currentState!.save();
+    _formData['workingTime'] = '${_currentSliderValue * 60}';
     print(_formData.toString());
     await context
         .read<TaskController>()

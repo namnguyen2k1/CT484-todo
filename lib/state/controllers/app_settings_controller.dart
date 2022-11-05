@@ -12,9 +12,11 @@ enum LanguageMode { vietnamese, english, japan, china }
 class AppSettingsController with ChangeNotifier {
   ThemMode _theme = ThemMode.light;
   LanguageMode _language = LanguageMode.english;
+  bool _autoReplayPomodoroTimer = false;
 
   bool get isEnglishLanguage => _language == LanguageMode.english;
   bool get isDarkTheme => _theme == ThemMode.dark;
+  bool get isAutoReplayPomodoroTimer => _autoReplayPomodoroTimer;
 
   Future<void> _initValue() async {
     // Load Theme
@@ -35,6 +37,17 @@ class AppSettingsController with ChangeNotifier {
       _language = LanguageMode.vietnamese;
     } else if (currentLanguage == 'eng') {
       _language = LanguageMode.english;
+    }
+
+    // Load language
+    final bool currentStateIsAutoReplayPomodoroTimer =
+        await SharedPreferencesSerivce().getBool(
+      SharedKey.appAutoReplayPomodoroKey,
+    );
+    if (currentStateIsAutoReplayPomodoroTimer) {
+      _autoReplayPomodoroTimer = true;
+    } else {
+      _autoReplayPomodoroTimer = false;
     }
 
     notifyListeners();
@@ -66,6 +79,20 @@ class AppSettingsController with ChangeNotifier {
     await SharedPreferencesSerivce().setString(
       SharedKey.appLanguageKey,
       language,
+    );
+    notifyListeners();
+  }
+
+  Future<void> changeStateAutoReplayPomodoroTimer(
+      {required bool autoReplay}) async {
+    if (autoReplay) {
+      _autoReplayPomodoroTimer = true;
+    } else {
+      _autoReplayPomodoroTimer = false;
+    }
+    await SharedPreferencesSerivce().setBool(
+      SharedKey.appAutoReplayPomodoroKey,
+      autoReplay,
     );
     notifyListeners();
   }

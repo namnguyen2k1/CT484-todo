@@ -7,6 +7,6 @@ export 'modules/task/edit_task_screen.dart';
 export './modules/schedule/schedule_search_screen.dart';
 export 'modules/alarm/alarm_screen.dart';
 export './modules/profile/profile_screen.dart';
-export './modules/promodoro/timer_screen.dart';
+export 'modules/timer/timer_screen.dart';
 export './modules/workspace/workspace_screen.dart';
 export './modules/error/error_screen.dart';

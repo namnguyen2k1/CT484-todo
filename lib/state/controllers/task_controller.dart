@@ -1,19 +1,19 @@
 import 'package:flutter/foundation.dart';
 
 import 'package:todoapp/state/services/sqflite_service.dart';
-import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import '../models/task_model.dart';
 
 class TaskController with ChangeNotifier {
-  final _allItems = <TaskModel>[...FakeData.tasks];
+  final _allItems = <TaskModel>[];
   final SqfliteService _service = SqfliteService.instance;
 
   int get itemCount => _allItems.length;
   List<TaskModel> get allItems => List.unmodifiable(_allItems);
 
   Future<void> getAll() async {
+    // gọi trong hàm main()
     final items = await _service.getAllTasks();
-    _allItems.clear();
+    // _allItems.clear();
     _allItems.addAll([...items]);
     notifyListeners();
   }

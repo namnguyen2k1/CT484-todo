@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 
 import '../services/sqflite_service.dart';
 import '../models/category_model.dart';
@@ -8,13 +7,15 @@ import '../models/category_model.dart';
 class CategoryController with ChangeNotifier {
   final SqfliteService _service = SqfliteService.instance;
 
-  final _allItems = <CategoryModel>[...FakeData.categorise];
+  final _allItems = <CategoryModel>[];
 
   int get itemCount => _allItems.length;
   List<CategoryModel> get allItems => List.unmodifiable(_allItems);
 
   Future<void> getAll() async {
+    // gọi trong hàm main()
     final items = await _service.getAllCategories();
+    // _allItems.clear();
     _allItems.addAll([...items]);
     notifyListeners();
   }

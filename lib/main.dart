@@ -15,6 +15,11 @@ import './ui/themes/theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Load data from sqflite
+  await CategoryController().getAll();
+  await TaskController().getAll();
+
+  // Load biến mỗi trường
   await dotenv.load();
   runApp(const MyApp());
 }

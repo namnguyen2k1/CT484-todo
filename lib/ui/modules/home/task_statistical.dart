@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
+
 import 'package:todoapp/state/models/task_model.dart';
 import 'package:todoapp/ui/shared/empty_box.dart';
-
-import '../../../state/controllers/app_settings_controller.dart';
 import '../../../state/controllers/task_controller.dart';
 import '../utilities/format_time.dart';
 
@@ -198,8 +197,12 @@ class _TaskStatisticalState extends State<TaskStatistical> {
                   ],
                 ),
               )
-            : const EmptyBox(message: 'Không tồn tại kế hoạch làm việc'),
-        if (tasks.where((element) => element.isCompleted == true).length ==
+            : const Padding(
+                padding: EdgeInsets.all(10.0),
+                child: EmptyBox(message: 'Không tồn tại kế hoạch làm việc'),
+              ),
+        if (tasks.isNotEmpty &&
+            tasks.where((element) => element.isCompleted == true).length ==
                 tasks.length &&
             FormatTime.convertTimestampToFormatTimer(
                     _selectedDate.toString()) ==

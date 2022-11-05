@@ -13,12 +13,14 @@ class RiskTextCustom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RichText(
+      overflow: TextOverflow.ellipsis,
       text: TextSpan(
         children: [
           TextSpan(
             text: content,
             style: TextStyle(
               color: Theme.of(context).textTheme.bodyText1!.color,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           WidgetSpan(

@@ -114,7 +114,7 @@ class _CategoryItemState extends State<CategoryItem> {
             ),
           ),
           Text(
-            '[${tasksOfCategoryType.length} việc]',
+            '(${tasksOfCategoryType.length} việc)',
             style: TextStyle(
               color: Theme.of(context).textTheme.bodyText1!.color,
               fontWeight: FontWeight.bold,
@@ -173,17 +173,12 @@ class _CategoryItemState extends State<CategoryItem> {
                     Row(
                       children: [
                         Text(
-                          FormatTime.convertTimestampToFormatTimer(_createdAt),
+                          '-- ${FormatTime.convertTimestampToFormatTimer(_createdAt)} --',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             overflow: TextOverflow.ellipsis,
                             color: Theme.of(context).textTheme.bodyText1!.color,
                           ),
-                        ),
-                        const SizedBox(width: 5),
-                        Icon(
-                          Icons.query_builder,
-                          color: Color(int.parse(_color)),
                         ),
                       ],
                     ),

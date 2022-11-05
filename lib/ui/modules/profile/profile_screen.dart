@@ -11,6 +11,7 @@ import 'package:todoapp/ui/shared/rate_star.dart';
 import 'package:widget_circular_animator/widget_circular_animator.dart';
 import '../../../state/controllers/auth_controller.dart';
 import '../../../state/controllers/task_controller.dart';
+import 'profile_information.dart';
 
 class SalesData {
   SalesData(this.year, this.sales);
@@ -107,112 +108,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
             buildProfileInformations(),
-            const Divider(),
             buildProfileControls(context),
             const SizedBox(
               height: 200,
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Column buildProfileControls(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Xoá tài khoản cục bộ',
-                style: TextStyle(color: Colors.red),
-              ),
-              IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  onPressed: () {
-                    CustomDialog.showConfirm(
-                      context,
-                      'Xác nhận muốn xoá tài khoản?',
-                      '*không thể phục hồi tài khoản',
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.no_accounts,
-                    color: Colors.red,
-                  ))
-            ],
-          ),
-        ),
-        const Divider(),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Đăng xuất',
-                style: TextStyle(color: Colors.teal),
-              ),
-              IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                onPressed: () {
-                  context.read<AuthController>().logout();
-                  print('[logout]');
-                },
-                icon: const Icon(
-                  Icons.exit_to_app,
-                  color: Colors.teal,
-                ),
-              )
-            ],
-          ),
-        ),
-        const Divider(),
-      ],
-    );
-  }
-
-  Container buildProfileInformations() {
-    final tasks = context.read<TaskController>().allItems;
-    final easy = tasks.where((element) => element.star == 1).toList().length;
-    final medium = tasks.where((element) => element.star == 2).toList().length;
-    final hard = tasks.where((element) => element.star == 3).toList().length;
-    final categories = context.read<CategoryController>().allItems;
-    return Container(
-      margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        children: [
-          const buildTextInformation(
-            icon: Icons.email,
-            fieldTitle: 'Email',
-            fieldContent: 'nanam133hg@gmail.com',
-          ),
-          const Divider(),
-          const buildTextInformation(
-            icon: Icons.home,
-            fieldTitle: 'Địa Chỉ',
-            fieldContent: '../../../..',
-          ),
-          const Divider(),
-          buildTextInformation(
-            icon: Icons.task,
-            fieldTitle: 'Tổng quan công việc',
-            fieldContent: '$easy dễ, $medium trung bình, $hard khó',
-          ),
-          const Divider(),
-          buildTextInformation(
-            icon: Icons.view_comfortable,
-            fieldTitle: 'Tổng quan danh mục',
-            fieldContent: '${categories.length} danh mục',
-          ),
-        ],
       ),
     );
   }
@@ -266,55 +167,116 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
     );
   }
-}
 
-class buildTextInformation extends StatelessWidget {
-  final IconData? icon;
-  final String fieldTitle;
-  final String fieldContent;
-  const buildTextInformation({
-    Key? key,
-    required this.icon,
-    required this.fieldTitle,
-    required this.fieldContent,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
+  Container buildProfileInformations() {
+    final tasks = context.read<TaskController>().allItems;
+    final easy = tasks.where((element) => element.star == 1).toList().length;
+    final medium = tasks.where((element) => element.star == 2).toList().length;
+    final hard = tasks.where((element) => element.star == 3).toList().length;
+    final tasksDone =
+        tasks.where((element) => element.isCompleted == true).toList().length;
+    final categories = context.read<CategoryController>().allItems;
     return Container(
-      padding: EdgeInsets.zero,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(10),
+      child: Column(
         children: [
-          Icon(
-            icon,
-            size: 30,
+          const BuildTextInformation(
+            icon: Icons.email,
+            fieldTitle: 'Email',
+            fieldContent: 'nanam133hg@gmail.com',
           ),
-          const SizedBox(
-            width: 15,
+          const Divider(),
+          const BuildTextInformation(
+            icon: Icons.home,
+            fieldTitle: 'Địa Chỉ',
+            fieldContent: '../../../..',
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '$fieldTitle:',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                fieldContent,
-                style: TextStyle(
-                  color: Theme.of(context).focusColor,
-                ),
-              ),
-            ],
-          )
+          const Divider(),
+          BuildTextInformation(
+            icon: Icons.view_comfortable,
+            fieldTitle: 'Tổng quan danh mục',
+            fieldContent: '${categories.length} danh mục',
+          ),
+          const Divider(),
+          BuildTextInformation(
+            icon: Icons.task,
+            fieldTitle: 'Tổng quan công việc',
+            fieldContent: '$easy dễ, $medium trung bình, $hard khó',
+          ),
+          const Divider(),
+          BuildFinishedTask(
+            icon: Icons.task_alt,
+            fieldTitle: 'Tiến độ làm việc',
+            fieldContent: 'Đã hoàn thành $tasksDone việc',
+          ),
         ],
       ),
     );
   }
+
+  Container buildProfileControls(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Xoá tài khoản cục bộ',
+                  style: TextStyle(color: Colors.red),
+                ),
+                IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: () {
+                      CustomDialog.showConfirm(
+                        context,
+                        'Xác nhận muốn xoá tài khoản?',
+                        '*không thể phục hồi tài khoản',
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.no_accounts,
+                      color: Colors.red,
+                    ))
+              ],
+            ),
+          ),
+          const Divider(),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Đăng xuất',
+                  style: TextStyle(color: Colors.teal),
+                ),
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () {
+                    context.read<AuthController>().logout();
+                    print('[logout]');
+                  },
+                  icon: const Icon(
+                    Icons.exit_to_app,
+                    color: Colors.teal,
+                  ),
+                )
+              ],
+            ),
+          ),
+          const Divider(),
+        ],
+      ),
+    );
+  }
+
+  //
 }

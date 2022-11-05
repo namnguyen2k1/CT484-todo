@@ -65,7 +65,7 @@ class FakeData {
       color: Colors.blue.value.toString(),
       description: 'Mô tả công việc 3',
       imageUrl: icons[9]['path'],
-      workingTime: '120',
+      workingTime: '600',
       createdAt: DateTime.now().toString(),
       isCompleted: false,
     ),
@@ -75,7 +75,7 @@ class FakeData {
     {
       'id': 1,
       'name':
-          'Dành thời gian tìm hiểu nhiều hơn về promodoro để cải thiện hiệu quả làm việc'
+          'Dành thời gian tìm hiểu nhiều hơn về Pomodoro để cải thiện hiệu quả làm việc'
     },
     {
       'id': 2,

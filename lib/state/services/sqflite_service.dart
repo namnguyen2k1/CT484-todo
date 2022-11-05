@@ -19,7 +19,9 @@ class SqfliteService {
 
   final integerType = 'INTEGER NOT NULL';
   final textType = 'TEXT NOT NULL';
-  final boolType = 'BOOLEAN NOT NULL';
+
+  // Sqflite :Only num, String and Uint8List are supported.
+  // SupportType: https://github.com/tekartik/sqflite/blob/master/sqflite/doc/supported_types.md
 
   // Create singleton
   static final SqfliteService instance = SqfliteService._sharedInstance();
@@ -41,11 +43,12 @@ class SqfliteService {
 
     final databasePath = await getDatabasesPath();
     final filePath = join(databasePath, fileName);
-    print('database Path: $filePath');
     return await openDatabase(
       filePath,
       version: _databaseVersion,
       onCreate: _createDefaultTables,
+      // cascade delete
+      onConfigure: (db) async => await db.execute('PRAGMA foreign_keys = ON'),
     );
   }
 
@@ -75,8 +78,8 @@ class SqfliteService {
       imageUrl $textType,
       workingTime $textType,
       createdAt $textType,
-      isCompleted $boolType,
-      FOREIGN KEY (categoryId) REFERENCES $_categoryTableName(id) ON DELETE SET NULL
+      isCompleted $integerType,
+      FOREIGN KEY (categoryId) REFERENCES $_categoryTableName(id)
     )''',
     );
 

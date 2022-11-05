@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import '../../ui/modules/promodoro/time_left_notifier.dart';
+import '../../ui/modules/timer/time_left_notifier.dart';
 
 enum ButtonState {
   initial,

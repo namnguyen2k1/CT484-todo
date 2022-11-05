@@ -33,7 +33,7 @@ class TaskModel {
     String? imageUrl,
     String? workingTime,
     String? createdAt,
-    bool? isCompleted,
+    int? isCompleted,
   }) {
     return TaskModel(
       id: id ?? this.id,
@@ -45,7 +45,8 @@ class TaskModel {
       imageUrl: imageUrl ?? this.imageUrl,
       workingTime: workingTime ?? this.workingTime,
       createdAt: createdAt ?? this.createdAt,
-      isCompleted: isCompleted ?? this.isCompleted,
+      isCompleted: isCompleted == 1 ? true : false,
+      // isCompleted {0, 1}
     );
   }
 
@@ -60,7 +61,7 @@ class TaskModel {
       'imageUrl': imageUrl,
       'workingTime': workingTime,
       'createdAt': createdAt,
-      'isCompleted': isCompleted,
+      'isCompleted': isCompleted ? 1 : 0,
     };
   }
 
@@ -75,12 +76,12 @@ class TaskModel {
       imageUrl: json['imageUrl'] as String,
       workingTime: json['workingTime'] as String,
       createdAt: json['createdAt'] as String,
-      isCompleted: json['isCompleted'] as bool,
+      isCompleted: json['isCompleted'] == 1 ? true : false,
     );
   }
 
   @override
   String toString() {
-    return 'TaskModel($id $categoryId $name $description $star $color $workingTime $createdAt)';
+    return 'TaskModel($id $categoryId $name $description $star $color $workingTime $createdAt ${isCompleted ? 1 : 0})';
   }
 }

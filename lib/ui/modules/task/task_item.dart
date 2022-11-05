@@ -11,11 +11,11 @@ import '../../shared/risk_text.dart';
 import '../../../state/models/task_model.dart';
 
 class TaskItem extends StatefulWidget {
-  final TaskModel? item;
+  final TaskModel item;
 
   const TaskItem({
     super.key,
-    this.item,
+    required this.item,
   });
 
   @override
@@ -32,23 +32,21 @@ class _TaskItemState extends State<TaskItem> {
   String _imageUrl = FakeData.icons[0]['path'];
   String _createdAt = '';
   String _workingTime = '';
-  bool _isCompleted = false;
+  int _isCompleted = 0;
 
   @override
   void initState() {
     final item = widget.item;
-    if (item != null) {
-      _id = item.id;
-      _categoryId = item.categoryId;
-      _name = item.name;
-      _star = item.star;
-      _color = item.color;
-      _description = item.description;
-      _imageUrl = item.imageUrl;
-      _createdAt = item.createdAt;
-      _workingTime = item.workingTime;
-      _isCompleted = item.isCompleted;
-    }
+    _id = item.id;
+    _categoryId = item.categoryId;
+    _name = item.name;
+    _star = item.star;
+    _color = item.color;
+    _description = item.description;
+    _imageUrl = item.imageUrl;
+    _createdAt = item.createdAt;
+    _workingTime = item.workingTime;
+    _isCompleted = item.isCompleted ? 1 : 0;
     super.initState();
   }
 
@@ -124,19 +122,23 @@ class _TaskItemState extends State<TaskItem> {
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
                 onPressed: () async {
-                  final bool? finshed = await CustomDialog.showConfirm(
+                  final bool? accepted = await CustomDialog.showConfirm(
                     context,
-                    _isCompleted
+                    _isCompleted == 1
                         ? 'Bỏ đánh dấu hoàn thành công việc?'
                         : 'Đánh dấu hoàn thành công việc?',
                     DateTime.now().toString(),
                   );
-                  if (finshed!) {
-                    setState(() {
-                      _isCompleted = !_isCompleted;
-                    });
-                  }
-                  if (widget.item != null) {
+                  if (accepted!) {
+                    if (_isCompleted == 1) {
+                      setState(() {
+                        _isCompleted = 0;
+                      });
+                    } else if (_isCompleted == 0) {
+                      setState(() {
+                        _isCompleted = 1;
+                      });
+                    }
                     await taskController.updateItem(
                       TaskModel(
                         id: _id,
@@ -148,13 +150,15 @@ class _TaskItemState extends State<TaskItem> {
                         imageUrl: _imageUrl,
                         createdAt: _createdAt,
                         workingTime: _workingTime,
-                        isCompleted: _isCompleted,
+                        isCompleted: _isCompleted == 1,
                       ),
                     );
                   }
                 },
                 icon: Icon(
-                  _isCompleted ? Icons.check_circle : Icons.circle_outlined,
+                  _isCompleted == 1
+                      ? Icons.check_circle
+                      : Icons.circle_outlined,
                 ),
               ),
             ],
@@ -217,17 +221,12 @@ class _TaskItemState extends State<TaskItem> {
                     Row(
                       children: [
                         Text(
-                          FormatTime.convertTimestampToFormatTimer(_createdAt),
+                          '-- ${FormatTime.convertTimestampToFormatTimer(_createdAt)} --',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             overflow: TextOverflow.ellipsis,
                             color: Theme.of(context).textTheme.bodyText1!.color,
                           ),
-                        ),
-                        const SizedBox(width: 5),
-                        Icon(
-                          Icons.query_builder,
-                          color: Color(int.parse(_color)),
                         ),
                       ],
                     ),
@@ -246,34 +245,3 @@ class _TaskItemState extends State<TaskItem> {
     );
   }
 }
-
-
-
-/// Dismissible
-// key: const ValueKey(1),
-// background: Container(
-//   color: Theme.of(context).errorColor,
-//   alignment: Alignment.centerRight,
-//   padding: const EdgeInsets.only(right: 20),
-//   margin: const EdgeInsets.symmetric(
-//     horizontal: 15,
-//     vertical: 4,
-//   ),
-//   child: const Icon(
-//     Icons.delete,
-//     color: Colors.white,
-//     size: 40,
-//   ),
-// ),
-// direction: DismissDirection.endToStart,
-// confirmDismiss: (direction) {
-//   return showConfirmDialog(
-//     context,
-//     'Do you want to remove the item from the cart?',
-//     "Hanh dong sẽ chuyển sang task tiếp theo",
-//   );
-// },
-// onDismissed: (direction) {
-//   // context.read<CartManager>().removeItem(productId);
-// },
-///
