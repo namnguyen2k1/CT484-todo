@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 
 import '../services/shared_preference_service.dart';
 
@@ -13,8 +14,10 @@ class AppSettingsController with ChangeNotifier {
   ThemMode _theme = ThemMode.light;
   LanguageMode _language = LanguageMode.english;
   bool _autoReplayPomodoroTimer = false;
+  String _coverImageUrl = FakeData.coverImages[0]['path'];
 
   bool get isEnglishLanguage => _language == LanguageMode.english;
+  String get coverImageUrl => _coverImageUrl;
   bool get isDarkTheme => _theme == ThemMode.dark;
   bool get isAutoReplayPomodoroTimer => _autoReplayPomodoroTimer;
 
@@ -50,6 +53,16 @@ class AppSettingsController with ChangeNotifier {
       _autoReplayPomodoroTimer = false;
     }
 
+    // get coverImage
+    final String currentCoverImage = await SharedPreferencesSerivce().getString(
+      SharedKey.appCoverImage,
+    );
+    if (currentCoverImage == 'empty') {
+      _coverImageUrl = FakeData.coverImages[0]['path'];
+    } else {
+      _coverImageUrl = currentCoverImage;
+    }
+
     notifyListeners();
   }
 
@@ -66,6 +79,15 @@ class AppSettingsController with ChangeNotifier {
     await SharedPreferencesSerivce().setString(
       SharedKey.appThemeKey,
       theme,
+    );
+    notifyListeners();
+  }
+
+  Future<void> changeCoverImage({required String imageUrl}) async {
+    _coverImageUrl = imageUrl;
+    await SharedPreferencesSerivce().setString(
+      SharedKey.appCoverImage,
+      _coverImageUrl,
     );
     notifyListeners();
   }

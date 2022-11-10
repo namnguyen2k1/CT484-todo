@@ -134,7 +134,6 @@ class _AuthScreenState extends State<AuthScreen> {
           children: [
             IconButton(
               onPressed: () async {
-                print('[Remove] $email');
                 final isAccepted = await CustomDialog.showConfirm(
                   context,
                   'Xoá thông tin tài khoản này?',
@@ -153,7 +152,6 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
             IconButton(
               onPressed: () {
-                print('[Login]: $email');
                 context.read<AuthController>().login(email, password);
               },
               icon: const Icon(Icons.login),

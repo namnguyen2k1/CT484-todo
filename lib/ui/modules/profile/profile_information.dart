@@ -42,7 +42,9 @@ class BuildTextInformation extends StatelessWidget {
               Text(
                 fieldContent,
                 style: TextStyle(
-                  color: Theme.of(context).focusColor,
+                  color: Theme.of(context)
+                      .floatingActionButtonTheme
+                      .backgroundColor,
                 ),
               ),
             ],
@@ -94,7 +96,9 @@ class BuildFinishedTask extends StatelessWidget {
                 Text(
                   fieldContent,
                   style: TextStyle(
-                    color: Theme.of(context).focusColor,
+                    color: Theme.of(context)
+                        .floatingActionButtonTheme
+                        .backgroundColor,
                   ),
                 ),
                 const SizedBox(

@@ -24,6 +24,10 @@ class AuthController with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<AuthTokenModel?> getInforAccount() async {
+    return await _authService.loadSavedAuthToken();
+  }
+
   Future<void> signup(String email, String password) async {
     _setAuthToken(
       await _authService.signup(email, password),

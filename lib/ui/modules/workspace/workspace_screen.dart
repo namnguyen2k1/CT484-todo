@@ -6,8 +6,6 @@ import '../../screens.dart';
 import '../../shared/custom_dialog.dart';
 
 class WorkspaceScreen extends StatefulWidget {
-  static const routeName = '/workspace';
-
   static const List<Widget> _screenOptions = <Widget>[
     HomeScreen(),
     ScheduleScreen(),

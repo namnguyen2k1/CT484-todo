@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:widget_circular_animator/widget_circular_animator.dart';
 
+import '../../../state/controllers/auth_controller.dart';
 import '../../../state/controllers/category_controller.dart';
 import '../../../state/controllers/task_controller.dart';
-
 import '../category/category_item.dart';
 import '../home/task_statistical.dart';
 import '../task/task_item.dart';
@@ -21,16 +20,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _starCountFollowingTaskCompleted() {
     final tasks = context.read<TaskController>().allItems;
-    print(tasks.length);
     var completedTask = 0;
     for (var element in tasks) {
       if (element.isCompleted == true) completedTask++;
     }
-    print(completedTask);
-    var starCount = 1;
-    if (completedTask >= 10) starCount = 2;
-    if (completedTask >= 50) starCount = 3;
-    print(starCount);
+
+    if (completedTask >= 50) return 3;
+    if (completedTask >= 10) return 2;
     return 1;
   }
 
@@ -53,10 +49,26 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   AppBar buildHomeScreenAppBar(BuildContext context) {
+    final account = context.read<AuthController>().authToken;
+    final emailHeader = account!.email.split('@')[0];
+    final username =
+        "${emailHeader[0].toUpperCase()}${emailHeader.substring(1).toLowerCase()}";
     return AppBar(
       title: Row(children: [
-        const Text(
-          'Nguyen Nam',
+        Container(
+          padding: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            border: Border.all(color: Theme.of(context).focusColor, width: 1.0),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            username,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color:
+                  Theme.of(context).floatingActionButtonTheme.backgroundColor,
+            ),
+          ),
         ),
         const SizedBox(
           width: 10,

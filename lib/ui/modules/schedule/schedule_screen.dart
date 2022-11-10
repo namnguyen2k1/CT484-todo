@@ -3,22 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:simple_ripple_animation/simple_ripple_animation.dart';
 
 import 'package:todoapp/state/controllers/category_controller.dart';
-import 'package:todoapp/state/controllers/task_controller.dart';
-
-import 'package:todoapp/state/models/category_model.dart';
-import 'package:todoapp/state/models/task_model.dart';
-
-import 'package:todoapp/ui/modules/category/category_item.dart';
 import 'package:todoapp/ui/modules/schedule/list_category.dart';
 import 'package:todoapp/ui/modules/schedule/list_task.dart';
 import 'package:todoapp/ui/shared/custom_dialog.dart';
-import 'package:todoapp/ui/shared/empty_box.dart';
-
-import 'package:todoapp/ui/modules/category/edit_category_screen.dart';
 import 'package:todoapp/ui/modules/schedule/list_tip.dart';
-import 'package:todoapp/ui/modules/task/edit_task_screen.dart';
 
-import '../task/task_item.dart';
+import '../../shared/custom_snackbar.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({Key? key}) : super(key: key);
@@ -108,13 +98,13 @@ class _ScheduleScreenState extends State<ScheduleScreen>
         minRadius: 30,
         ripplesCount: 6,
         child: FloatingActionButton(
-          heroTag: "button1",
+          heroTag: "createTask",
           onPressed: () {
             if (categoryController.allItems.isEmpty) {
               CustomDialog.showAlert(
                 context,
-                'Cant create task without creating category',
-                'swiper right and create new category',
+                'Không thêm tạo thêm công việc khi chưa có danh mục',
+                '*Vuốt qua phải và tạo mới danh mục',
               );
             } else {
               Navigator.pushNamed(context, '/workspace/schedule/todo');
@@ -132,7 +122,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
         minRadius: 30,
         ripplesCount: 6,
         child: FloatingActionButton(
-          heroTag: "button2",
+          heroTag: "createCategory",
           onPressed: () {
             Navigator.pushNamed(context, '/workspace/home/category');
           },

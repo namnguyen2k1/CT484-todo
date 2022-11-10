@@ -168,8 +168,8 @@ class FakeData {
   ];
 
   static List<Map<String, dynamic>> coverImages = [
-    {"name": "cover_image_2.png", "path": "assets/images/cover_image_2.png"},
-    {"name": "cover_image_3.png", "path": "assets/images/cover_image_3.png"},
+    {"name": "cover_image_2.png", "path": "assets/images/cover_image_2.jpg"},
+    {"name": "cover_image_3.png", "path": "assets/images/cover_image_3.jpg"},
     {"name": "cover_image_4.png", "path": "assets/images/cover_image_4.png"},
   ];
   //

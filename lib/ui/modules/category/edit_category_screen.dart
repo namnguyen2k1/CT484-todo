@@ -21,7 +21,7 @@ class EditCategoryScreen extends StatefulWidget {
         code: '',
         name: '',
         description: '',
-        imageUrl: '',
+        imageUrl: FakeData.icons[0]['path'],
         color: Colors.greenAccent.value.toString(),
         createdAt: DateTime.now().toString(),
       );
@@ -83,25 +83,14 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
       return;
     }
     _formKey.currentState!.save();
-    print(_formData.toString());
     await context
         .read<CategoryController>()
         .addItem(CategoryModel.fromJson(_formData));
-
-    // resetForm
-    _formData = {
-      'id': const Uuid().v4(),
-      'name': '',
-      'code': '',
-      'description': '',
-      'imageUrl': FakeData.icons[0]['path'],
-      'color': '',
-      'createdAt': DateTime.now().toString(),
-    };
     if (mounted) {
-      SnackBarCustom.showSuccessMessage(
+      Navigator.pop(context);
+      CustomSnackBar.showQuickMessage(
         context,
-        'Add Category successfully',
+        'Thêm danh mục mới thành công!',
       );
     }
   }
@@ -111,15 +100,14 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
       return;
     }
     _formKey.currentState!.save();
-    print(_formData.toString());
     await context
         .read<CategoryController>()
         .updateItem(CategoryModel.fromJson(_formData));
     if (mounted) {
       Navigator.pop(context);
-      SnackBarCustom.showSuccessMessage(
+      CustomSnackBar.showQuickMessage(
         context,
-        'Save Category successfully',
+        'Chỉnh sửa danh mục thành công!',
       );
     }
   }
@@ -131,7 +119,8 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
         automaticallyImplyLeading: false,
         centerTitle: true,
         title: Text(
-            _formData['code'] == '' ? 'Danh mục mới' : 'Chỉnh sửa danh mục'),
+          _formData['code'] == '' ? 'Danh mục mới' : 'Chỉnh sửa danh mục',
+        ),
       ),
       body: Form(
         key: _formKey,
@@ -305,11 +294,10 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
           _isEditing = true;
         });
       },
-      // controller: _categoryTextEditingController,
       initialValue: _formData['name'],
       validator: (value) {
         if (value!.isEmpty || value.length < 3) {
-          return 'Invalid name!';
+          return 'Nhập tên danh mục';
         }
         return null;
       },
@@ -349,8 +337,11 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
         });
       },
       validator: (value) {
-        if (value!.isEmpty || value.length < 3) {
-          return 'Invalid code!';
+        if (value!.isEmpty) {
+          return 'Nhập mã danh mục!';
+        }
+        if (value.length != 3) {
+          return 'Mã danh mục phải gồm 3 kí tự số';
         }
         return null;
       },
@@ -358,7 +349,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
         _formData['code'] = value!;
       },
       initialValue: _formData['code'],
-      keyboardType: TextInputType.name,
+      keyboardType: TextInputType.number,
       obscureText: false,
       decoration: InputDecoration(
         prefixIcon: Icon(

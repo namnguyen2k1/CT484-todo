@@ -19,7 +19,6 @@ dependencies:
   sqflite: ^2.1.0+1
   path: ^1.8.2
   shared_preferences: ^2.0.15
-  animated_background: ^2.0.0
   toggle_switch: ^2.0.1
   percent_indicator: ^4.2.2
   flutter_native_splash: ^2.2.12

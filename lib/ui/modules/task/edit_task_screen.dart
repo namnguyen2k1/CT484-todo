@@ -91,9 +91,12 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       }
     }
     final category = context.read<CategoryController>().allItems;
+    _formData['categoryId'] = category[0].id;
+    _selectedCategoryIndex = 0;
     for (var index = 0; index < category.length; index++) {
       if (category[index].id == item.categoryId) {
         _selectedCategoryIndex = index;
+        _formData['categoryId'] = category[index].id;
       }
     }
     super.initState();
@@ -118,14 +121,13 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     }
     _taskFormKey.currentState!.save();
     _formData['workingTime'] = '${_currentSliderValue * 60}';
-    print(_formData.toString());
     await context.read<TaskController>().addItem(
           TaskModel.fromJson(_formData),
         );
 
     if (mounted) {
       Navigator.pop(context);
-      SnackBarCustom.showSuccessMessage(
+      CustomSnackBar.showQuickMessage(
         context,
         'Tạo công việc mới thành công!',
       );
@@ -138,16 +140,15 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     }
     _taskFormKey.currentState!.save();
     _formData['workingTime'] = '${_currentSliderValue * 60}';
-    print(_formData.toString());
     await context
         .read<TaskController>()
         .updateItem(TaskModel.fromJson(_formData));
 
     if (mounted) {
       Navigator.pop(context);
-      SnackBarCustom.showSuccessMessage(
+      CustomSnackBar.showQuickMessage(
         context,
-        'Lưu thông tin công việc thành công',
+        'Chỉnh sửa công việc thành công',
       );
     }
   }
@@ -169,46 +170,17 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           padding: const EdgeInsets.all(16.0),
           children: <Widget>[
             buildNameField(),
+            const Divider(),
             buildDescriptionField(),
             const Divider(),
-            buildCategoryList(),
-            const Divider(),
-            Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Chon thoi gian:'),
-                      Text(
-                        FormatTime.converSecondsToText(
-                            _currentSliderValue * 60),
-                      )
-                    ],
-                  ),
-                ),
-                Slider(
-                  inactiveColor: currentColor.withOpacity(0.2),
-                  activeColor: currentColor,
-                  value: _currentSliderValue.toDouble(),
-                  min: _minSlider.toDouble(),
-                  max: _maxSlider.toDouble(),
-                  divisions: _maxSlider ~/ _minSlider - 1,
-                  onChanged: (double value) {
-                    setState(() {
-                      _currentSliderValue = value.toInt();
-                    });
-                  },
-                ),
-              ],
-            ),
-            const Divider(),
+            buildTimeField(currentColor),
             buildListIcons(context),
             const Divider(),
             buildRankField(),
             const Divider(),
             buildFieldColor(context),
+            const Divider(),
+            buildCategoryList(),
             const Divider(),
             buildControlButtons(context)
           ],
@@ -217,68 +189,61 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     );
   }
 
-  Column buildNameField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text('Tên công việc:'),
+  TextFormField buildNameField() {
+    return TextFormField(
+      initialValue: _formData['name'],
+      decoration: InputDecoration(
+        isDense: true,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        border: const OutlineInputBorder(),
+        labelText: 'Tên công việc',
+        labelStyle: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).focusColor,
         ),
-        TextFormField(
-          initialValue: _formData['name'],
-          decoration: const InputDecoration(
-            isDense: true,
-            contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            border: OutlineInputBorder(),
-          ),
-          textInputAction: TextInputAction.next,
-          // autofocus: true,
-          validator: (value) {
-            if (value!.isEmpty) {
-              return 'Vui lòng nhập tên công việc!';
-            }
-            return null;
-          },
-          onSaved: (value) {
-            _formData['name'] = value!;
-          },
-        ),
-      ],
+      ),
+      // autofocus: true,
+      validator: (value) {
+        if (value!.isEmpty) {
+          return 'Vui lòng nhập tên công việc!';
+        }
+        return null;
+      },
+      onSaved: (value) {
+        _formData['name'] = value!;
+      },
     );
   }
 
-  Column buildDescriptionField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text('Mô tả công việc:'),
+  TextFormField buildDescriptionField() {
+    return TextFormField(
+      initialValue: _formData['description'],
+      decoration: InputDecoration(
+        isDense: true,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        border: const OutlineInputBorder(),
+        labelText: 'Mô tả công việc',
+        labelStyle: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).focusColor,
         ),
-        TextFormField(
-          initialValue: _formData['description'],
-          decoration: const InputDecoration(
-            isDense: true,
-            contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            border: OutlineInputBorder(),
-          ),
-          maxLines: 3,
-          keyboardType: TextInputType.multiline,
-          validator: (value) {
-            if (value!.isEmpty) {
-              return 'Vui lòng nhập mô tả công việc!';
-            }
-            if (value.length < 10) {
-              return 'Nhập mô tả nhiều hơn 10 kí tự!';
-            }
-            return null;
-          },
-          onSaved: (value) {
-            _formData['description'] = value!;
-          },
-        ),
-      ],
+      ),
+      maxLines: 3,
+      keyboardType: TextInputType.multiline,
+      validator: (value) {
+        if (value!.isEmpty) {
+          return 'Vui lòng nhập mô tả công việc!';
+        }
+        if (value.length < 5) {
+          return 'Nhập mô tả nhiều hơn 5 kí tự!';
+        }
+        return null;
+      },
+      onSaved: (value) {
+        _formData['description'] = value!;
+      },
     );
   }
 
@@ -291,7 +256,12 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         Container(
           alignment: Alignment.topLeft,
           padding: const EdgeInsets.all(10),
-          child: const Text('Chọn icon:'),
+          child: Text(
+            'Chọn icon:',
+            style: TextStyle(
+              color: Theme.of(context).focusColor,
+            ),
+          ),
         ),
         GridView.count(
             crossAxisCount: sizeImage,
@@ -332,9 +302,14 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.all(10),
-          child: Text('Chọn độ khó:'),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Text(
+            'Chọn độ khó:',
+            style: TextStyle(
+              color: Theme.of(context).focusColor,
+            ),
+          ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -346,14 +321,52 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               minWidth: 90,
               labels: listRank,
               onToggle: (index) {
-                print('switched to: $index ${listRank[index!]}');
                 setState(() {
-                  _starCount = index + 1;
-                  _formData['star'] = _starCount;
+                  _starCount = index! + 1;
                 });
+                _formData['star'] = _starCount;
               },
             ),
           ],
+        ),
+      ],
+    );
+  }
+
+  Column buildTimeField(Color currentColor) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Chọn thời gian:',
+                style: TextStyle(
+                  color: Theme.of(context).focusColor,
+                ),
+              ),
+              Text(
+                FormatTime.converSecondsToText(
+                  _currentSliderValue * 60,
+                ),
+              )
+            ],
+          ),
+        ),
+        Slider(
+          inactiveColor: currentColor.withOpacity(0.2),
+          activeColor: currentColor,
+          value: _currentSliderValue.toDouble(),
+          min: _minSlider.toDouble(),
+          max: _maxSlider.toDouble(),
+          divisions: _maxSlider ~/ _minSlider - 1,
+          onChanged: (double value) {
+            setState(() {
+              _currentSliderValue = value.toInt();
+            });
+          },
         ),
       ],
     );
@@ -363,9 +376,14 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.all(10),
-          child: Text('Chọn màu sắc:'),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Text(
+            'Chọn màu sắc:',
+            style: TextStyle(
+              color: Theme.of(context).focusColor,
+            ),
+          ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -440,16 +458,20 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
   Column buildCategoryList() {
     var listCategory = context.read<CategoryController>().allItems;
-// bug khi chưa build Category
     final customWidths = List.generate(listCategory.length, (index) => 100.0);
     final labels = listCategory.map((item) => item.name).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.all(10),
-          child: Text('Chọn danh mục:'),
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: Text(
+            'Chọn danh mục:',
+            style: TextStyle(
+              color: Theme.of(context).focusColor,
+            ),
+          ),
         ),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,

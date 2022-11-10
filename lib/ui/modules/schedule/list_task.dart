@@ -34,9 +34,6 @@ class _ListTaskState extends State<ListTask> {
     final deviceSize = MediaQuery.of(context).size;
     final taskController = context.read<TaskController>();
     final listTask = _fillterTaskDaily(taskController.allItems);
-    for (var item in listTask) {
-      print(item.toString());
-    }
 
     return Column(
       children: [

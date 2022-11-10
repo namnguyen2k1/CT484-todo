@@ -36,6 +36,7 @@ class AuthService {
         ),
       );
       final responseJson = json.decode(response.body);
+      print(responseJson);
       if (responseJson['error'] != null) {
         throw HttpException.firebase(responseJson['error']['message']);
       }
@@ -46,7 +47,6 @@ class AuthService {
 
       return authToken;
     } catch (error) {
-      print(error);
       rethrow;
     }
   }
@@ -130,6 +130,7 @@ class AuthService {
     return AuthTokenModel(
       token: json['idToken'],
       userId: json['localId'],
+      email: json['email'],
       expiryDate: DateTime.now().add(
         Duration(
           seconds: int.parse(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todoapp/state/controllers/task_controller.dart';
 
 import '../../../state/controllers/category_controller.dart';
 import '../../../state/models/category_model.dart';
@@ -34,9 +35,6 @@ class _ListCategoryState extends State<ListCategory> {
     final deviceSize = MediaQuery.of(context).size;
     final categoryController = context.read<CategoryController>();
     final listCategory = _fillterCategoryDaily(categoryController.allItems);
-    for (var item in listCategory) {
-      print(item.toString());
-    }
     return Column(
       children: [
         buildSelectDate(context),
@@ -139,6 +137,9 @@ class _ListCategoryState extends State<ListCategory> {
     int index,
   ) {
     final categoryController = context.read<CategoryController>();
+    final tasksController = context.read<TaskController>();
+    final taksDependencies =
+        tasksController.findTasksByCategoryId(listCategory[index].id);
     return Row(
       children: [
         const SizedBox(
@@ -177,10 +178,12 @@ class _ListCategoryState extends State<ListCategory> {
                 final bool? isAccept = await CustomDialog.showConfirm(
                   context,
                   'Bạn muốn xoá công việc này?',
-                  '*không thể phục hồi công việc đã xoá',
+                  '*Các công việc phụ thuộc cũng sẽ bị xoá',
                 );
                 if (isAccept != false) {
-                  print('delete task');
+                  for (var i in taksDependencies) {
+                    await tasksController.deleteItemById(i.id);
+                  }
                   await categoryController.deleteItem(
                     listCategory[index].id,
                   );

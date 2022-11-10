@@ -5,6 +5,7 @@ class SharedKey {
   static const localAccountKey = 'todolist_local_account';
   static const appThemeKey = 'todolist_app_theme';
   static const appLanguageKey = 'todolist_app_language';
+  static const appCoverImage = 'todolist_app_cover_image';
   static const appAutoReplayPomodoroKey = 'todolist_app_replay_pomodoro';
 }
 
