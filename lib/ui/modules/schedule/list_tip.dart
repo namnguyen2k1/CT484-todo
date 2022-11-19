@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../utilities/fake_data.dart';
-import '../tip/tip_item.dart';
+import 'tip_item.dart';
 
 class ListTipScreen extends StatelessWidget {
   const ListTipScreen({super.key});

@@ -1,6 +1,7 @@
-import 'package:todoapp/state/models/category_model.dart';
-import 'package:todoapp/state/models/task_model.dart';
 import 'package:flutter/material.dart';
+
+import 'package:todoapp/state/models/category_model_change_notifier.dart';
+import 'package:todoapp/state/models/task_model_change_notifier.dart';
 
 class FakeData {
   static final List<CategoryModel> categorise = [
@@ -172,5 +173,4 @@ class FakeData {
     {"name": "cover_image_3.png", "path": "assets/images/cover_image_3.jpg"},
     {"name": "cover_image_4.png", "path": "assets/images/cover_image_4.png"},
   ];
-  //
 }

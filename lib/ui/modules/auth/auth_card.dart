@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../common/http_exception.dart';
+import '../../../state/services/http_exception.dart';
 import '../../shared/custom_dialog.dart';
-
 import '../../../state/controllers/auth_controller.dart';
 
 enum AuthMode { signup, login }
@@ -37,9 +36,7 @@ class _AuthCardState extends State<AuthCard> {
       return;
     }
     _formKey.currentState!.save();
-
     _isSubmitting.value = true;
-
     try {
       if (_authMode == AuthMode.login) {
         // Log user in
@@ -92,11 +89,10 @@ class _AuthCardState extends State<AuthCard> {
       ),
       elevation: 8.0,
       child: Container(
-        height: _authMode == AuthMode.signup ? 340 : 280,
+        height: _authMode == AuthMode.signup ? 360 : 280,
         constraints: BoxConstraints(
           minHeight: _authMode == AuthMode.signup ? 320 : 260,
         ),
-        // width: deviceSize.width * 0.95,
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
@@ -179,6 +175,7 @@ class _AuthCardState extends State<AuthCard> {
 
   Widget _buildPasswordConfirmField() {
     return TextFormField(
+      textInputAction: TextInputAction.next,
       enabled: _authMode == AuthMode.signup,
       decoration: InputDecoration(
         labelText: 'Xác nhận mật khẩu',
@@ -191,7 +188,6 @@ class _AuthCardState extends State<AuthCard> {
         suffixIcon: IconButton(
           icon: Icon(
             _passwordConfirmVisible ? Icons.visibility : Icons.visibility_off,
-            // color: Colors.black87,
           ),
           onPressed: () {
             setState(() {
@@ -214,6 +210,7 @@ class _AuthCardState extends State<AuthCard> {
 
   Widget _buildPasswordField() {
     return TextFormField(
+      textInputAction: TextInputAction.next,
       obscureText: !_passwordVisible,
       decoration: InputDecoration(
         labelText: 'Mật khẩu',
@@ -226,7 +223,6 @@ class _AuthCardState extends State<AuthCard> {
         suffixIcon: IconButton(
           icon: Icon(
             _passwordVisible ? Icons.visibility : Icons.visibility_off,
-            // color: Colors.black87,
           ),
           onPressed: () {
             setState(() {
@@ -250,6 +246,7 @@ class _AuthCardState extends State<AuthCard> {
 
   Widget _buildEmailField() {
     return TextFormField(
+      textInputAction: TextInputAction.next,
       decoration: const InputDecoration(
         labelText: 'Email',
         prefixIcon: Padding(

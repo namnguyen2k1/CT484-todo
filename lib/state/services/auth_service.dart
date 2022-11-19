@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import '../../common/http_exception.dart';
+import './http_exception.dart';
 import '../models/auth_token_model.dart';
 import './shared_preference_service.dart';
 
@@ -36,7 +36,6 @@ class AuthService {
         ),
       );
       final responseJson = json.decode(response.body);
-      print(responseJson);
       if (responseJson['error'] != null) {
         throw HttpException.firebase(responseJson['error']['message']);
       }

@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 
 class CustomDialog {
   static Future<bool?> showConfirm(
-      BuildContext context, String answer, String message) {
+    BuildContext context,
+    String answer,
+    String message,
+  ) {
     return showDialog(
       context: context,
       builder: (ctx) => AlertDialog(

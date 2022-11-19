@@ -30,7 +30,6 @@ class SharedPreferencesSerivce {
     await sharedPreferences.setBool(key, data);
   }
 
-  // Get data by key
   Future<String> getString(String key) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     return sharedPreferences.getString(key) ?? 'empty';
@@ -51,13 +50,11 @@ class SharedPreferencesSerivce {
     return sharedPreferences.getBool(key) ?? false;
   }
 
-  // Delete data with key
   Future<bool> removeStorage(String key) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     return sharedPreferences.remove(key);
   }
 
-  // Check Contains Key
   Future<bool> isExisted(String key) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     return sharedPreferences.containsKey(key);

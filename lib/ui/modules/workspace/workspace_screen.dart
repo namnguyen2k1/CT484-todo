@@ -1,6 +1,7 @@
-import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+
 import 'package:todoapp/state/controllers/category_controller.dart';
 import '../../screens.dart';
 import '../../shared/custom_dialog.dart';
@@ -36,25 +37,11 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final categoryController = context.read<CategoryController>();
     return Scaffold(
       body: Center(
         child: WorkspaceScreen._screenOptions.elementAt(_selectedScreenIndex),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (categoryController.allItems.isEmpty) {
-            CustomDialog.showAlert(
-              context,
-              'Không thể tạo công việc mới nếu chưa tạo danh mục',
-              '*tạo danh mục trước khi tạo công việc mới',
-            );
-          } else {
-            Navigator.pushNamed(context, '/workspace/schedule/todo');
-          }
-        },
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: buildFloatingActionButton(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: AnimatedBottomNavigationBar(
         backgroundColor: Theme.of(context).backgroundColor,
@@ -71,6 +58,24 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         },
         //other params
       ),
+    );
+  }
+
+  FloatingActionButton buildFloatingActionButton(BuildContext context) {
+    final categoryController = Provider.of<CategoryController>(context);
+    return FloatingActionButton(
+      onPressed: () {
+        if (categoryController.allItems.isEmpty) {
+          CustomDialog.showAlert(
+            context,
+            'Không thể tạo công việc mới nếu chưa tạo danh mục',
+            '*tạo danh mục trước khi tạo công việc mới',
+          );
+        } else {
+          Navigator.pushNamed(context, '/workspace/schedule/todo');
+        }
+      },
+      child: const Icon(Icons.add),
     );
   }
 }

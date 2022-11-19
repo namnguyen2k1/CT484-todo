@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:todoapp/state/controllers/task_controller.dart';
 
 import '../../../state/controllers/category_controller.dart';
-import '../../../state/models/category_model.dart';
+import '../../../state/models/category_model_change_notifier.dart';
 import '../../shared/custom_dialog.dart';
 import '../../shared/empty_box.dart';
 import '../category/category_item.dart';
@@ -32,56 +32,63 @@ class _ListCategoryState extends State<ListCategory> {
 
   @override
   Widget build(BuildContext context) {
-    final deviceSize = MediaQuery.of(context).size;
-    final categoryController = context.read<CategoryController>();
-    final listCategory = _fillterCategoryDaily(categoryController.allItems);
     return Column(
       children: [
         buildSelectDate(context),
-        Expanded(
-          child: listCategory.isNotEmpty
-              ? ListView.builder(
-                  itemCount: listCategory.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final bool isMatch = _selectedCategory == index;
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _selectedCategory = index;
-                            });
-                          },
-                          style: TextButton.styleFrom(
-                            foregroundColor: Theme.of(context).backgroundColor,
-                            padding: EdgeInsets.zero,
-                          ),
-                          child: CategoryItem(
-                            listCategory[index],
-                            widthItem: isMatch
-                                ? deviceSize.width * 0.85
-                                : deviceSize.width - 20,
-                            isHorizontal: false,
-                          ),
-                        ),
-                        isMatch
-                            ? buildCategoryControlButton(
-                                context,
-                                listCategory,
-                                index,
-                              )
-                            : const SizedBox(
-                                width: 0,
-                              ),
-                      ],
-                    );
-                  },
-                  padding: const EdgeInsets.all(10),
-                )
-              : const EmptyBox(message: 'Chưa có danh mục nào được tạo'),
-        ),
+        buildListCategory(context),
       ],
+    );
+  }
+
+  Expanded buildListCategory(BuildContext context) {
+    final deviceSize = MediaQuery.of(context).size;
+    final categoryController =
+        Provider.of<CategoryController>(context, listen: true);
+    final listCategory = _fillterCategoryDaily(categoryController.allItems);
+
+    return Expanded(
+      child: listCategory.isNotEmpty
+          ? ListView.builder(
+              itemCount: listCategory.length,
+              itemBuilder: (BuildContext context, int index) {
+                print(listCategory.toString());
+                final bool isMatch = _selectedCategory == index;
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedCategory = index;
+                        });
+                      },
+                      style: TextButton.styleFrom(
+                        foregroundColor: Theme.of(context).backgroundColor,
+                        padding: EdgeInsets.zero,
+                      ),
+                      child: CategoryItem(
+                        item: listCategory[index],
+                        widthItem: isMatch
+                            ? deviceSize.width * 0.85
+                            : deviceSize.width - 20,
+                        isHorizontal: false,
+                      ),
+                    ),
+                    isMatch
+                        ? buildCategoryControlButton(
+                            context,
+                            listCategory,
+                            index,
+                          )
+                        : const SizedBox(
+                            width: 0,
+                          ),
+                  ],
+                );
+              },
+              padding: const EdgeInsets.all(10),
+            )
+          : const EmptyBox(message: 'Chưa có danh mục nào được tạo'),
     );
   }
 
@@ -162,7 +169,6 @@ class _ListCategoryState extends State<ListCategory> {
                     ),
                   ),
                 );
-                // re-build category
               },
               icon: const Icon(
                 Icons.edit,
@@ -177,7 +183,7 @@ class _ListCategoryState extends State<ListCategory> {
               onPressed: () async {
                 final bool? isAccept = await CustomDialog.showConfirm(
                   context,
-                  'Bạn muốn xoá công việc này?',
+                  'Bạn muốn xoá danh mục này?',
                   '*Các công việc phụ thuộc cũng sẽ bị xoá',
                 );
                 if (isAccept != false) {

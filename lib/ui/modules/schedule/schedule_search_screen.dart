@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'package:todoapp/state/controllers/category_controller.dart';
 import 'package:todoapp/state/controllers/task_controller.dart';
 import 'package:todoapp/ui/modules/category/category_item.dart';
@@ -63,7 +64,6 @@ class _ScheduleSearchScreenState extends State<ScheduleSearchScreen> {
           _searchKey = value!;
         },
         onFieldSubmitted: (value) {
-          // Khi người dùng nhập xong và nhấn "hoàn tất"
           if (!_searchFormKey.currentState!.validate()) {
             return;
           }
@@ -97,8 +97,8 @@ class _ScheduleSearchScreenState extends State<ScheduleSearchScreen> {
   }
 
   Column buildSearchResults() {
-    final tasks = context.read<TaskController>().allItems;
-    final categories = context.read<CategoryController>().allItems;
+    final tasks = context.watch<TaskController>().allItems;
+    final categories = context.watch<CategoryController>().allItems;
     var tasksMatch = tasks.where((e) => e.name.contains(_searchKey)).toList();
     var cartegoriesMatch =
         categories.where((e) => e.name.contains(_searchKey)).toList();
@@ -141,14 +141,16 @@ class _ScheduleSearchScreenState extends State<ScheduleSearchScreen> {
           ),
           Column(
             children: cartegoriesMatch
-                .map((e) => Container(
-                      padding: const EdgeInsets.all(10),
-                      child: CategoryItem(
-                        e,
-                        isHorizontal: false,
-                        widthItem: MediaQuery.of(context).size.width,
-                      ),
-                    ))
+                .map(
+                  (e) => Container(
+                    padding: const EdgeInsets.all(10),
+                    child: CategoryItem(
+                      item: e,
+                      isHorizontal: false,
+                      widthItem: MediaQuery.of(context).size.width,
+                    ),
+                  ),
+                )
                 .toList(),
           ),
         ],
@@ -192,29 +194,4 @@ class _ScheduleSearchScreenState extends State<ScheduleSearchScreen> {
       ],
     );
   }
-
-  // Container buildRecentSearchValue() {
-  //   return Container(
-  //     padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 0),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //       children: [
-  //         Row(
-  //           children: const [
-  //             Icon(Icons.settings_backup_restore),
-  //             SizedBox(width: 10),
-  //             Text('Tìm kiếm gần đây'),
-  //           ],
-  //         ),
-  //         IconButton(
-  //           padding: EdgeInsets.zero,
-  //           onPressed: () {},
-  //           icon: const Icon(Icons.delete_forever),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  //
 }

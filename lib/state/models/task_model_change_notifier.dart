@@ -1,14 +1,16 @@
-class TaskModel {
-  final String id;
-  final String categoryId;
-  final String name;
-  final int star;
-  final String color;
-  final String description;
-  final String imageUrl;
-  final String workingTime;
-  final String createdAt;
-  final bool isCompleted;
+import 'package:flutter/foundation.dart';
+
+class TaskModel with ChangeNotifier {
+  String id;
+  String categoryId;
+  String name;
+  int star;
+  String color;
+  String description;
+  String imageUrl;
+  String workingTime;
+  String createdAt;
+  bool isCompleted;
 
   TaskModel({
     required this.id,
@@ -22,33 +24,6 @@ class TaskModel {
     required this.createdAt,
     required this.isCompleted,
   });
-
-  TaskModel copyWith({
-    String? id,
-    String? categoryId,
-    String? name,
-    int? star,
-    String? color,
-    String? description,
-    String? imageUrl,
-    String? workingTime,
-    String? createdAt,
-    int? isCompleted,
-  }) {
-    return TaskModel(
-      id: id ?? this.id,
-      categoryId: categoryId ?? this.categoryId,
-      name: name ?? this.name,
-      star: star ?? this.star,
-      color: color ?? this.color,
-      description: description ?? this.description,
-      imageUrl: imageUrl ?? this.imageUrl,
-      workingTime: workingTime ?? this.workingTime,
-      createdAt: createdAt ?? this.createdAt,
-      isCompleted: isCompleted == 1 ? true : false,
-      // isCompleted {0, 1}
-    );
-  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -83,5 +58,19 @@ class TaskModel {
   @override
   String toString() {
     return 'TaskModel($id $categoryId $name $description $star $color $workingTime $createdAt ${isCompleted ? 1 : 0})';
+  }
+
+  void updateWith(TaskModel task) {
+    id = task.id;
+    categoryId = task.categoryId;
+    name = task.name;
+    star = task.star;
+    color = task.color;
+    description = task.description;
+    imageUrl = task.imageUrl;
+    workingTime = task.workingTime;
+    createdAt = task.createdAt;
+    isCompleted = task.isCompleted;
+    notifyListeners();
   }
 }

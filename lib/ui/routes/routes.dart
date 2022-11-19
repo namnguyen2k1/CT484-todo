@@ -15,12 +15,10 @@ const String alarmScreen = '/workspace/alarm';
 const String alarmTimerScreen = '/workspace/alarm/timer';
 
 const String profileScreen = '/workspace/profile';
-
 const String profileSettingScreen = '/workspace/profile/setting';
 
 const String workspaceScreen = '/workspace';
 
-// Control our page route flow
 Route<dynamic> routeController(RouteSettings settings) {
   switch (settings.name) {
     case splashScreen:

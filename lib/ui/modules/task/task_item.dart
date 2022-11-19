@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'package:todoapp/state/controllers/category_controller.dart';
 import 'package:todoapp/state/controllers/task_controller.dart';
-import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import 'package:todoapp/ui/modules/utilities/format_time.dart';
-
 import 'package:todoapp/ui/shared/custom_dialog.dart';
 import 'package:todoapp/ui/shared/rate_star.dart';
 import '../../shared/risk_text.dart';
-import '../../../state/models/task_model.dart';
+import '../../../state/models/task_model_change_notifier.dart';
 
-class TaskItem extends StatefulWidget {
+class TaskItem extends StatelessWidget {
   final TaskModel item;
 
   const TaskItem({
@@ -19,62 +18,32 @@ class TaskItem extends StatefulWidget {
   });
 
   @override
-  State<TaskItem> createState() => _TaskItemState();
-}
-
-class _TaskItemState extends State<TaskItem> {
-  String _id = '';
-  String _categoryId = '';
-  String _name = '';
-  int _star = 1;
-  String _color = '';
-  String _description = '';
-  String _imageUrl = FakeData.icons[0]['path'];
-  String _createdAt = '';
-  String _workingTime = '';
-  int _isCompleted = 0;
-
-  @override
-  void initState() {
-    final item = widget.item;
-    _id = item.id;
-    _categoryId = item.categoryId;
-    _name = item.name;
-    _star = item.star;
-    _color = item.color;
-    _description = item.description;
-    _imageUrl = item.imageUrl;
-    _createdAt = item.createdAt;
-    _workingTime = item.workingTime;
-    _isCompleted = item.isCompleted ? 1 : 0;
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final deviceSize = MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
-        color: Color(int.parse(_color)),
+        color: Color(int.parse(item.color)),
         borderRadius: BorderRadius.circular(10),
       ),
       padding: const EdgeInsets.all(5),
-      child: Column(
-        children: [
-          buildTaskHeader(deviceSize, context),
-          const SizedBox(
-            height: 5,
-          ),
-          buildTaskBody(context),
-        ],
+      child: ChangeNotifierProvider.value(
+        value: item,
+        child: Column(
+          children: [
+            buildTaskHeader(context, item),
+            const SizedBox(
+              height: 5,
+            ),
+            buildTaskBody(context, item),
+          ],
+        ),
       ),
     );
   }
 
-  Container buildTaskHeader(Size deviceSize, BuildContext context) {
-    final categoryController = context.read<CategoryController>();
+  Container buildTaskHeader(BuildContext context, TaskModel item) {
     final taskController = context.read<TaskController>();
-    final category = categoryController.findById(_categoryId);
+    final categoryController = context.read<CategoryController>();
+    final category = categoryController.findById(item.categoryId);
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
@@ -101,7 +70,7 @@ class _TaskItemState extends State<TaskItem> {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              _name,
+              item.name,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 overflow: TextOverflow.ellipsis,
@@ -114,7 +83,7 @@ class _TaskItemState extends State<TaskItem> {
           ),
           Row(
             children: [
-              RateStar(starCount: _star),
+              RateStar(starCount: item.star),
               const SizedBox(
                 width: 10,
               ),
@@ -124,41 +93,32 @@ class _TaskItemState extends State<TaskItem> {
                 onPressed: () async {
                   final bool? accepted = await CustomDialog.showConfirm(
                     context,
-                    _isCompleted == 1
+                    item.isCompleted
                         ? 'Bỏ đánh dấu hoàn thành công việc?'
                         : 'Đánh dấu hoàn thành công việc?',
-                    DateTime.now().toString(),
+                    item.isCompleted
+                        ? '*Bạn sẽ trở về công việc trước đó'
+                        : '*Bạn sẽ chuyển sang công việc tiếp theo',
                   );
                   if (accepted!) {
-                    if (_isCompleted == 1) {
-                      setState(() {
-                        _isCompleted = 0;
-                      });
-                    } else if (_isCompleted == 0) {
-                      setState(() {
-                        _isCompleted = 1;
-                      });
-                    }
                     await taskController.updateItem(
                       TaskModel(
-                        id: _id,
-                        categoryId: _categoryId,
-                        name: _name,
-                        star: _star,
-                        color: _color,
-                        description: _description,
-                        imageUrl: _imageUrl,
-                        createdAt: _createdAt,
-                        workingTime: _workingTime,
-                        isCompleted: _isCompleted == 1,
+                        id: item.id,
+                        categoryId: item.categoryId,
+                        name: item.name,
+                        star: item.star,
+                        color: item.color,
+                        description: item.description,
+                        imageUrl: item.imageUrl,
+                        createdAt: item.createdAt,
+                        workingTime: item.workingTime,
+                        isCompleted: !item.isCompleted,
                       ),
                     );
                   }
                 },
                 icon: Icon(
-                  _isCompleted == 1
-                      ? Icons.check_circle
-                      : Icons.circle_outlined,
+                  item.isCompleted ? Icons.check_circle : Icons.circle_outlined,
                 ),
               ),
             ],
@@ -168,7 +128,7 @@ class _TaskItemState extends State<TaskItem> {
     );
   }
 
-  Row buildTaskBody(BuildContext context) {
+  Row buildTaskBody(BuildContext context, TaskModel item) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,7 +137,7 @@ class _TaskItemState extends State<TaskItem> {
           width: 50,
           height: 50,
           child: Image.asset(
-            _imageUrl,
+            item.imageUrl,
             fit: BoxFit.cover,
           ),
         ),
@@ -202,14 +162,14 @@ class _TaskItemState extends State<TaskItem> {
                       children: [
                         Icon(
                           Icons.timer,
-                          color: Color(int.parse(_color)),
+                          color: Color(int.parse(item.color)),
                         ),
                         const SizedBox(
                           width: 5,
                         ),
                         Text(
                           FormatTime.converSecondsToText(
-                              int.parse(_workingTime)),
+                              int.parse(item.workingTime)),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             overflow: TextOverflow.ellipsis,
@@ -221,7 +181,7 @@ class _TaskItemState extends State<TaskItem> {
                     Row(
                       children: [
                         Text(
-                          '-- ${FormatTime.convertTimestampToFormatTimer(_createdAt)} --',
+                          '-- ${FormatTime.convertTimestampToFormatTimer(item.createdAt)} --',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             overflow: TextOverflow.ellipsis,
@@ -234,7 +194,7 @@ class _TaskItemState extends State<TaskItem> {
                 ),
                 const Divider(),
                 RiskTextCustom(
-                  content: _description,
+                  content: item.description,
                   lastIcon: Icons.edit,
                 ),
               ],

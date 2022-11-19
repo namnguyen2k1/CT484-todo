@@ -1,8 +1,30 @@
-# todoapp
+## Todolist App
 
--- Lỗi color: render và init state in editing task screen
+- Một số hình ảnh:
 
-A new Flutter project.
+<img width='30%' height='auto' src='./readme_images/ct484_slide (1).jpg'/>
+<img width='30%' height='auto' src='./readme_images/ct484_slide (10).jpg'/>
+<img width='30%' height='auto' src='./readme_images/ct484_slide (14).jpg'/>
+
+---
+
+<img width='30%' height='auto' src='./readme_images/ct484_slide (15).jpg'/>
+<img width='30%' height='auto' src='./readme_images/ct484_slide (16).jpg'/>
+<img width='30%' height='auto' src='./readme_images/ct484_slide (17).jpg'/>
+
+---
+
+<img width='30%' height='auto' src='./readme_images/ct484_slide (18).jpg'/>
+<img width='30%' height='auto' src='./readme_images/ct484_slide (20).jpg'/>
+<img width='30%' height='auto' src='./readme_images/ct484_slide (21).jpg'/>
+
+---
+
+<img width='30%' height='auto' src='./readme_images/ct484_slide (24).jpg'/>
+<img width='30%' height='auto' src='./readme_images/ct484_slide (5).jpg'/>
+<img width='30%' height='auto' src='./readme_images/ct484_slide (7).jpg'/>
+
+---
 
 ## Getting Started
 

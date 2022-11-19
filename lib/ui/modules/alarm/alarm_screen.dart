@@ -5,8 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:todoapp/state/controllers/task_controller.dart';
 import 'package:todoapp/ui/modules/task/task_item.dart';
 import 'package:todoapp/ui/shared/empty_box.dart';
-
-import '../../../state/models/task_model.dart';
+import '../../../state/models/task_model_change_notifier.dart';
 
 class AlarmScreen extends StatefulWidget {
   const AlarmScreen({Key? key}) : super(key: key);
@@ -32,7 +31,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final alltasks = context.read<TaskController>().allItems;
+    final alltasks = Provider.of<TaskController>(context).allItems;
     final listTasks =
         alltasks.where((element) => element.isCompleted == false).toList();
     return Scaffold(

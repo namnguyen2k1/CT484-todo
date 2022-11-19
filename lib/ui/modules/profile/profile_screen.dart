@@ -21,7 +21,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   int _starCountFollowingTaskCompleted() {
-    final tasks = context.read<TaskController>().allItems;
+    final tasks = context.watch<TaskController>().allItems;
     var completedTask = 0;
     for (var element in tasks) {
       if (element.isCompleted == true) completedTask++;
@@ -45,7 +45,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     const double coverImageHeight = 150;
     const double avatarSize = 150;
-    final appSettingController = context.read<AppSettingsController>();
+    final appSettingController =
+        Provider.of<AppSettingsController>(context, listen: true);
     return Scaffold(
       body: ListView(
         padding: EdgeInsets.zero,
@@ -97,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Container buildPupupMenu(BuildContext context) {
     final listCoverImage = FakeData.coverImages;
 
-    final appSettingController = context.read<AppSettingsController>();
+    final appSettingController = context.watch<AppSettingsController>();
     return Container(
       height: 30,
       width: 30,
@@ -141,7 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Row buildProfileHeader({required double avatarSize}) {
     const double paddingSize = 2;
 
-    final account = context.read<AuthController>().authToken;
+    final account = context.watch<AuthController>().authToken;
     final emailHeader = account!.email.split('@')[0];
     final username =
         "${emailHeader[0].toUpperCase()}${emailHeader.substring(1).toLowerCase()}";
@@ -182,7 +183,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 padding: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
                   border: Border.all(
-                      color: Theme.of(context).focusColor, width: 1.0),
+                    color: Theme.of(context).focusColor,
+                    width: 1.0,
+                  ),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
@@ -205,14 +208,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Container buildProfileInformations() {
-    final account = context.read<AuthController>().authToken;
-    final tasks = context.read<TaskController>().allItems;
+    final account = context.watch<AuthController>().authToken;
+    final tasks = context.watch<TaskController>().allItems;
     final easy = tasks.where((element) => element.star == 1).toList().length;
     final medium = tasks.where((element) => element.star == 2).toList().length;
     final hard = tasks.where((element) => element.star == 3).toList().length;
     final tasksDone =
         tasks.where((element) => element.isCompleted == true).toList().length;
-    final categories = context.read<CategoryController>().allItems;
+    final categories = context.watch<CategoryController>().allItems;
     return Container(
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(10),
@@ -220,7 +223,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           BuildTextInformation(
             icon: Icons.email,
-            fieldTitle: 'Email',
+            fieldTitle: 'Địa chỉ email',
             fieldContent: account!.email,
           ),
           const Divider(),
@@ -314,7 +317,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     const double settingOptionPadding = 10.0;
     final themeOptions = ['dark', 'light'];
     final themeOptionsVietsub = ['Tối', 'Sáng'];
-    final appSettingsController = Provider.of<AppSettingsController>(context);
+    final appSettingsController = context.watch<AppSettingsController>();
     return Container(
       padding: const EdgeInsets.only(
         left: settingOptionPadding,
@@ -350,6 +353,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-
-  //
 }

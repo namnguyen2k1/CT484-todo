@@ -3,8 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../models/category_model.dart';
-import '../models/task_model.dart';
+import '../models/category_model_change_notifier.dart';
+import '../models/task_model_change_notifier.dart';
 
 class SqfliteService {
   static const _categoryTableName = 'categories';
@@ -83,7 +83,7 @@ class SqfliteService {
     )''',
     );
 
-    //
+    // Create more...
   }
 
   void close() {

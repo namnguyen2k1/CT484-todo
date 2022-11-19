@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-
 import '../services/sqflite_service.dart';
-import '../models/category_model.dart';
 
-class CategoryController with ChangeNotifier {
+import '../models/category_model_change_notifier.dart';
+
+class CategoryController extends ChangeNotifier {
   final SqfliteService _service = SqfliteService.instance;
 
   final _allItems = <CategoryModel>[];
@@ -13,7 +13,6 @@ class CategoryController with ChangeNotifier {
   List<CategoryModel> get allItems => List.unmodifiable(_allItems);
 
   Future<void> getAll() async {
-    // gọi trong hàm main()
     final items = await _service.getAllCategories();
     // _allItems.clear();
     _allItems.addAll([...items]);
@@ -34,7 +33,7 @@ class CategoryController with ChangeNotifier {
     final index = _allItems.indexWhere(
       (i) => i.id == newItem.id,
     );
-    _allItems[index] = newItem;
+    _allItems[index].updateWith(newItem);
     notifyListeners();
     await _service.updateCategory(newItem);
   }

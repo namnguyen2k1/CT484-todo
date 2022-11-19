@@ -19,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _starCountFollowingTaskCompleted() {
-    final tasks = context.read<TaskController>().allItems;
+    final tasks = context.watch<TaskController>().allItems;
     var completedTask = 0;
     for (var element in tasks) {
       if (element.isCompleted == true) completedTask++;
@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   AppBar buildHomeScreenAppBar(BuildContext context) {
-    final account = context.read<AuthController>().authToken;
+    final account = context.watch<AuthController>().authToken;
     final emailHeader = account!.email.split('@')[0];
     final username =
         "${emailHeader[0].toUpperCase()}${emailHeader.substring(1).toLowerCase()}";
@@ -97,9 +97,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildCurrentTask(BuildContext context) {
-    final listTaskPending = context
-        .read<TaskController>()
-        .allItems
+    final taskController = context.watch<TaskController>();
+
+    final listTaskPending = taskController.allItems
         .where((element) => element.isCompleted == false)
         .toList();
     final taskPending =
@@ -142,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
           for (var item in listCategory) {
             listWidgetCategory.add(
               CategoryItem(
-                item,
+                item: item,
                 widthItem: widthCategory,
                 isHorizontal: true,
               ),

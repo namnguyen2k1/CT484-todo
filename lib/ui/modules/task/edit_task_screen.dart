@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
+import 'package:toggle_switch/toggle_switch.dart';
+import 'package:uuid/uuid.dart';
 
 import 'package:todoapp/state/controllers/category_controller.dart';
 import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import 'package:todoapp/ui/modules/utilities/format_time.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 import 'package:todoapp/ui/shared/rate_star.dart';
-import 'package:uuid/uuid.dart';
-import '../../../state/models/task_model.dart';
+import '../../../state/models/task_model_change_notifier.dart';
 import '../../../state/controllers/task_controller.dart';
 import '../../shared/custom_snackbar.dart';
 
@@ -23,7 +23,7 @@ class EditTaskScreen extends StatefulWidget {
       this.todo = TaskModel(
         id: const Uuid().v4(),
         categoryId: '',
-        name: '',
+        name: '__________',
         star: 1,
         color: Colors.deepPurpleAccent.value.toString(),
         description: '',
@@ -43,6 +43,8 @@ class EditTaskScreen extends StatefulWidget {
 
 class _EditTaskScreenState extends State<EditTaskScreen> {
   final GlobalKey<FormState> _taskFormKey = GlobalKey();
+
+  final _fieldNameFocusNode = FocusNode();
   final _taskTextEditingController = TextEditingController();
   final _listIcons = FakeData.icons;
   late int _starCount;
@@ -104,15 +106,9 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
   @override
   void dispose() {
+    _fieldNameFocusNode.dispose();
     _taskTextEditingController.dispose();
     super.dispose();
-  }
-
-  bool _isValidImageUrl(String value) {
-    return (value.startsWith('http') || value.startsWith('https')) &&
-        (value.endsWith('.png') ||
-            value.endsWith('.jpg') ||
-            value.endsWith('.jpeg'));
   }
 
   Future<void> _handleAddItem() async {
@@ -160,7 +156,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: Text(_formData['name'] == ''
+        title: Text(_formData['name'] == '__________'
             ? 'Tạo công việc mới'
             : 'Chỉnh sửa công việc'),
       ),
@@ -191,7 +187,10 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
   TextFormField buildNameField() {
     return TextFormField(
-      initialValue: _formData['name'],
+      autofocus: true,
+      focusNode: _fieldNameFocusNode,
+      textInputAction: TextInputAction.next,
+      initialValue: _formData['name'] == '__________' ? '' : _formData['name'],
       decoration: InputDecoration(
         isDense: true,
         contentPadding:
@@ -218,6 +217,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
   TextFormField buildDescriptionField() {
     return TextFormField(
+      textInputAction: TextInputAction.next,
       initialValue: _formData['description'],
       decoration: InputDecoration(
         isDense: true,
@@ -457,7 +457,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   }
 
   Column buildCategoryList() {
-    var listCategory = context.read<CategoryController>().allItems;
+    final listCategory = context.watch<CategoryController>().allItems;
     final customWidths = List.generate(listCategory.length, (index) => 100.0);
     final labels = listCategory.map((item) => item.name).toList();
 
@@ -507,7 +507,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         const SizedBox(
           width: 50,
         ),
-        if (_formData['name'] == '') ...[
+        if (_formData['name'] == '__________') ...[
           ElevatedButton.icon(
             onPressed: _handleAddItem,
             icon: const Icon(Icons.add_circle),

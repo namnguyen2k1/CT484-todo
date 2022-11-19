@@ -2,12 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../ui/modules/timer/time_left_notifier.dart';
 
-enum ButtonState {
-  initial,
-  started,
-  paused,
-  finished,
-}
+enum ButtonState { initial, started, paused, finished }
 
 class TimerController extends ChangeNotifier {
   final timeLeftNotifier = TimeLeftNotifier();

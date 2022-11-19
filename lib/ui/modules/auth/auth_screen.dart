@@ -1,13 +1,11 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todoapp/state/controllers/app_settings_controller.dart';
 
 import 'package:todoapp/state/controllers/auth_controller.dart';
 import 'package:todoapp/state/services/auth_service.dart';
 import 'package:todoapp/ui/shared/custom_dialog.dart';
-
-import 'auth_card.dart';
+import './auth_card.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -45,7 +43,6 @@ class _AuthScreenState extends State<AuthScreen> {
       fontSize: 35.0,
     );
     return Scaffold(
-      // resizeToAvoidBottomInset: false,
       body: ListView(
         padding: const EdgeInsets.all(30),
         children: [

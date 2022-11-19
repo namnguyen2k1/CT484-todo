@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../state/controllers/task_controller.dart';
-import '../../../state/models/task_model.dart';
+import '../../../state/models/task_model_change_notifier.dart';
 import '../../shared/custom_dialog.dart';
 import '../../shared/empty_box.dart';
 import '../task/edit_task_screen.dart';
@@ -20,20 +20,11 @@ class _ListTaskState extends State<ListTask> {
   int _selectedTask = -1;
   DateTime _selectedDate = DateTime.now();
 
-  List<TaskModel> _fillterTaskDaily(List<TaskModel> tasks) {
-    final filterTasks = tasks
-        .where((element) =>
-            FormatTime.convertTimestampToFormatTimer(element.createdAt) ==
-            FormatTime.convertTimestampToFormatTimer(_selectedDate.toString()))
-        .toList();
-    return filterTasks;
-  }
-
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
-    final taskController = context.read<TaskController>();
-    final listTask = _fillterTaskDaily(taskController.allItems);
+    final taskController = Provider.of<TaskController>(context, listen: true);
+    final listTask = fillterTaskDaily(taskController.allItems);
 
     return Column(
       children: [
@@ -77,10 +68,19 @@ class _ListTaskState extends State<ListTask> {
                     );
                   },
                 )
-              : const EmptyBox(message: 'Chưa có nhiệm vụ nào được tạo'),
+              : const EmptyBox(message: 'Chưa có công việc nào được tạo'),
         ),
       ],
     );
+  }
+
+  List<TaskModel> fillterTaskDaily(List<TaskModel> tasks) {
+    final filterTasks = tasks
+        .where((element) =>
+            FormatTime.convertTimestampToFormatTimer(element.createdAt) ==
+            FormatTime.convertTimestampToFormatTimer(_selectedDate.toString()))
+        .toList();
+    return filterTasks;
   }
 
   Container buildTaskHeader(BuildContext context) {
@@ -130,8 +130,11 @@ class _ListTaskState extends State<ListTask> {
   }
 
   Row buildTaskControlButton(
-      BuildContext context, List<TaskModel> listTask, int index) {
-    final taskController = context.read<TaskController>();
+    BuildContext context,
+    List<TaskModel> listTask,
+    int index,
+  ) {
+    final taskController = context.watch<TaskController>();
     const EdgeInsetsGeometry paddingButton = EdgeInsets.all(5.0);
     return Row(
       children: [
@@ -161,7 +164,7 @@ class _ListTaskState extends State<ListTask> {
                 final bool? isAccept = await CustomDialog.showConfirm(
                   context,
                   'Bạn muốn xoá công việc này?',
-                  '*không thể phục hồi công việc đã xoá',
+                  '*không thể phục hồi các công việc đã xoá',
                 );
                 if (isAccept != false) {
                   await taskController.deleteItemById(
@@ -190,9 +193,12 @@ class _ListTaskState extends State<ListTask> {
             IconButton(
               padding: paddingButton,
               constraints: const BoxConstraints(),
-              onPressed: () {
+              onPressed: () async {
                 if (_selectedTask == listTask.length - 1) return;
-                taskController.swapTwoItem(_selectedTask, _selectedTask + 1);
+                await taskController.swapTwoItem(
+                  _selectedTask,
+                  _selectedTask + 1,
+                );
                 setState(() {
                   _selectedTask = _selectedTask + 1;
                 });

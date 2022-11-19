@@ -4,7 +4,7 @@ import 'package:uuid/uuid.dart';
 import 'package:provider/provider.dart';
 
 import 'package:todoapp/state/controllers/category_controller.dart';
-import 'package:todoapp/state/models/category_model.dart';
+import 'package:todoapp/state/models/category_model_change_notifier.dart';
 import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import 'package:todoapp/ui/shared/custom_snackbar.dart';
 
@@ -47,6 +47,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
     'createdAt': ''
   };
   final GlobalKey<FormState> _formKey = GlobalKey();
+  final _fieldNameFocusNode = FocusNode();
   final _categoryTextEditingController = TextEditingController();
   final _listIcons = FakeData.icons;
   int _selectedIcon = 0;
@@ -74,6 +75,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
 
   @override
   void dispose() {
+    _fieldNameFocusNode.dispose();
     _categoryTextEditingController.dispose();
     super.dispose();
   }
@@ -167,9 +169,8 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
             crossAxisCount: sizeImage,
             crossAxisSpacing: 5,
             mainAxisSpacing: 5,
-            physics:
-                const NeverScrollableScrollPhysics(), // to disable GridView's scrolling
-            shrinkWrap: true, // You won't see infinite size error
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
             children: _listIcons.map((e) {
               int index = _listIcons.indexOf(e);
               return IconButton(
@@ -288,6 +289,9 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
     required String label,
   }) {
     return TextFormField(
+      autofocus: true,
+      focusNode: _fieldNameFocusNode,
+      textInputAction: TextInputAction.next,
       enabled: _isEditing,
       onTap: () {
         setState(() {
@@ -330,6 +334,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
     required String label,
   }) {
     return TextFormField(
+      textInputAction: TextInputAction.next,
       enabled: _isEditing,
       onTap: () {
         setState(() {

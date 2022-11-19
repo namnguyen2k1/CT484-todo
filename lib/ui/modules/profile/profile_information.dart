@@ -108,7 +108,9 @@ class BuildFinishedTask extends StatelessWidget {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     border: Border.all(
-                        color: Theme.of(context).focusColor, width: 1.0),
+                      color: Theme.of(context).focusColor,
+                      width: 1.0,
+                    ),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
@@ -120,7 +122,7 @@ class BuildFinishedTask extends StatelessWidget {
                           SizedBox(
                             height: 5,
                           ),
-                          Text('1 việc'),
+                          Text('0 việc'),
                         ],
                       ),
                       const Icon(Icons.arrow_forward),

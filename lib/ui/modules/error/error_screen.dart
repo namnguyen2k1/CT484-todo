@@ -27,13 +27,15 @@ class ErrorScreen extends StatelessWidget {
                 ),
                 backgroundColor: Theme.of(context).primaryColor,
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 50.0, vertical: 10.0),
+                  horizontal: 50.0,
+                  vertical: 10.0,
+                ),
                 textStyle: TextStyle(
                   color: Theme.of(context).primaryTextTheme.headline6?.color,
                 ),
               ),
               child: Text(
-                "Go Back".toUpperCase(),
+                "Quay Lại".toUpperCase(),
                 style: const TextStyle(
                   color: Colors.white,
                 ),

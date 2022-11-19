@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 
+import 'package:todoapp/ui/modules/utilities/fake_data.dart';
 import '../services/shared_preference_service.dart';
 
 // 'light', 'dark', 'system'

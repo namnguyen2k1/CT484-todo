@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todoapp/state/controllers/app_settings_controller.dart';
 
+import 'package:todoapp/state/controllers/app_settings_controller.dart';
 import '../../../state/controllers/timer_controller.dart';
-import 'timer_buttons.dart';
+import './timer_buttons.dart';
 
 class TimerScreen extends StatefulWidget {
   const TimerScreen({super.key});
@@ -77,7 +77,8 @@ class _TimerScreenState extends State<TimerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final manager = context.read<TimerController>();
+    final timerController = Provider.of<TimerController>(context, listen: true);
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -89,12 +90,12 @@ class _TimerScreenState extends State<TimerScreen> {
         children: [
           const Spacer(flex: 2),
           ValueListenableProvider.value(
-            value: manager.timeLeftNotifier,
+            value: timerController.timeLeftNotifier,
             child: const TimerTextWidget(),
           ),
           const SizedBox(height: 20),
           ValueListenableProvider.value(
-            value: manager.buttonStateNotifier,
+            value: timerController.buttonStateNotifier,
             child: const ButtonsContainer(),
           ),
           const Spacer(flex: 2),
@@ -194,8 +195,8 @@ class _TimerScreenState extends State<TimerScreen> {
         ),
         const Divider(),
         Wrap(
-          runSpacing: 10.0, // column spacing
-          spacing: 10.0, // row spacing
+          runSpacing: 10.0,
+          spacing: 10.0,
           children: _listPomodoroTimeOptions.map((e) {
             int index = _listPomodoroTimeOptions.indexOf(e);
             return IconButton(
@@ -318,6 +319,4 @@ class TimerTextWidget extends StatelessWidget {
       ),
     );
   }
-
-  //
 }

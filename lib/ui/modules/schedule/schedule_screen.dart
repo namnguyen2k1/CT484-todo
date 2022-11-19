@@ -8,8 +8,6 @@ import 'package:todoapp/ui/modules/schedule/list_task.dart';
 import 'package:todoapp/ui/shared/custom_dialog.dart';
 import 'package:todoapp/ui/modules/schedule/list_tip.dart';
 
-import '../../shared/custom_snackbar.dart';
-
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({Key? key}) : super(key: key);
 
@@ -80,11 +78,35 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       padding: const EdgeInsets.all(10),
       labelPadding: EdgeInsets.zero,
       isScrollable: false,
-      indicatorWeight: 2,
-      tabs: const [
-        Tab(child: Text('Công việc')),
-        Tab(child: Text('Danh mục')),
-        Tab(child: Text('Mẹo')),
+      indicator: UnderlineTabIndicator(
+        borderSide: BorderSide(
+          width: 3.0,
+          color: Theme.of(context).floatingActionButtonTheme.backgroundColor!,
+        ),
+        insets: const EdgeInsets.symmetric(
+          horizontal: 10.0,
+          vertical: 5,
+        ),
+      ),
+      tabs: [
+        Tab(
+          icon: Icon(
+            Icons.task,
+            color: Theme.of(context).focusColor,
+          ),
+        ),
+        Tab(
+          icon: Icon(
+            Icons.view_comfortable,
+            color: Theme.of(context).focusColor,
+          ),
+        ),
+        Tab(
+          icon: Icon(
+            Icons.tips_and_updates,
+            color: Theme.of(context).focusColor,
+          ),
+        ),
       ],
     );
   }
@@ -103,8 +125,8 @@ class _ScheduleScreenState extends State<ScheduleScreen>
             if (categoryController.allItems.isEmpty) {
               CustomDialog.showAlert(
                 context,
-                'Không thêm tạo thêm công việc khi chưa có danh mục',
-                '*Vuốt qua phải và tạo mới danh mục',
+                'Không thêm tạo công việc khi chưa có danh mục',
+                '*Vuốt qua phải và tạo danh mục mới',
               );
             } else {
               Navigator.pushNamed(context, '/workspace/schedule/todo');

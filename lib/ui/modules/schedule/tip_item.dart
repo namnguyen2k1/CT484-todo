@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 
 class TipItem extends StatelessWidget {
   const TipItem({super.key, required this.tip, required this.colorTip});
 
   final Color colorTip;
-
   final Map<String, dynamic> tip;
 
   @override

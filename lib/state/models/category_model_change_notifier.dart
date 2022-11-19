@@ -1,11 +1,13 @@
-class CategoryModel {
-  final String id;
-  final String code;
-  final String name;
-  final String description;
-  final String color;
-  final String imageUrl;
-  final String createdAt;
+import 'package:flutter/foundation.dart';
+
+class CategoryModel with ChangeNotifier {
+  String id;
+  String code;
+  String name;
+  String description;
+  String color;
+  String imageUrl;
+  String createdAt;
 
   CategoryModel({
     required this.id,
@@ -16,26 +18,6 @@ class CategoryModel {
     required this.color,
     required this.createdAt,
   });
-
-  CategoryModel copyWith({
-    String? id,
-    String? code,
-    String? name,
-    String? description,
-    String? imageUrl,
-    String? color,
-    String? createdAt,
-  }) {
-    return CategoryModel(
-      id: id ?? this.id,
-      code: code ?? this.code,
-      name: name ?? this.name,
-      description: description ?? this.description,
-      imageUrl: imageUrl ?? this.imageUrl,
-      color: color ?? this.color,
-      createdAt: createdAt ?? this.createdAt,
-    );
-  }
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     return CategoryModel(
@@ -64,5 +46,16 @@ class CategoryModel {
   @override
   String toString() {
     return 'CategoryModel($id $name $description $imageUrl $color $createdAt)';
+  }
+
+  void updateWith(CategoryModel category) {
+    id = category.id;
+    code = category.code;
+    name = category.name;
+    description = category.description;
+    color = category.color;
+    imageUrl = category.imageUrl;
+    createdAt = category.createdAt;
+    notifyListeners();
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
-import 'package:todoapp/state/models/task_model.dart';
+import 'package:todoapp/state/models/task_model_change_notifier.dart';
 import 'package:todoapp/ui/shared/empty_box.dart';
 import '../../../state/controllers/task_controller.dart';
 import '../utilities/format_time.dart';
@@ -17,7 +17,7 @@ class TaskStatistical extends StatefulWidget {
 class _TaskStatisticalState extends State<TaskStatistical> {
   DateTime _selectedDate = DateTime.now();
 
-  List<TaskModel> _fillterTaskDaily(List<TaskModel> tasks) {
+  List<TaskModel> fillterTaskDaily(List<TaskModel> tasks) {
     final filterTasks = tasks
         .where((element) =>
             FormatTime.convertTimestampToFormatTimer(element.createdAt) ==
@@ -28,8 +28,8 @@ class _TaskStatisticalState extends State<TaskStatistical> {
 
   @override
   Widget build(BuildContext context) {
-    final allTasks = Provider.of<TaskController>(context).allItems;
-    final tasks = _fillterTaskDaily(allTasks);
+    final taskController = Provider.of<TaskController>(context, listen: true);
+    final tasks = fillterTaskDaily(taskController.allItems);
 
     return Column(
       children: [
@@ -212,7 +212,8 @@ class _TaskStatisticalState extends State<TaskStatistical> {
           const Padding(
             padding: EdgeInsets.all(10.0),
             child: EmptyBox(
-              message: 'Bạn đã hoàn thành tất cả công việc của ngày hôm nay',
+              message:
+                  'Bạn đã hoàn thành tất cả công việc hôm nay!\nHãy cố gắng hơn ở ngày mai!',
             ),
           )
         ],
