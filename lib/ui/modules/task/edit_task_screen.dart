@@ -217,7 +217,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
   TextFormField buildDescriptionField() {
     return TextFormField(
-      textInputAction: TextInputAction.next,
       initialValue: _formData['description'],
       decoration: InputDecoration(
         isDense: true,
