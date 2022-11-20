@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     final double widthCategory = deviceSize.width * 0.7;
-    const double heightCategory = 170.00;
+    const double heightCategory = 150.00;
 
     return Scaffold(
       appBar: buildHomeScreenAppBar(context),
@@ -142,10 +142,10 @@ class _HomeScreenState extends State<HomeScreen> {
           for (var item in listCategory) {
             listWidgetCategory.add(
               CategoryItem(
-                item: item,
-                widthItem: widthCategory,
-                isHorizontal: true,
-              ),
+                  item: item,
+                  widthItem: widthCategory,
+                  isHorizontal: true,
+                  onlyLineContent: true),
             );
           }
         }

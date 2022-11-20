@@ -148,6 +148,7 @@ class _ScheduleSearchScreenState extends State<ScheduleSearchScreen> {
                       item: e,
                       isHorizontal: false,
                       widthItem: MediaQuery.of(context).size.width,
+                      onlyLineContent: false,
                     ),
                   ),
                 )

@@ -192,10 +192,11 @@ class TaskItem extends StatelessWidget {
                     ),
                   ],
                 ),
-                const Divider(),
+                const SizedBox(height: 5),
                 RiskTextCustom(
                   content: item.description,
                   lastIcon: Icons.edit,
+                  onlyLine: false,
                 ),
               ],
             ),

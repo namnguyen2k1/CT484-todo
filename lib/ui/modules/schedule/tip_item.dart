@@ -35,10 +35,18 @@ class TipItem extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey, width: 1.0),
+                    border: Border.all(
+                        color: Theme.of(context).focusColor, width: 1.0),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Text(tip['name']),
+                  child: Text(
+                    tip['name'],
+                    style: TextStyle(
+                      color: Theme.of(context)
+                          .floatingActionButtonTheme
+                          .backgroundColor,
+                    ),
+                  ),
                 ),
               ],
             ),

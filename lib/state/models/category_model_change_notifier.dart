@@ -1,5 +1,15 @@
 import 'package:flutter/foundation.dart';
 
+class CategoryFields {
+  static const id = 'id';
+  static const code = 'code';
+  static const name = 'name';
+  static const description = 'description';
+  static const color = 'color';
+  static const imageUrl = 'imageUrl';
+  static const createdAt = 'createdAt';
+}
+
 class CategoryModel with ChangeNotifier {
   String id;
   String code;

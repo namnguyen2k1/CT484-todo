@@ -12,11 +12,13 @@ class CategoryItem extends StatelessWidget {
     required this.item,
     required this.widthItem,
     required this.isHorizontal,
+    required this.onlyLineContent,
   });
 
   final CategoryModel item;
   final double widthItem;
   final bool isHorizontal;
+  final bool onlyLineContent;
 
   @override
   Widget build(BuildContext context) {
@@ -114,11 +116,13 @@ class CategoryItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                      width: 40,
+                      width: 30,
                       child: Container(
-                        padding: const EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(2),
                         decoration: BoxDecoration(
-                          color: Color(int.parse(item.color)),
+                          border: Border.all(
+                            color: Color(int.parse(item.color)),
+                          ),
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Text(
@@ -143,10 +147,11 @@ class CategoryItem extends StatelessWidget {
                     ),
                   ],
                 ),
-                const Divider(),
+                const SizedBox(height: 5),
                 RiskTextCustom(
                   content: item.description,
                   lastIcon: Icons.edit,
+                  onlyLine: onlyLineContent,
                 ),
               ],
             ),

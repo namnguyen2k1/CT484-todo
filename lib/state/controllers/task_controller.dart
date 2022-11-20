@@ -10,11 +10,12 @@ class TaskController extends ChangeNotifier {
   int get itemCount => _allItems.length;
   List<TaskModel> get allItems => List.unmodifiable(_allItems);
 
-  Future<void> getAll() async {
+  Future<List<TaskModel>> getAllTasks() async {
     final items = await _service.getAllTasks();
-    // _allItems.clear();
-    _allItems.addAll([...items]);
+    _allItems.clear();
+    _allItems.addAll(items);
     notifyListeners();
+    return items;
   }
 
   Future<void> addItem(TaskModel item) async {

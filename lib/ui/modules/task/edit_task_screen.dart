@@ -217,6 +217,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
   TextFormField buildDescriptionField() {
     return TextFormField(
+      textInputAction: TextInputAction.done,
       initialValue: _formData['description'],
       decoration: InputDecoration(
         isDense: true,
@@ -241,7 +242,11 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         return null;
       },
       onSaved: (value) {
-        _formData['description'] = value!;
+        var filterContent = value!;
+        while (filterContent[filterContent.length - 1] == '\n') {
+          filterContent = filterContent.substring(0, filterContent.length - 1);
+        }
+        _formData['description'] = filterContent;
       },
     );
   }

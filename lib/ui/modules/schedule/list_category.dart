@@ -51,27 +51,23 @@ class _ListCategoryState extends State<ListCategory> {
           ? ListView.builder(
               itemCount: listCategory.length,
               itemBuilder: (BuildContext context, int index) {
-                print(listCategory.toString());
                 final bool isMatch = _selectedCategory == index;
                 return Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextButton(
-                      onPressed: () {
+                    GestureDetector(
+                      onTap: () {
                         setState(() {
                           _selectedCategory = index;
                         });
                       },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Theme.of(context).backgroundColor,
-                        padding: EdgeInsets.zero,
-                      ),
                       child: CategoryItem(
                         item: listCategory[index],
                         widthItem: isMatch
                             ? deviceSize.width * 0.85
                             : deviceSize.width - 20,
                         isHorizontal: false,
+                        onlyLineContent: false,
                       ),
                     ),
                     isMatch

@@ -1,5 +1,18 @@
 import 'package:flutter/foundation.dart';
 
+class TaskFields {
+  static const id = 'id';
+  static const categoryId = 'categoryId';
+  static const name = 'name';
+  static const star = 'star';
+  static const color = 'color';
+  static const description = 'description';
+  static const imageUrl = 'imageUrl';
+  static const workingTime = 'workingTime';
+  static const createdAt = 'createdAt';
+  static const isCompleted = 'isCompleted';
+}
+
 class TaskModel with ChangeNotifier {
   String id;
   String categoryId;

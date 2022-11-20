@@ -380,6 +380,8 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
     required String label,
   }) {
     return TextFormField(
+      maxLines: 3,
+      keyboardType: TextInputType.multiline,
       enabled: _isEditing,
       onTap: () {
         setState(() {
@@ -393,10 +395,13 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
         return null;
       },
       onSaved: (value) {
-        _formData['description'] = value!;
+        var filterContent = value!;
+        while (filterContent[filterContent.length - 1] == '\n') {
+          filterContent = filterContent.substring(0, filterContent.length - 1);
+        }
+        _formData['description'] = filterContent;
       },
       initialValue: _formData['description'],
-      keyboardType: TextInputType.name,
       obscureText: false,
       decoration: InputDecoration(
         prefixIcon: Icon(

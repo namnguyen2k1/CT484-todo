@@ -42,13 +42,8 @@ class _ListTaskState extends State<ListTask> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
-                            child: TextButton(
-                              style: TextButton.styleFrom(
-                                foregroundColor:
-                                    Theme.of(context).backgroundColor,
-                                padding: EdgeInsets.zero,
-                              ),
-                              onPressed: () {
+                            child: GestureDetector(
+                              onTap: () {
                                 setState(() {
                                   _selectedTask = index;
                                 });

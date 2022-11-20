@@ -66,28 +66,43 @@ class _AlarmScreenState extends State<AlarmScreen> {
   }
 
   NeonCircularTimer buildCircularTimer(TaskModel task, BuildContext context) {
+    final taskController = context.read<TaskController>();
     return NeonCircularTimer(
-      width: 160,
-      duration: int.parse(task.workingTime),
-      isReverse: true,
-      controller: _countDowncontroller,
-      isTimerTextShown: true,
-      textFormat: TextFormat.HH_MM_SS,
-      strokeWidth: 15,
-      textStyle: const TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 30,
-      ),
-      neumorphicEffect: false,
-      innerFillGradient: LinearGradient(colors: [
-        Theme.of(context).focusColor,
-        Theme.of(context).floatingActionButtonTheme.backgroundColor!
-      ]),
-      neonGradient: LinearGradient(colors: [
-        Theme.of(context).focusColor,
-        Theme.of(context).floatingActionButtonTheme.backgroundColor!
-      ]),
-    );
+        onComplete: () async {
+          await taskController.updateItem(TaskModel(
+            id: task.id,
+            categoryId: task.categoryId,
+            name: task.name,
+            star: task.star,
+            color: task.color,
+            description: task.description,
+            imageUrl: task.imageUrl,
+            workingTime: task.workingTime,
+            createdAt: task.createdAt,
+            isCompleted: true,
+          ));
+          setState(() {});
+        },
+        width: 160,
+        duration: int.parse(task.workingTime),
+        isReverse: true,
+        controller: _countDowncontroller,
+        isTimerTextShown: true,
+        textFormat: TextFormat.HH_MM_SS,
+        strokeWidth: 15,
+        textStyle: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 30,
+        ),
+        neumorphicEffect: false,
+        innerFillGradient: LinearGradient(colors: [
+          Theme.of(context).focusColor,
+          Theme.of(context).floatingActionButtonTheme.backgroundColor!
+        ]),
+        neonGradient: LinearGradient(colors: [
+          Theme.of(context).focusColor,
+          Theme.of(context).floatingActionButtonTheme.backgroundColor!
+        ]));
   }
 
   Container buildTask(TaskModel task, {bool isCurentTask = true}) {

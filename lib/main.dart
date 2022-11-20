@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:todoapp/state/models/category_model_change_notifier.dart';
+import 'package:todoapp/state/models/task_model_change_notifier.dart';
 
 import './state/controllers/app_settings_controller.dart';
 import './state/controllers/category_controller.dart';
@@ -15,17 +17,28 @@ import './ui/themes/theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load data from sqflite
-  await CategoryController().getAll();
-  await TaskController().getAll();
+  final categoryController = CategoryController();
+  final taskController = TaskController();
+  // Load local resources
+  await categoryController.getAllCategories();
+  await taskController.getAllTasks();
 
-  // Load biến mỗi trường
+  // Load env
   await dotenv.load();
-  runApp(const MyApp());
+  runApp(MyApp(
+    tasks: taskController,
+    categories: categoryController,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final TaskController tasks;
+  final CategoryController categories;
+  const MyApp({
+    super.key,
+    required this.tasks,
+    required this.categories,
+  });
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -36,11 +49,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (ctx) => AppSettingsController(),
         ),
-        ChangeNotifierProvider(
-          create: (ctx) => CategoryController(),
+        ChangeNotifierProvider.value(
+          value: categories,
         ),
-        ChangeNotifierProvider(
-          create: (ctx) => TaskController(),
+        ChangeNotifierProvider.value(
+          value: tasks,
         ),
         ChangeNotifierProvider(
           create: (ctx) => TimerController(),

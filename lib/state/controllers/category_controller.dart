@@ -12,11 +12,12 @@ class CategoryController extends ChangeNotifier {
   int get itemCount => _allItems.length;
   List<CategoryModel> get allItems => List.unmodifiable(_allItems);
 
-  Future<void> getAll() async {
+  Future<List<CategoryModel>> getAllCategories() async {
     final items = await _service.getAllCategories();
-    // _allItems.clear();
-    _allItems.addAll([...items]);
+    _allItems.clear();
+    _allItems.addAll(items);
     notifyListeners();
+    return items;
   }
 
   Future<void> addItem(CategoryModel item) async {

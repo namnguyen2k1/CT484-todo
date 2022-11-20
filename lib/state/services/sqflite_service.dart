@@ -12,30 +12,18 @@ class SqfliteService {
   static const _databaseName = 'ct484_sqflite.db';
   static const _databaseVersion = 1;
 
-  // Trường hợp id được tạo từ uuid nên cần chuyển int => text
-  final idType = 'TEXT PRIMARY KEY';
-  // Trường hợp xoá id từ category nên cần đổi trường categoryId trong task => null
-  final foreignType = 'TEXT NULL';
-
-  final integerType = 'INTEGER NOT NULL';
-  final textType = 'TEXT NOT NULL';
-
-  // Sqflite :Only num, String and Uint8List are supported.
-  // SupportType: https://github.com/tekartik/sqflite/blob/master/sqflite/doc/supported_types.md
-
   // Create singleton
-  static final SqfliteService instance = SqfliteService._sharedInstance();
-  SqfliteService._sharedInstance();
+  static final SqfliteService instance = SqfliteService._internal();
+  SqfliteService._internal();
 
   Database? _defaultDatabase;
 
   Future<Database> get _database async {
     if (_defaultDatabase != null) {
       return _defaultDatabase!;
-    } else {
-      _defaultDatabase = await _initDatabase(_databaseName);
-      return _defaultDatabase!;
     }
+    _defaultDatabase = await _initDatabase(_databaseName);
+    return _defaultDatabase!;
   }
 
   Future<Database> _initDatabase(String fileName) async {
@@ -53,60 +41,66 @@ class SqfliteService {
   }
 
   Future<void> _createDefaultTables(Database db, int version) async {
+    // Sqflite supported only: {num, String and Uint8List}
+    // Article: https://github.com/tekartik/sqflite/blob/master/sqflite/doc/supported_types.md
+
+    // id được tạo từ uuid nên cần chuyển int => text
+    const idType = 'TEXT PRIMARY KEY';
+    // id từ category nên cần đổi trường categoryId trong task => null
+    const foreignType = 'TEXT NOT NULL';
+    const integerType = 'INTEGER NOT NULL';
+    const textType = 'TEXT NOT NULL';
+
     // Create category table
     await db.execute(
       '''CREATE TABLE $_categoryTableName (
-      id $idType,
-      name $textType,
-      code $textType,
-      description $textType,
-      imageUrl $textType,
-      color $textType,
-      createdAt $textType
+      ${CategoryFields.id} $idType,
+      ${CategoryFields.name} $textType,
+      ${CategoryFields.code} $textType,
+      ${CategoryFields.description} $textType,
+      ${CategoryFields.imageUrl} $textType,
+      ${CategoryFields.color} $textType,
+      ${CategoryFields.createdAt} $textType
     )''',
     );
 
     // Create task table
     await db.execute(
       '''CREATE TABLE $_taskTableName (
-      id $idType,
-      categoryId $foreignType,
-      name $textType,
-      star $integerType,
-      color $textType,
-      description $textType,
-      imageUrl $textType,
-      workingTime $textType,
-      createdAt $textType,
-      isCompleted $integerType,
-      FOREIGN KEY (categoryId) REFERENCES $_categoryTableName(id)
+      ${TaskFields.id} $idType,
+      ${TaskFields.categoryId} $foreignType,
+      ${TaskFields.name} $textType,
+      ${TaskFields.star} $integerType,
+      ${TaskFields.color} $textType,
+      ${TaskFields.description} $textType,
+      ${TaskFields.imageUrl} $textType,
+      ${TaskFields.workingTime} $textType,
+      ${TaskFields.createdAt} $textType,
+      ${TaskFields.isCompleted} $integerType,
+      FOREIGN KEY (${TaskFields.categoryId}) REFERENCES $_categoryTableName(${CategoryFields.id})
     )''',
     );
-
-    // Create more...
   }
 
-  void close() {
-    if (_defaultDatabase != null) {
-      _defaultDatabase!.close();
-      _defaultDatabase = null;
-    }
+  Future<void> close() async {
+    final db = await instance._database;
+    db.close();
   }
 
   Future<List<CategoryModel>> getAllCategories() async {
-    final db = await _database;
+    final db = await instance._database;
     final result = await db.query(
       _categoryTableName,
-      orderBy: 'createdAt DESC',
+      orderBy: '${CategoryFields.createdAt} DESC',
     );
     return result.map((item) => CategoryModel.fromJson(item)).toList();
   }
 
   Future<CategoryModel> getCategoryById(String id) async {
-    final db = await _database;
+    final db = await instance._database;
     final result = await db.query(
       _categoryTableName,
-      where: 'id = ?',
+      where: '${CategoryFields.id} = ?',
       whereArgs: [id],
     );
     return CategoryModel.fromJson(
@@ -115,7 +109,7 @@ class SqfliteService {
   }
 
   Future<int> addCategory(CategoryModel item) async {
-    final db = await _database;
+    final db = await instance._database;
     final index = await db.insert(
       _categoryTableName,
       item.toJson(),
@@ -125,40 +119,40 @@ class SqfliteService {
   }
 
   Future<int> updateCategory(CategoryModel item) async {
-    final db = await _database;
+    final db = await instance._database;
     final updateRowCount = await db.update(
       _categoryTableName,
       item.toJson(),
-      where: 'id = ?',
+      where: '${CategoryFields.id} = ?',
       whereArgs: [item.id],
     );
     return updateRowCount;
   }
 
   Future<int> deleteCategoryById(String id) async {
-    final db = await _database;
+    final db = await instance._database;
     final deleteRowCount = await db.delete(
       _categoryTableName,
-      where: 'id = ?',
+      where: '${CategoryFields.id} = ?',
       whereArgs: [id],
     );
     return deleteRowCount;
   }
 
   Future<List<TaskModel>> getAllTasks() async {
-    final db = await _database;
+    final db = await instance._database;
     final result = await db.query(
       _taskTableName,
-      orderBy: 'createdAt DESC',
+      orderBy: '${TaskFields.createdAt} DESC',
     );
     return result.map((item) => TaskModel.fromJson(item)).toList();
   }
 
   Future<TaskModel> getTaskById(String id) async {
-    final db = await _database;
+    final db = await instance._database;
     final result = await db.query(
       _taskTableName,
-      where: 'id = ?',
+      where: '${TaskFields.id} = ?',
       whereArgs: [id],
     );
     return TaskModel.fromJson(
@@ -167,7 +161,7 @@ class SqfliteService {
   }
 
   Future<int> addTask(TaskModel item) async {
-    final db = await _database;
+    final db = await instance._database;
     final index = await db.insert(
       _taskTableName,
       item.toJson(),
@@ -177,21 +171,21 @@ class SqfliteService {
   }
 
   Future<int> updateTask(TaskModel item) async {
-    final db = await _database;
+    final db = await instance._database;
     final updateRowCount = await db.update(
       _taskTableName,
       item.toJson(),
-      where: 'id = ?',
+      where: '${TaskFields.id} = ?',
       whereArgs: [item.id],
     );
     return updateRowCount;
   }
 
   Future<int> deleteTaskById(String id) async {
-    final db = await _database;
+    final db = await instance._database;
     final deleteRowCount = await db.delete(
       _taskTableName,
-      where: 'id = ?',
+      where: '${TaskFields.id} = ?',
       whereArgs: [id],
     );
     return deleteRowCount;
