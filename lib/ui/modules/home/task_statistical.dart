@@ -48,7 +48,7 @@ class _TaskStatisticalState extends State<TaskStatistical> {
                     width: 10,
                   ),
                   Text(
-                    FormatTime.formatTimeLocalArea(time: _selectedDate),
+                    'Thống kê ngày ${FormatTime.formatTimeLocalArea(time: _selectedDate)}',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],

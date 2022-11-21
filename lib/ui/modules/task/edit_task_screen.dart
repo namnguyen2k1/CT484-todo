@@ -154,30 +154,40 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     final currentColor = Theme.of(context).focusColor;
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        title: Text(_formData['name'] == '__________'
-            ? 'Tạo công việc mới'
-            : 'Chỉnh sửa công việc'),
+        titleSpacing: 0,
+        automaticallyImplyLeading: _formData['name'] != '__________',
+        centerTitle: _formData['name'] == '__________',
+        title: Text(
+          _formData['name'] == '__________'
+              ? 'Tạo Công Việc Mới'
+              : 'Chỉnh Sửa Công Việc',
+        ),
+        actions: [
+          if (_formData['name'] != '__________') ...[
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.zero,
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+              ),
+              onPressed: _handleSaveItem,
+              child: const Icon(Icons.save),
+            ),
+          ]
+        ],
       ),
       body: Form(
         key: _taskFormKey,
         child: ListView(
           padding: const EdgeInsets.all(16.0),
           children: <Widget>[
+            buildCategoryList(),
             buildNameField(),
-            const Divider(),
             buildDescriptionField(),
-            const Divider(),
             buildTimeField(currentColor),
             buildListIcons(context),
-            const Divider(),
             buildRankField(),
-            const Divider(),
-            buildFieldColor(context),
-            const Divider(),
-            buildCategoryList(),
-            const Divider(),
+            buildColorField(context),
             buildControlButtons(context)
           ],
         ),
@@ -185,69 +195,76 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     );
   }
 
-  TextFormField buildNameField() {
-    return TextFormField(
-      autofocus: true,
-      focusNode: _fieldNameFocusNode,
-      textInputAction: TextInputAction.next,
-      initialValue: _formData['name'] == '__________' ? '' : _formData['name'],
-      decoration: InputDecoration(
-        isDense: true,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        border: const OutlineInputBorder(),
-        labelText: 'Tên công việc',
-        labelStyle: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Theme.of(context).focusColor,
+  Padding buildNameField() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10, top: 10),
+      child: TextFormField(
+        autofocus: true,
+        focusNode: _fieldNameFocusNode,
+        textInputAction: TextInputAction.next,
+        initialValue:
+            _formData['name'] == '__________' ? '' : _formData['name'],
+        decoration: InputDecoration(
+          isDense: true,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          border: const OutlineInputBorder(),
+          labelText: 'Tên công việc',
+          labelStyle: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).focusColor,
+          ),
         ),
+        // autofocus: true,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return 'Vui lòng nhập tên công việc!';
+          }
+          return null;
+        },
+        onSaved: (value) {
+          _formData['name'] = value!;
+        },
       ),
-      // autofocus: true,
-      validator: (value) {
-        if (value!.isEmpty) {
-          return 'Vui lòng nhập tên công việc!';
-        }
-        return null;
-      },
-      onSaved: (value) {
-        _formData['name'] = value!;
-      },
     );
   }
 
-  TextFormField buildDescriptionField() {
-    return TextFormField(
-      textInputAction: TextInputAction.done,
-      initialValue: _formData['description'],
-      decoration: InputDecoration(
-        isDense: true,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        border: const OutlineInputBorder(),
-        labelText: 'Mô tả công việc',
-        labelStyle: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Theme.of(context).focusColor,
+  Padding buildDescriptionField() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: TextFormField(
+        initialValue: _formData['description'],
+        decoration: InputDecoration(
+          isDense: true,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          border: const OutlineInputBorder(),
+          labelText: 'Mô tả công việc',
+          labelStyle: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).focusColor,
+          ),
         ),
+        maxLines: 3,
+        keyboardType: TextInputType.multiline,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return 'Vui lòng nhập mô tả công việc!';
+          }
+          if (value.length < 5) {
+            return 'Nhập mô tả nhiều hơn 5 kí tự!';
+          }
+          return null;
+        },
+        onSaved: (value) {
+          var filterContent = value!;
+          while (filterContent[filterContent.length - 1] == '\n') {
+            filterContent =
+                filterContent.substring(0, filterContent.length - 1);
+          }
+          _formData['description'] = filterContent;
+        },
       ),
-      maxLines: 3,
-      keyboardType: TextInputType.multiline,
-      validator: (value) {
-        if (value!.isEmpty) {
-          return 'Vui lòng nhập mô tả công việc!';
-        }
-        if (value.length < 5) {
-          return 'Nhập mô tả nhiều hơn 5 kí tự!';
-        }
-        return null;
-      },
-      onSaved: (value) {
-        var filterContent = value!;
-        while (filterContent[filterContent.length - 1] == '\n') {
-          filterContent = filterContent.substring(0, filterContent.length - 1);
-        }
-        _formData['description'] = filterContent;
-      },
     );
   }
 
@@ -256,14 +273,15 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     final sizeImage =
         (MediaQuery.of(context).size.width / maxSizeImage).round();
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          alignment: Alignment.topLeft,
-          padding: const EdgeInsets.all(10),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10),
           child: Text(
             'Chọn icon:',
             style: TextStyle(
               color: Theme.of(context).focusColor,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -302,33 +320,39 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   }
 
   Column buildRankField() {
-    const listRank = ['Dễ', 'Trung bình', 'Khó'];
+    const listRank = ['Dễ', 'Vừa', 'Khó'];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.only(top: 10, bottom: 10),
           child: Text(
             'Chọn độ khó:',
             style: TextStyle(
               color: Theme.of(context).focusColor,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            RateStar(starCount: _starCount),
+            RateStar(starCount: _formData['star']),
             ToggleSwitch(
+              minHeight: 30,
+              activeBgColor: [Theme.of(context).focusColor],
+              borderWidth: 1.0,
+              inactiveFgColor: Colors.black,
+              fontSize: 16.0,
               initialLabelIndex: _starCount - 1,
               totalSwitches: 3,
-              minWidth: 90,
+              minWidth: 70,
               labels: listRank,
               onToggle: (index) {
                 setState(() {
                   _starCount = index! + 1;
                 });
-                _formData['star'] = _starCount;
+                _formData['star'] = index! + 1;
               },
             ),
           ],
@@ -339,25 +363,24 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
   Column buildTimeField(Color currentColor) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Chọn thời gian:',
-                style: TextStyle(
-                  color: Theme.of(context).focusColor,
-                ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Chọn thời gian làm việc:',
+              style: TextStyle(
+                color: Theme.of(context).focusColor,
+                fontWeight: FontWeight.bold,
               ),
-              Text(
-                FormatTime.converSecondsToText(
-                  _currentSliderValue * 60,
-                ),
-              )
-            ],
-          ),
+            ),
+            Text(
+              FormatTime.converSecondsToText(
+                _currentSliderValue * 60,
+              ),
+            )
+          ],
         ),
         Slider(
           inactiveColor: currentColor.withOpacity(0.2),
@@ -376,16 +399,17 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     );
   }
 
-  Column buildFieldColor(BuildContext context) {
+  Column buildColorField(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.only(top: 10),
           child: Text(
             'Chọn màu sắc:',
             style: TextStyle(
               color: Theme.of(context).focusColor,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -469,11 +493,12 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.only(bottom: 10),
           child: Text(
             'Chọn danh mục:',
             style: TextStyle(
               color: Theme.of(context).focusColor,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -481,13 +506,18 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           scrollDirection: Axis.horizontal,
           child: Scrollbar(
             child: ToggleSwitch(
+              minHeight: 30,
+              activeBgColor: [Theme.of(context).focusColor],
+              borderWidth: 1.0,
+              inactiveFgColor: Colors.black,
+              fontSize: 16.0,
               customWidths: customWidths,
-              activeFgColor: Colors.white,
-              inactiveBgColor: Colors.grey,
-              inactiveFgColor: Colors.white,
               initialLabelIndex: _selectedCategoryIndex,
               labels: labels,
               onToggle: (index) {
+                setState(() {
+                  _selectedCategoryIndex = index!;
+                });
                 _formData['categoryId'] = listCategory[index!].id;
               },
             ),
@@ -501,29 +531,23 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ElevatedButton.icon(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_left),
-          label: const Text('Đóng'),
-        ),
-        const SizedBox(
-          width: 50,
-        ),
         if (_formData['name'] == '__________') ...[
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(Icons.arrow_left),
+            label: const Text('Đóng'),
+          ),
+          const SizedBox(
+            width: 50,
+          ),
           ElevatedButton.icon(
             onPressed: _handleAddItem,
             icon: const Icon(Icons.add_circle),
             label: const Text('Thêm'),
           ),
-        ] else ...[
-          ElevatedButton.icon(
-            onPressed: _handleSaveItem,
-            icon: const Icon(Icons.save),
-            label: const Text('Lưu'),
-          ),
-        ],
+        ]
       ],
     );
   }

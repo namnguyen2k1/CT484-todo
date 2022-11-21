@@ -21,6 +21,20 @@ class _ListTaskState extends State<ListTask> {
   DateTime _selectedDate = DateTime.now();
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  List<TaskModel> fillterTaskDaily(List<TaskModel> tasks) {
+    final filterTasks = tasks
+        .where((task) =>
+            FormatTime.convertTimestampToFormatTimer(task.createdAt) ==
+            FormatTime.convertTimestampToFormatTimer(_selectedDate.toString()))
+        .toList();
+    return filterTasks;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     final taskController = Provider.of<TaskController>(context, listen: true);
@@ -28,7 +42,7 @@ class _ListTaskState extends State<ListTask> {
 
     return Column(
       children: [
-        buildTaskHeader(context),
+        buildTaskHeader(context, listTask),
         Expanded(
           child: listTask.isNotEmpty
               ? ListView.builder(
@@ -69,18 +83,9 @@ class _ListTaskState extends State<ListTask> {
     );
   }
 
-  List<TaskModel> fillterTaskDaily(List<TaskModel> tasks) {
-    final filterTasks = tasks
-        .where((element) =>
-            FormatTime.convertTimestampToFormatTimer(element.createdAt) ==
-            FormatTime.convertTimestampToFormatTimer(_selectedDate.toString()))
-        .toList();
-    return filterTasks;
-  }
-
-  Container buildTaskHeader(BuildContext context) {
+  Container buildTaskHeader(BuildContext context, List<TaskModel> listTasks) {
     return Container(
-      padding: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 0),
+      padding: const EdgeInsets.only(top: 10, left: 10, right: 20, bottom: 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -94,7 +99,7 @@ class _ListTaskState extends State<ListTask> {
                 width: 10,
               ),
               Text(
-                FormatTime.formatTimeLocalArea(time: _selectedDate),
+                '${FormatTime.formatTimeLocalArea(time: _selectedDate)}   -- ${listTasks.length} việc --',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
@@ -116,6 +121,7 @@ class _ListTaskState extends State<ListTask> {
               );
               setState(() {
                 _selectedDate = selectedDate!;
+                _selectedTask = -1;
               });
             },
           ),
@@ -129,7 +135,7 @@ class _ListTaskState extends State<ListTask> {
     List<TaskModel> listTask,
     int index,
   ) {
-    final taskController = context.watch<TaskController>();
+    final taskController = context.read<TaskController>();
     const EdgeInsetsGeometry paddingButton = EdgeInsets.all(5.0);
     return Row(
       children: [
@@ -174,9 +180,22 @@ class _ListTaskState extends State<ListTask> {
             IconButton(
               padding: paddingButton,
               constraints: const BoxConstraints(),
-              onPressed: () {
-                if (_selectedTask == 0) return;
-                taskController.swapTwoItem(_selectedTask, _selectedTask - 1);
+              onPressed: () async {
+                if (_selectedTask == 0) {
+                  setState(() {
+                    _selectedTask = -1;
+                  });
+                  return;
+                }
+
+                final indexItemOnListTask = taskController.allItems.indexWhere(
+                  (item) => item.id == listTask[index].id,
+                );
+                await taskController.swapTwoItem(
+                  indexItemOnListTask,
+                  indexItemOnListTask - 1,
+                );
+
                 setState(() {
                   _selectedTask = _selectedTask - 1;
                 });
@@ -189,10 +208,19 @@ class _ListTaskState extends State<ListTask> {
               padding: paddingButton,
               constraints: const BoxConstraints(),
               onPressed: () async {
-                if (_selectedTask == listTask.length - 1) return;
+                if (_selectedTask == listTask.length - 1) {
+                  setState(() {
+                    _selectedTask = -1;
+                  });
+                  return;
+                }
+
+                final indexItemOnListTask = taskController.allItems.indexWhere(
+                  (item) => item.id == listTask[index].id,
+                );
                 await taskController.swapTwoItem(
-                  _selectedTask,
-                  _selectedTask + 1,
+                  indexItemOnListTask,
+                  indexItemOnListTask + 1,
                 );
                 setState(() {
                   _selectedTask = _selectedTask + 1;

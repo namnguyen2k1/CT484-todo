@@ -118,11 +118,25 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        centerTitle: true,
+        titleSpacing: 0,
+        automaticallyImplyLeading: _formData['code'] != '',
+        centerTitle: _formData['code'] == '',
         title: Text(
-          _formData['code'] == '' ? 'Danh mục mới' : 'Chỉnh sửa danh mục',
+          _formData['code'] == '' ? 'Tạo Danh Mục Mới' : 'Chỉnh Sửa Danh Mục',
         ),
+        actions: [
+          if (_formData['code'] != '') ...[
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.zero,
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+              ),
+              onPressed: _handleSaveItem,
+              child: const Icon(Icons.save),
+            ),
+          ]
+        ],
       ),
       body: Form(
         key: _formKey,
@@ -426,29 +440,23 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ElevatedButton.icon(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_left),
-          label: const Text('Quay lại'),
-        ),
-        const SizedBox(
-          width: 50,
-        ),
         if (_formData['code'] == '') ...[
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(Icons.arrow_left),
+            label: const Text('Đóng'),
+          ),
+          const SizedBox(
+            width: 50,
+          ),
           ElevatedButton.icon(
             onPressed: _handleAddItem,
             icon: const Icon(Icons.add_circle),
             label: const Text('Thêm'),
           ),
-        ] else ...[
-          ElevatedButton.icon(
-            onPressed: _handleSaveItem,
-            icon: const Icon(Icons.save),
-            label: const Text('Lưu'),
-          )
-        ],
+        ]
       ],
     );
   }

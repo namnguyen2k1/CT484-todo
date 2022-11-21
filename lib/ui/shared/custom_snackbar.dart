@@ -7,7 +7,8 @@ class CustomSnackBar {
     final deviceSize = MediaQuery.of(context).size;
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: Theme.of(context).focusColor,
+        backgroundColor:
+            Theme.of(context).floatingActionButtonTheme.backgroundColor,
         margin: EdgeInsets.only(
           bottom: deviceSize.height - 200,
           right: 10,

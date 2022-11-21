@@ -34,7 +34,6 @@ class _ListCategoryState extends State<ListCategory> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        buildSelectDate(context),
         buildListCategory(context),
       ],
     );
@@ -44,7 +43,7 @@ class _ListCategoryState extends State<ListCategory> {
     final deviceSize = MediaQuery.of(context).size;
     final categoryController =
         Provider.of<CategoryController>(context, listen: true);
-    final listCategory = _fillterCategoryDaily(categoryController.allItems);
+    final listCategory = categoryController.allItems;
 
     return Expanded(
       child: listCategory.isNotEmpty

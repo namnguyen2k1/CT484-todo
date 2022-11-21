@@ -110,15 +110,27 @@ class _HomeScreenState extends State<HomeScreen> {
           alignment: Alignment.topLeft,
           padding: const EdgeInsets.all(10),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(
-                Icons.pending,
-                color: Theme.of(context).focusColor,
+              Row(
+                children: [
+                  Icon(
+                    Icons.pending,
+                    color: Theme.of(context).focusColor,
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  const Text(
+                    'Công việc hiện tại',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
-              const SizedBox(
-                width: 10,
+              Text(
+                '-- Hôm nay còn ${listTaskPending.length} việc --',
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              const Text('Công việc hiện tại'),
             ],
           ),
         ),
@@ -142,10 +154,11 @@ class _HomeScreenState extends State<HomeScreen> {
           for (var item in listCategory) {
             listWidgetCategory.add(
               CategoryItem(
-                  item: item,
-                  widthItem: widthCategory,
-                  isHorizontal: true,
-                  onlyLineContent: true),
+                item: item,
+                widthItem: widthCategory,
+                isHorizontal: true,
+                onlyLineContent: true,
+              ),
             );
           }
         }
@@ -161,7 +174,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Theme.of(context).focusColor,
                   ),
                   const SizedBox(width: 10),
-                  Text('Danh mục (${listCategory.length})'),
+                  Text(
+                    'Danh mục (${listCategory.length})',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ],
               ),
             ),

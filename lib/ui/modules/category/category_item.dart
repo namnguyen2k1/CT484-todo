@@ -26,7 +26,7 @@ class CategoryItem extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       margin: EdgeInsets.only(
         right: isHorizontal ? 10 : 0,
-        bottom: isHorizontal ? 0 : 10,
+        bottom: isHorizontal ? 0 : 20,
       ),
       width: widthItem,
       decoration: BoxDecoration(

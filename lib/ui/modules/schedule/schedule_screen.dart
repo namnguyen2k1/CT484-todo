@@ -3,10 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:simple_ripple_animation/simple_ripple_animation.dart';
 
 import 'package:todoapp/state/controllers/category_controller.dart';
+import 'package:todoapp/state/controllers/task_controller.dart';
 import 'package:todoapp/ui/modules/schedule/list_category.dart';
 import 'package:todoapp/ui/modules/schedule/list_task.dart';
 import 'package:todoapp/ui/shared/custom_dialog.dart';
 import 'package:todoapp/ui/modules/schedule/list_tip.dart';
+import 'package:todoapp/ui/shared/top_right_badge.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({Key? key}) : super(key: key);
@@ -56,7 +58,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
             icon: const Icon(Icons.search),
           ),
         ],
-        bottom: buildTabBar(),
+        bottom: buildTabBar(context),
       ),
       floatingActionButton: createFloatingActionButton(
         currentTab: _tabController.index,
@@ -72,7 +74,9 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     );
   }
 
-  TabBar buildTabBar() {
+  TabBar buildTabBar(BuildContext context) {
+    final taskController = context.watch<TaskController>();
+    final categoryController = context.watch<CategoryController>();
     return TabBar(
       controller: _tabController,
       padding: const EdgeInsets.all(10),
@@ -90,21 +94,42 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       ),
       tabs: [
         Tab(
-          icon: Icon(
-            Icons.task,
-            color: Theme.of(context).focusColor,
+          child: SizedBox(
+            width: 60,
+            height: 50,
+            child: TopRightBadge(
+              data: taskController.allItems.length,
+              child: Icon(
+                Icons.task,
+                color: Theme.of(context).focusColor,
+                size: 35,
+              ),
+            ),
           ),
         ),
         Tab(
-          icon: Icon(
-            Icons.view_comfortable,
-            color: Theme.of(context).focusColor,
+          child: SizedBox(
+            width: 60,
+            height: 50,
+            child: TopRightBadge(
+              data: categoryController.allItems.length,
+              child: Icon(
+                Icons.view_comfortable,
+                color: Theme.of(context).focusColor,
+                size: 35,
+              ),
+            ),
           ),
         ),
         Tab(
-          icon: Icon(
-            Icons.tips_and_updates,
-            color: Theme.of(context).focusColor,
+          icon: SizedBox(
+            width: 60,
+            height: 50,
+            child: Icon(
+              Icons.tips_and_updates,
+              color: Theme.of(context).focusColor,
+              size: 30,
+            ),
           ),
         ),
       ],
