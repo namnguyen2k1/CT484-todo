@@ -242,7 +242,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           BuildFinishedTask(
             icon: Icons.task_alt,
             fieldTitle: 'Tiến độ làm việc',
-            fieldContent: 'Đã hoàn thành $tasksDone việc',
+            fieldContent: 'Đã hoàn thành $tasksDone/${tasks.length} công việc',
           ),
         ],
       ),

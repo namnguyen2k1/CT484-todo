@@ -9,6 +9,7 @@ import '../home/task_statistical.dart';
 import '../task/task_item.dart';
 import '../../shared/rate_star.dart';
 import '../../shared/empty_box.dart';
+import '../utilities/format_time.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -54,19 +55,19 @@ class _HomeScreenState extends State<HomeScreen> {
     final username =
         "${emailHeader[0].toUpperCase()}${emailHeader.substring(1).toLowerCase()}";
     return AppBar(
+      titleSpacing: 10,
       title: Row(children: [
         Container(
           padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
-            border: Border.all(color: Theme.of(context).focusColor, width: 1.0),
+            color: Theme.of(context).focusColor,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
             username,
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color:
-                  Theme.of(context).floatingActionButtonTheme.backgroundColor,
+              color: Theme.of(context).appBarTheme.backgroundColor,
             ),
           ),
         ),
@@ -99,9 +100,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget buildCurrentTask(BuildContext context) {
     final taskController = context.watch<TaskController>();
 
-    final listTaskPending = taskController.allItems
-        .where((element) => element.isCompleted == false)
+    final filterTasks = taskController.allItems
+        .where((task) =>
+            FormatTime.convertTimestampToFormatTimer(task.createdAt) ==
+            FormatTime.convertTimestampToFormatTimer(DateTime.now().toString()))
         .toList();
+
+    final listTaskPending =
+        filterTasks.where((element) => element.isCompleted == false).toList();
     final taskPending =
         listTaskPending.indexWhere((e) => e.isCompleted == false);
     return Column(

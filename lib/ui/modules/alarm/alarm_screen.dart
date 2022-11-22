@@ -6,6 +6,7 @@ import 'package:todoapp/state/controllers/task_controller.dart';
 import 'package:todoapp/ui/modules/task/task_item.dart';
 import 'package:todoapp/ui/shared/empty_box.dart';
 import '../../../state/models/task_model_change_notifier.dart';
+import '../utilities/format_time.dart';
 
 class AlarmScreen extends StatefulWidget {
   const AlarmScreen({Key? key}) : super(key: key);
@@ -32,15 +33,20 @@ class _AlarmScreenState extends State<AlarmScreen> {
   @override
   Widget build(BuildContext context) {
     final alltasks = Provider.of<TaskController>(context).allItems;
+    final filterTasks = alltasks
+        .where((task) =>
+            FormatTime.convertTimestampToFormatTimer(task.createdAt) ==
+            FormatTime.convertTimestampToFormatTimer(DateTime.now().toString()))
+        .toList();
     final listTasks =
-        alltasks.where((element) => element.isCompleted == false).toList();
+        filterTasks.where((element) => element.isCompleted == false).toList();
     return Scaffold(
       key: _scaffoldAlarmKey,
       appBar: buildAlarmAppBar(),
       body: ListView(
         children: [
           if (listTasks.isEmpty) ...[
-            const EmptyBox(message: 'Hiện tại không có công việc')
+            const EmptyBox(message: 'Hiện tại chưa có công việc mới')
           ],
           if (listTasks.length == 1) ...[
             Column(
@@ -142,7 +148,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
   AppBar buildAlarmAppBar() {
     return AppBar(
-      title: const Text('Quản lý tiến độ công việc'),
+      title: const Text('Quản Lý Thời Gian Làm Việc'),
       automaticallyImplyLeading: false,
       actions: [
         IconButton(
